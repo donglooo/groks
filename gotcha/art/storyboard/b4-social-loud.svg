@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140" width="320" height="140" role="img">
+  <rect width="320" height="140" rx="8" fill="#402060"/>
+  
+  <rect x="30" y="36" width="260" height="90" rx="6" fill="#2a1840"/>
+  <rect x="44" y="48" width="230" height="60" rx="4" fill="#ff4d6d" opacity=".45"/>
+  <text x="160" y="85" text-anchor="middle" fill="#ffe566" font-size="14" font-family="system-ui,sans-serif" font-weight="700">罵聲放大 · 異見縮小</text>
+  <text x="160" y="120" text-anchor="middle" fill="#6eb6ff" font-size="10" font-family="system-ui,sans-serif">音畫引導</text>
+
+  <text x="12" y="22" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#e8eaf0">④ 社群牆（B）</text>
+  <text x="308" y="128" text-anchor="end" font-size="10" fill="#ffe566" font-family="system-ui,sans-serif">被剪版</text>
+</svg>

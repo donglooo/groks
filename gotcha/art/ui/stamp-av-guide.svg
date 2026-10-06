@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120" role="img" aria-label="中招印章 音畫引導">
+  <g transform="rotate(-8 100 60)">
+    <rect x="12" y="18" width="176" height="84" rx="12" fill="none" stroke="#6eb6ff" stroke-width="6"/>
+    <rect x="22" y="28" width="156" height="64" rx="8" fill="none" stroke="#6eb6ff" stroke-width="2" opacity=".5"/>
+    <text x="100" y="58" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26" font-weight="800" fill="#6eb6ff">中招·音畫引導</text>
+    <text x="100" y="80" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#6eb6ff" opacity=".85">聲音帶著你下結論</text>
+  </g>
+</svg>

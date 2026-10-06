@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="極端派 · caught">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#2a3040"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#d0b090"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#d0b090"/>
+  <!-- hair -->
+  <path d="M32 50 L36 22 L64 18 L92 22 L96 50 L80 42 L64 46 L48 42 Z" fill="#1a1e28"/>
+  <path d="M40 44 l18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M88 44 l-18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="48" cy="58" rx="8" ry="9" fill="#e8eaf0"/><ellipse cx="80" cy="58" rx="8" ry="9" fill="#e8eaf0"/><circle cx="48" cy="58" r="4" fill="#0a0b10"/><circle cx="80" cy="58" r="4" fill="#0a0b10"/>
+  <ellipse cx="64" cy="80" rx="6" ry="7" fill="#0a0b10"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ff4d6d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">極端派</text>
+</svg>

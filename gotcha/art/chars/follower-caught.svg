@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="跟風仔 · caught">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#3d5a80"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#c4a882"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#c4a882"/>
+  <!-- hair -->
+  <path d="M30 55 Q32 28 64 24 Q96 28 98 55 L90 48 Q64 36 38 48 Z" fill="#3d4a66"/>
+  <path d="M40 44 l18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M88 44 l-18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="48" cy="58" rx="8" ry="9" fill="#e8eaf0"/><ellipse cx="80" cy="58" rx="8" ry="9" fill="#e8eaf0"/><circle cx="48" cy="58" r="4" fill="#0a0b10"/><circle cx="80" cy="58" r="4" fill="#0a0b10"/>
+  <ellipse cx="64" cy="80" rx="6" ry="7" fill="#0a0b10"/>
+  <g transform="translate(78 85)"><rect x="0" y="0" width="22" height="32" rx="3" fill="#0a0b10" stroke="#6eb6ff" stroke-width="1.5"/><rect x="3" y="4" width="16" height="20" fill="#1a3048"/><circle cx="11" cy="28" r="2" fill="#6eb6ff"/></g>
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#6eb6ff" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">跟風仔</text>
+</svg>

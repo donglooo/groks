@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140" width="320" height="140" role="img">
+  <rect width="320" height="140" rx="8" fill="#1a4030"/>
+  
+  <rect x="0" y="90" width="320" height="50" fill="#0a2018"/>
+  <path d="M40 90 Q160 40 280 90" fill="none" stroke="#5dffb0" stroke-width="4" opacity=".6"/>
+  <rect x="70" y="70" width="24" height="50" fill="#2a5040"/>
+  <rect x="226" y="70" width="24" height="50" fill="#2a5040"/>
+  <circle cx="260" cy="36" r="10" fill="#ffe566" opacity=".5"/>
+
+  <text x="12" y="22" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#e8eaf0">③ 橋墩夜景</text>
+  <text x="308" y="128" text-anchor="end" font-size="10" fill="#ffe566" font-family="system-ui,sans-serif">完整版</text>
+</svg>
