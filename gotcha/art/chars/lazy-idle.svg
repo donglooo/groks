@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="懶人包控 · idle">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#4a4558"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#b89878"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#b89878"/>
+  <!-- hair -->
+  <path d="M28 58 Q30 30 64 22 Q98 30 100 58 Q64 48 28 58 Z" fill="#5a5048"/><rect x="20" y="55" width="14" height="28" rx="4" fill="#2a3040"/><rect x="94" y="55" width="14" height="28" rx="4" fill="#2a3040"/>
+  <path d="M40 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/><path d="M70 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <path d="M40 58 h16" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/><path d="M72 58 h16" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M54 80 h20" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ffb84d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">懶人包控</text>
+</svg>

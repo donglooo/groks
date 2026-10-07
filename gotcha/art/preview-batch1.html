@@ -1,0 +1,266 @@
+<!DOCTYPE html><html lang="zh-Hant"><meta charset="utf-8">
+<style>
+body{margin:0;background:#0a0b10;color:#e8eaf0;font-family:system-ui;padding:16px}
+h1{font-size:15px;margin:0 0 8px}h2{font-size:12px;color:#8b90a0;margin:16px 0 8px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+figure{margin:0;text-align:center}figcaption{font-size:10px;color:#8b90a0;margin-top:4px;line-height:1.3}
+</style>
+<h1>《先騙你一次》美術 batch 1 · Ink</h1>
+<h2>room-bg.svg</h2><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="640" height="400" role="img" aria-label="夜間剪接室全景">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#161822"/><stop offset="100%" stop-color="#0b0d14"/>
+    </linearGradient>
+    <linearGradient id="deskG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c1814"/><stop offset="100%" stop-color="#0e0c0a"/>
+    </linearGradient>
+    <linearGradient id="scrA" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#0d2840"/><stop offset="100%" stop-color="#050810"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="38%" cy="28%" r="35%">
+      <stop offset="0%" stop-color="#2a70a0" stop-opacity=".45"/><stop offset="100%" stop-color="#2a70a0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <!-- room shell -->
+  <rect width="800" height="500" fill="#07080c"/>
+  <rect width="800" height="300" fill="url(#wall)"/>
+  <!-- back wall door (slightly ajar, amber crack) -->
+  <rect x="355" y="70" width="90" height="200" rx="2" fill="#0e1018" stroke="#2a3040" stroke-width="2"/>
+  <rect x="360" y="75" width="8" height="190" fill="#ffb84d" opacity=".35"/>
+  <circle cx="430" cy="170" r="4" fill="#8b90a0"/>
+  <!-- ceiling strip lights dim -->
+  <rect x="120" y="16" width="200" height="6" rx="2" fill="#2a3040"/>
+  <rect x="480" y="16" width="200" height="6" rx="2" fill="#2a3040"/>
+  <!-- LEFT MONITOR A -->
+  <g id="monitor-a">
+    <rect x="40" y="36" width="300" height="200" rx="8" fill="#1a1e2a" stroke="#3a4258" stroke-width="3"/>
+    <rect x="52" y="48" width="276" height="160" rx="2" fill="url(#scrA)"/>
+    <ellipse cx="190" cy="120" rx="130" ry="75" fill="url(#glowA)"/>
+    <!-- fake waveform / edit preview -->
+    <rect x="70" y="70" width="100" height="60" rx="3" fill="#1a3048" opacity=".9"/>
+    <rect x="180" y="70" width="120" height="60" rx="3" fill="#152838" opacity=".9"/>
+    <path d="M70 155 h220" stroke="#6eb6ff" stroke-width="2" opacity=".5"/>
+    <path d="M70 165 h160" stroke="#5dffb0" stroke-width="2" opacity=".35"/>
+    <text x="190" y="120" text-anchor="middle" fill="#6eb6ff" font-size="20" font-family="system-ui,sans-serif" font-weight="700">A · 完整版</text>
+    <text x="190" y="145" text-anchor="middle" fill="#8ec8ff" font-size="11" font-family="system-ui,sans-serif">▶ REC</text>
+    <!-- bezel LED -->
+    <circle cx="60" cy="220" r="4" fill="#ff4d6d"/>
+  </g>
+  <!-- RIGHT MONITOR B (standby) -->
+  <g id="monitor-b">
+    <rect x="460" y="36" width="300" height="200" rx="8" fill="#141820" stroke="#2a3040" stroke-width="3"/>
+    <rect x="472" y="48" width="276" height="160" rx="2" fill="#080a10"/>
+    <text x="610" y="120" text-anchor="middle" fill="#5a6078" font-size="20" font-family="system-ui,sans-serif" font-weight="700">B · 待命</text>
+    <text x="610" y="145" text-anchor="middle" fill="#252836" font-size="11" font-family="system-ui,sans-serif">LOCKED</text>
+    <circle cx="480" cy="220" r="4" fill="#2a3040"/>
+  </g>
+  <!-- desk -->
+  <rect x="20" y="270" width="760" height="230" fill="url(#deskG)"/>
+  <rect x="20" y="270" width="760" height="8" fill="#2a2418"/>
+  <!-- TIMELINE (hotspot region) -->
+  <g id="timeline">
+    <rect x="70" y="300" width="620" height="100" rx="6" fill="#0a0c12" stroke="#2a3040" stroke-width="2"/>
+    <text x="86" y="322" fill="#8b90a0" font-size="11" font-family="system-ui,sans-serif">TIMELINE · 青石鎮橋案（虛構）</text>
+    <!-- tracks -->
+    <rect x="86" y="336" width="180" height="14" rx="3" fill="#2a5080" opacity=".7"/>
+    <rect x="280" y="336" width="90" height="14" rx="3" fill="#5a3030" opacity=".7"/>
+    <rect x="380" y="336" width="140" height="14" rx="3" fill="#1a4030" opacity=".7"/>
+    <rect x="530" y="336" width="120" height="14" rx="3" fill="#402060" opacity=".55"/>
+    <rect x="86" y="360" width="560" height="8" rx="2" fill="#1a2030"/>
+    <rect x="86" y="376" width="400" height="8" rx="2" fill="#1a2030"/>
+    <!-- playhead -->
+    <rect x="250" y="330" width="3" height="60" fill="#ffb84d"/>
+    <polygon points="250,328 262,322 250,316" fill="#ffb84d"/>
+  </g>
+  <!-- coffee + sticky notes -->
+  <circle cx="720" cy="390" r="22" fill="#1a1208" stroke="#c47a20" stroke-width="2"/>
+  <ellipse cx="720" cy="382" rx="12" ry="5" fill="#3a2810"/>
+  <rect x="700" y="430" width="50" height="36" rx="3" fill="#ffe566" opacity=".85"/>
+  <text x="725" y="452" text-anchor="middle" fill="#1a1208" font-size="9" font-family="system-ui,sans-serif">REWIND?</text>
+  <!-- keyboard hint -->
+  <rect x="200" y="420" width="280" height="48" rx="4" fill="#12141c" stroke="#2a3040"/>
+  <g fill="#2a3040">
+    <rect x="210" y="428" width="14" height="10" rx="1"/>
+    <rect x="228" y="428" width="14" height="10" rx="1"/>
+    <rect x="246" y="428" width="14" height="10" rx="1"/>
+    <rect x="264" y="428" width="14" height="10" rx="1"/>
+    <rect x="282" y="428" width="14" height="10" rx="1"/>
+    <rect x="300" y="428" width="14" height="10" rx="1"/>
+    <rect x="318" y="428" width="14" height="10" rx="1"/>
+    <rect x="336" y="428" width="14" height="10" rx="1"/>
+    <rect x="354" y="428" width="14" height="10" rx="1"/>
+    <rect x="372" y="428" width="14" height="10" rx="1"/>
+    <rect x="390" y="428" width="14" height="10" rx="1"/>
+    <rect x="408" y="428" width="14" height="10" rx="1"/>
+    <rect x="426" y="428" width="14" height="10" rx="1"/>
+    <rect x="444" y="428" width="14" height="10" rx="1"/>
+  </g>
+  <!-- floor reflection of A glow -->
+  <ellipse cx="190" cy="268" rx="100" ry="12" fill="#2a70a0" opacity=".12"/>
+</svg>
+
+<h2>chars</h2><div class="row"><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="跟風仔 · idle">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#3d5a80"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#c4a882"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#c4a882"/>
+  <!-- hair -->
+  <path d="M30 55 Q32 28 64 24 Q96 28 98 55 L90 48 Q64 36 38 48 Z" fill="#3d4a66"/>
+  <path d="M40 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/><path d="M70 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <ellipse cx="48" cy="58" rx="6" ry="7" fill="#e8eaf0"/><ellipse cx="80" cy="58" rx="6" ry="7" fill="#e8eaf0"/><circle cx="49" cy="58" r="3" fill="#0a0b10"/><circle cx="81" cy="58" r="3" fill="#0a0b10"/>
+  <path d="M54 80 h20" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <g transform="translate(78 85)"><rect x="0" y="0" width="22" height="32" rx="3" fill="#0a0b10" stroke="#6eb6ff" stroke-width="1.5"/><rect x="3" y="4" width="16" height="20" fill="#1a3048"/><circle cx="11" cy="28" r="2" fill="#6eb6ff"/></g>
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#6eb6ff" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">跟風仔</text>
+</svg>
+<figcaption>跟風仔<br>idle</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="跟風仔 · eager">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#3d5a80"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#c4a882"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#c4a882"/>
+  <!-- hair -->
+  <path d="M30 55 Q32 28 64 24 Q96 28 98 55 L90 48 Q64 36 38 48 Z" fill="#3d4a66"/>
+  <path d="M40 46 h18" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M70 46 h18" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="48" cy="58" rx="7" ry="8" fill="#e8eaf0"/><ellipse cx="80" cy="58" rx="7" ry="8" fill="#e8eaf0"/><circle cx="50" cy="59" r="3.5" fill="#0a0b10"/><circle cx="82" cy="59" r="3.5" fill="#0a0b10"/>
+  <path d="M50 78 q14 12 28 0" fill="none" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <g transform="translate(78 85)"><rect x="0" y="0" width="22" height="32" rx="3" fill="#0a0b10" stroke="#6eb6ff" stroke-width="1.5"/><rect x="3" y="4" width="16" height="20" fill="#1a3048"/><circle cx="11" cy="28" r="2" fill="#6eb6ff"/></g>
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#6eb6ff" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">跟風仔</text>
+</svg>
+<figcaption>跟風仔<br>eager</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="跟風仔 · caught">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#3d5a80"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#c4a882"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#c4a882"/>
+  <!-- hair -->
+  <path d="M30 55 Q32 28 64 24 Q96 28 98 55 L90 48 Q64 36 38 48 Z" fill="#3d4a66"/>
+  <path d="M40 44 l18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M88 44 l-18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="48" cy="58" rx="8" ry="9" fill="#e8eaf0"/><ellipse cx="80" cy="58" rx="8" ry="9" fill="#e8eaf0"/><circle cx="48" cy="58" r="4" fill="#0a0b10"/><circle cx="80" cy="58" r="4" fill="#0a0b10"/>
+  <ellipse cx="64" cy="80" rx="6" ry="7" fill="#0a0b10"/>
+  <g transform="translate(78 85)"><rect x="0" y="0" width="22" height="32" rx="3" fill="#0a0b10" stroke="#6eb6ff" stroke-width="1.5"/><rect x="3" y="4" width="16" height="20" fill="#1a3048"/><circle cx="11" cy="28" r="2" fill="#6eb6ff"/></g>
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#6eb6ff" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">跟風仔</text>
+</svg>
+<figcaption>跟風仔<br>caught</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="懶人包控 · idle">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#4a4558"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#b89878"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#b89878"/>
+  <!-- hair -->
+  <path d="M28 58 Q30 30 64 22 Q98 30 100 58 Q64 48 28 58 Z" fill="#5a5048"/><rect x="20" y="55" width="14" height="28" rx="4" fill="#2a3040"/><rect x="94" y="55" width="14" height="28" rx="4" fill="#2a3040"/>
+  <path d="M40 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/><path d="M70 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <path d="M40 58 h16" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/><path d="M72 58 h16" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M54 80 h20" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ffb84d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">懶人包控</text>
+</svg>
+<figcaption>懶人包控<br>idle</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="懶人包控 · smug">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#4a4558"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#b89878"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#b89878"/>
+  <!-- hair -->
+  <path d="M28 58 Q30 30 64 22 Q98 30 100 58 Q64 48 28 58 Z" fill="#5a5048"/><rect x="20" y="55" width="14" height="28" rx="4" fill="#2a3040"/><rect x="94" y="55" width="14" height="28" rx="4" fill="#2a3040"/>
+  <path d="M40 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/><path d="M70 48 h18" stroke="#0a0b10" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <path d="M40 58 h16" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/><path d="M72 58 h16" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M52 80 q12 8 24 -2" fill="none" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ffb84d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">懶人包控</text>
+</svg>
+<figcaption>懶人包控<br>smug</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="懶人包控 · caught">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#4a4558"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#b89878"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#b89878"/>
+  <!-- hair -->
+  <path d="M28 58 Q30 30 64 22 Q98 30 100 58 Q64 48 28 58 Z" fill="#5a5048"/><rect x="20" y="55" width="14" height="28" rx="4" fill="#2a3040"/><rect x="94" y="55" width="14" height="28" rx="4" fill="#2a3040"/>
+  <path d="M40 44 l18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M88 44 l-18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="48" cy="58" rx="8" ry="9" fill="#e8eaf0"/><ellipse cx="80" cy="58" rx="8" ry="9" fill="#e8eaf0"/><circle cx="48" cy="58" r="4" fill="#0a0b10"/><circle cx="80" cy="58" r="4" fill="#0a0b10"/>
+  <ellipse cx="64" cy="80" rx="6" ry="7" fill="#0a0b10"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ffb84d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">懶人包控</text>
+</svg>
+<figcaption>懶人包控<br>caught</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="極端派 · idle">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#2a3040"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#d0b090"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#d0b090"/>
+  <!-- hair -->
+  <path d="M32 50 L36 22 L64 18 L92 22 L96 50 L80 42 L64 46 L48 42 Z" fill="#1a1e28"/>
+  <path d="M40 48 l18 -4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M88 48 l-18 -4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M40 56 q8 6 16 0" fill="none" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/><path d="M72 56 q8 6 16 0" fill="none" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M50 82 h28" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ff4d6d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">極端派</text>
+</svg>
+<figcaption>極端派<br>idle</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="極端派 · smug">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#2a3040"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#d0b090"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#d0b090"/>
+  <!-- hair -->
+  <path d="M32 50 L36 22 L64 18 L92 22 L96 50 L80 42 L64 46 L48 42 Z" fill="#1a1e28"/>
+  <path d="M40 48 l18 -4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M88 48 l-18 -4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M40 56 q8 6 16 0" fill="none" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/><path d="M72 56 q8 6 16 0" fill="none" stroke="#e8eaf0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M52 80 q12 8 24 -2" fill="none" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ff4d6d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">極端派</text>
+</svg>
+<figcaption>極端派<br>smug</figcaption></figure><figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="72" height="72" role="img" aria-label="極端派 · caught">
+  <rect width="128" height="128" rx="24" fill="#12141c"/>
+  <!-- shoulders -->
+  <ellipse cx="64" cy="120" rx="48" ry="28" fill="#2a3040"/>
+  <!-- neck -->
+  <rect x="54" y="88" width="20" height="18" fill="#d0b090"/>
+  <!-- head -->
+  <ellipse cx="64" cy="62" rx="34" ry="38" fill="#d0b090"/>
+  <!-- hair -->
+  <path d="M32 50 L36 22 L64 18 L92 22 L96 50 L80 42 L64 46 L48 42 Z" fill="#1a1e28"/>
+  <path d="M40 44 l18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/><path d="M88 44 l-18 4" stroke="#0a0b10" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="48" cy="58" rx="8" ry="9" fill="#e8eaf0"/><ellipse cx="80" cy="58" rx="8" ry="9" fill="#e8eaf0"/><circle cx="48" cy="58" r="4" fill="#0a0b10"/><circle cx="80" cy="58" r="4" fill="#0a0b10"/>
+  <ellipse cx="64" cy="80" rx="6" ry="7" fill="#0a0b10"/>
+  
+  <!-- name plate -->
+  <rect x="8" y="108" width="48" height="14" rx="4" fill="#ff4d6d" opacity=".9"/>
+  <text x="32" y="118" text-anchor="middle" fill="#0a0b10" font-size="9" font-family="system-ui,sans-serif" font-weight="700">極端派</text>
+</svg>
+<figcaption>極端派<br>caught</figcaption></figure></div>
+</html>

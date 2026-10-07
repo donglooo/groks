@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140" width="320" height="140" role="img">
+  <rect width="320" height="140" rx="8" fill="#2a5080"/>
+  
+  <rect x="40" y="40" width="240" height="80" rx="4" fill="#1a3048"/>
+  <rect x="100" y="50" width="120" height="50" rx="4" fill="#243858"/>
+  <circle cx="160" cy="70" r="14" fill="#c4a882"/>
+  <rect x="145" y="82" width="30" height="20" fill="#3d5a80"/>
+  <rect x="200" y="60" width="28" height="8" rx="2" fill="#ffb84d"/>
+  <rect x="210" y="68" width="6" height="20" fill="#c47a20"/>
+  <!-- omit mark: no opposing seats shown -->
+  <rect x="40" y="100" width="80" height="16" fill="#ff4d6d" opacity=".4"/>
+  <text x="80" y="112" text-anchor="middle" fill="#ffe566" font-size="9" font-family="system-ui,sans-serif">反對席被剪</text>
+
+  <text x="12" y="22" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#e8eaf0">① 議事廳（B）</text>
+  <text x="308" y="128" text-anchor="end" font-size="10" fill="#ffe566" font-family="system-ui,sans-serif">被剪版</text>
+</svg>

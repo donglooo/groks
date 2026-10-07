@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="夜間剪接室全景">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#161822"/><stop offset="100%" stop-color="#0b0d14"/>
+    </linearGradient>
+    <linearGradient id="deskG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c1814"/><stop offset="100%" stop-color="#0e0c0a"/>
+    </linearGradient>
+    <linearGradient id="scrA" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#0d2840"/><stop offset="100%" stop-color="#050810"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="38%" cy="28%" r="35%">
+      <stop offset="0%" stop-color="#2a70a0" stop-opacity=".45"/><stop offset="100%" stop-color="#2a70a0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <!-- room shell -->
+  <rect width="800" height="500" fill="#07080c"/>
+  <rect width="800" height="300" fill="url(#wall)"/>
+  <!-- back wall door (slightly ajar, amber crack) -->
+  <rect x="355" y="70" width="90" height="200" rx="2" fill="#0e1018" stroke="#2a3040" stroke-width="2"/>
+  <rect x="360" y="75" width="8" height="190" fill="#ffb84d" opacity=".35"/>
+  <circle cx="430" cy="170" r="4" fill="#8b90a0"/>
+  <!-- ceiling strip lights dim -->
+  <rect x="120" y="16" width="200" height="6" rx="2" fill="#2a3040"/>
+  <rect x="480" y="16" width="200" height="6" rx="2" fill="#2a3040"/>
+  <!-- LEFT MONITOR A -->
+  <g id="monitor-a">
+    <rect x="40" y="36" width="300" height="200" rx="8" fill="#1a1e2a" stroke="#3a4258" stroke-width="3"/>
+    <rect x="52" y="48" width="276" height="160" rx="2" fill="url(#scrA)"/>
+    <ellipse cx="190" cy="120" rx="130" ry="75" fill="url(#glowA)"/>
+    <!-- fake waveform / edit preview -->
+    <rect x="70" y="70" width="100" height="60" rx="3" fill="#1a3048" opacity=".9"/>
+    <rect x="180" y="70" width="120" height="60" rx="3" fill="#152838" opacity=".9"/>
+    <path d="M70 155 h220" stroke="#6eb6ff" stroke-width="2" opacity=".5"/>
+    <path d="M70 165 h160" stroke="#5dffb0" stroke-width="2" opacity=".35"/>
+    <text x="190" y="120" text-anchor="middle" fill="#6eb6ff" font-size="20" font-family="system-ui,sans-serif" font-weight="700">A · 完整版</text>
+    <text x="190" y="145" text-anchor="middle" fill="#8ec8ff" font-size="11" font-family="system-ui,sans-serif">▶ REC</text>
+    <!-- bezel LED -->
+    <circle cx="60" cy="220" r="4" fill="#ff4d6d"/>
+  </g>
+  <!-- RIGHT MONITOR B (standby) -->
+  <g id="monitor-b">
+    <rect x="460" y="36" width="300" height="200" rx="8" fill="#141820" stroke="#2a3040" stroke-width="3"/>
+    <rect x="472" y="48" width="276" height="160" rx="2" fill="#080a10"/>
+    <text x="610" y="120" text-anchor="middle" fill="#5a6078" font-size="20" font-family="system-ui,sans-serif" font-weight="700">B · 待命</text>
+    <text x="610" y="145" text-anchor="middle" fill="#252836" font-size="11" font-family="system-ui,sans-serif">LOCKED</text>
+    <circle cx="480" cy="220" r="4" fill="#2a3040"/>
+  </g>
+  <!-- desk -->
+  <rect x="20" y="270" width="760" height="230" fill="url(#deskG)"/>
+  <rect x="20" y="270" width="760" height="8" fill="#2a2418"/>
+  <!-- TIMELINE (hotspot region) -->
+  <g id="timeline">
+    <rect x="70" y="300" width="620" height="100" rx="6" fill="#0a0c12" stroke="#2a3040" stroke-width="2"/>
+    <text x="86" y="322" fill="#8b90a0" font-size="11" font-family="system-ui,sans-serif">TIMELINE · 青石鎮橋案（虛構）</text>
+    <!-- tracks -->
+    <rect x="86" y="336" width="180" height="14" rx="3" fill="#2a5080" opacity=".7"/>
+    <rect x="280" y="336" width="90" height="14" rx="3" fill="#5a3030" opacity=".7"/>
+    <rect x="380" y="336" width="140" height="14" rx="3" fill="#1a4030" opacity=".7"/>
+    <rect x="530" y="336" width="120" height="14" rx="3" fill="#402060" opacity=".55"/>
+    <rect x="86" y="360" width="560" height="8" rx="2" fill="#1a2030"/>
+    <rect x="86" y="376" width="400" height="8" rx="2" fill="#1a2030"/>
+    <!-- playhead -->
+    <rect x="250" y="330" width="3" height="60" fill="#ffb84d"/>
+    <polygon points="250,328 262,322 250,316" fill="#ffb84d"/>
+  </g>
+  <!-- coffee + sticky notes -->
+  <circle cx="720" cy="390" r="22" fill="#1a1208" stroke="#c47a20" stroke-width="2"/>
+  <ellipse cx="720" cy="382" rx="12" ry="5" fill="#3a2810"/>
+  <rect x="700" y="430" width="50" height="36" rx="3" fill="#ffe566" opacity=".85"/>
+  <text x="725" y="452" text-anchor="middle" fill="#1a1208" font-size="9" font-family="system-ui,sans-serif">REWIND?</text>
+  <!-- keyboard hint -->
+  <rect x="200" y="420" width="280" height="48" rx="4" fill="#12141c" stroke="#2a3040"/>
+  <g fill="#2a3040">
+    <rect x="210" y="428" width="14" height="10" rx="1"/>
+    <rect x="228" y="428" width="14" height="10" rx="1"/>
+    <rect x="246" y="428" width="14" height="10" rx="1"/>
+    <rect x="264" y="428" width="14" height="10" rx="1"/>
+    <rect x="282" y="428" width="14" height="10" rx="1"/>
+    <rect x="300" y="428" width="14" height="10" rx="1"/>
+    <rect x="318" y="428" width="14" height="10" rx="1"/>
+    <rect x="336" y="428" width="14" height="10" rx="1"/>
+    <rect x="354" y="428" width="14" height="10" rx="1"/>
+    <rect x="372" y="428" width="14" height="10" rx="1"/>
+    <rect x="390" y="428" width="14" height="10" rx="1"/>
+    <rect x="408" y="428" width="14" height="10" rx="1"/>
+    <rect x="426" y="428" width="14" height="10" rx="1"/>
+    <rect x="444" y="428" width="14" height="10" rx="1"/>
+  </g>
+  <!-- floor reflection of A glow -->
+  <ellipse cx="190" cy="268" rx="100" ry="12" fill="#2a70a0" opacity=".12"/>
+</svg>

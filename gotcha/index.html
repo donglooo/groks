@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="content-label" content="虛構情境">
+<title>先騙你一次｜夜間剪接室</title>
+<style>
+:root{
+  --bg:#0a0b10;--panel:#12141c;--edge:#2a3040;
+  --amber:#ffb84d;--amber-dim:#c47a20;--mint:#5dffb0;
+  --hot:#ff4d6d;--cool:#6eb6ff;--ink:#e8eaf0;--mute:#8b90a0;
+  --trap:#ffe566;--shadow:rgba(0,0,0,.55);
+  --font:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center}
+.screen.on{display:flex}
+.fade-in{animation:fadeIn .5s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes stampPop{0%{transform:scale(1.8) rotate(-12deg);opacity:0}60%{transform:scale(.94) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(-5deg)}}
+@keyframes glowTrap{0%,100%{box-shadow:0 0 0 0 rgba(255,229,102,0)}50%{box-shadow:0 0 48px 12px rgba(255,229,102,.45)}}
+@keyframes heatUp{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes cutFlash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
+@keyframes charPop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes peelOff{from{opacity:.9}to{opacity:0}}
+
+#filterTint{position:fixed;inset:0;pointer-events:none;z-index:90;opacity:0;transition:opacity .5s;
+  background:radial-gradient(ellipse at 70% 40%,rgba(255,77,109,.2),transparent 55%),rgba(40,10,20,.22)}
+#filterTint.on{opacity:1}
+#filterTint.peel{animation:peelOff .8s ease forwards}
+#filterTint.lazy{background:rgba(0,0,0,.35)}
+#filterTint.extreme{background:radial-gradient(ellipse at 50% 30%,rgba(180,20,40,.35),transparent 60%)}
+#filterTint.follower{background:radial-gradient(ellipse at 80% 20%,rgba(93,255,176,.18),transparent 50%)}
+
+#hallway{background:radial-gradient(ellipse at 50% 80%,#1a1520 0%,#050508 70%);cursor:pointer}
+.hall-art{width:min(92vw,560px);height:auto;filter:drop-shadow(0 20px 40px var(--shadow))}
+.hall-copy{position:absolute;bottom:9%;left:0;right:0;text-align:center;padding:0 24px;pointer-events:none}
+.hall-copy h1{font-size:clamp(1.15rem,4.2vw,1.5rem);font-weight:700;letter-spacing:.06em;margin-bottom:.5rem}
+.hall-copy p{color:var(--mute);font-size:.92rem;line-height:1.55}
+.hall-hint{margin-top:1rem;color:var(--amber);font-size:.88rem;animation:pulse 1.6s infinite;font-weight:600}
+
+#room{background:#07080c;align-items:stretch;justify-content:stretch}
+.room-stage{position:relative;flex:1;overflow:hidden;min-height:0}
+.room-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hotspot{position:absolute;border:2px solid transparent;border-radius:12px;transition:.2s;cursor:pointer;z-index:5}
+.hotspot:hover,.hotspot:focus,.hotspot.active{border-color:var(--amber);background:rgba(255,184,77,.1);outline:none}
+.hotspot.locked{pointer-events:none;opacity:.4}
+.hs-label{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);font-size:.72rem;color:var(--amber);white-space:nowrap;background:rgba(0,0,0,.7);padding:3px 10px;border-radius:999px}
+#hs-left{left:4%;top:8%;width:42%;height:50%}
+#hs-right{right:4%;top:8%;width:38%;height:50%}
+#hs-timeline{left:10%;bottom:5%;width:80%;height:14%}
+.room-chrome{position:absolute;top:0;left:0;right:0;padding:10px 14px;display:flex;justify-content:space-between;z-index:8;
+  background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent);pointer-events:none}
+.room-chrome .tag{font-size:.68rem;letter-spacing:.1em;color:var(--mute)}
+.room-chrome .clock{color:var(--amber);font-variant-numeric:tabular-nums;font-size:.85rem}
+
+.cast{position:absolute;left:2%;right:2%;bottom:18%;display:flex;justify-content:space-between;gap:6px;z-index:7;padding:0 4px}
+.char{flex:1;max-width:110px;display:flex;flex-direction:column;align-items:center;opacity:0;cursor:pointer}
+.char.on{animation:charPop .45s ease forwards}
+.char:nth-child(2){animation-delay:.1s}
+.char:nth-child(3){animation-delay:.2s}
+.char img{width:min(20vw,80px);height:min(20vw,80px);object-fit:contain;border-radius:12px;background:rgba(10,12,18,.55);border:1px solid var(--edge);filter:drop-shadow(0 6px 12px rgba(0,0,0,.5))}
+.char .name{margin-top:4px;font-size:.68rem;color:var(--cool);font-weight:600;background:rgba(0,0,0,.7);padding:2px 7px;border-radius:999px}
+.char.active .name{color:var(--amber);box-shadow:0 0 0 1px var(--amber)}
+.char.caught img{filter:grayscale(.3) brightness(.9)}
+
+.npc-feed{position:absolute;right:2%;top:50%;width:min(46%,230px);z-index:8;pointer-events:none;display:flex;flex-direction:column;gap:5px}
+.npc-bubble{background:rgba(18,20,28,.94);border:1px solid var(--edge);border-radius:10px;padding:7px 10px;font-size:.72rem;line-height:1.35;opacity:0;transform:translateX(12px);transition:.35s}
+.npc-bubble.on{opacity:1;transform:none}
+.npc-bubble .who{font-weight:700;margin-right:4px}
+.npc-bubble.follower .who{color:var(--mint)}
+.npc-bubble.lazy .who{color:var(--amber)}
+.npc-bubble.extreme .who{color:var(--hot)}
+
+.room-prompt{position:absolute;left:50%;bottom:32%;transform:translateX(-50%);z-index:10;background:rgba(10,11,16,.92);border:1px solid var(--edge);border-radius:12px;padding:12px 16px;max-width:min(90vw,400px);text-align:center;font-size:.9rem;line-height:1.5;display:none}
+.room-prompt.on{display:block;animation:fadeIn .4s ease}
+
+/* MONITOR — real video */
+#monitor{background:rgba(0,0,0,.88);z-index:20;padding:10px}
+.mon-frame{width:min(96vw,720px);background:#0d0f16;border:2px solid #3a4258;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.mon-top{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#161a24;border-bottom:1px solid var(--edge);font-size:.78rem;color:var(--mute)}
+.mon-top .dot{width:8px;height:8px;border-radius:50%;background:#ff5f57}
+.mon-top .dot:nth-child(2){background:#febc2e}
+.mon-top .dot:nth-child(3){background:#28c840}
+.mon-title{margin-left:auto;color:var(--amber);letter-spacing:.06em}
+.mon-canvas{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
+.mon-canvas video{width:100%;height:100%}
+.mon-overlay{position:absolute;inset:0;pointer-events:none;z-index:3}
+.mon-overlay .extreme-title{position:absolute;top:12%;left:50%;transform:translateX(-50%);background:rgba(160,10,30,.85);color:#ffe566;font-weight:900;font-size:clamp(1rem,4vw,1.5rem);padding:8px 18px;border:2px solid #ffe566;display:none;white-space:nowrap}
+.mon-overlay .heat-ui{position:absolute;top:8px;right:8px;display:none;flex-direction:column;gap:4px;align-items:flex-end}
+.mon-overlay .heat-ui span{background:rgba(255,77,109,.85);color:#fff;font-size:.7rem;padding:3px 8px;border-radius:999px;font-weight:700}
+.mon-overlay.extreme .extreme-title{display:block}
+.mon-overlay.follower .heat-ui{display:flex}
+.mon-overlay.lazy::after{content:"懶人包｜只播前 5 秒";position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:var(--amber);font-size:.75rem;padding:4px 10px;border-radius:999px}
+.cut-mark{position:absolute;top:0;bottom:0;width:3px;background:var(--hot);box-shadow:0 0 12px var(--hot);opacity:0;pointer-events:none;z-index:4}
+.cut-mark.flash{animation:cutFlash .9s ease}
+.mon-bar{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#12151e;flex-wrap:wrap}
+.prog{flex:1;min-width:120px;height:8px;background:#222836;border-radius:99px;overflow:hidden;position:relative;cursor:pointer}
+.prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cool),var(--mint));pointer-events:none}
+.prog .mark{position:absolute;top:0;bottom:0;width:2px;background:var(--hot);opacity:.8}
+.time-label{font-size:.72rem;color:var(--mute);font-variant-numeric:tabular-nums;min-width:5.5em}
+.btn-send{flex:1 1 100%;margin-top:4px;background:linear-gradient(135deg,var(--hot),#c42040);color:#fff;font-weight:800;padding:14px 20px;border-radius:12px;font-size:1.05rem;letter-spacing:.04em;box-shadow:0 8px 28px rgba(255,77,109,.35);display:none}
+.btn-send.on{display:block;animation:heatUp .4s ease}
+.btn-send:active{transform:scale(.98)}
+.btn-replay{font-size:.78rem;color:var(--mute);padding:4px 10px;border:1px solid var(--edge);border-radius:8px;display:none}
+.btn-replay.on{display:inline-block}
+.mon-note{width:100%;font-size:.68rem;color:var(--mute);margin-top:2px}
+
+/* JUDGE = send decision only */
+#judge{background:rgba(5,6,10,.94);z-index:25;padding:16px;justify-content:flex-end;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.judge-wrap{width:min(96vw,440px)}
+.judge-card{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:20px 16px 16px;box-shadow:0 20px 50px var(--shadow)}
+.judge-card h2{font-size:1.1rem;margin-bottom:6px}
+.judge-card .hint{color:var(--mute);font-size:.82rem;margin-bottom:16px;line-height:1.45}
+.btn-big{display:block;width:100%;text-align:center;padding:16px;border-radius:14px;font-weight:800;font-size:1.08rem;margin-bottom:10px}
+.btn-big.hot{background:linear-gradient(135deg,var(--hot),#a01830);color:#fff;box-shadow:0 10px 30px rgba(255,77,109,.35)}
+.btn-big.ghost{background:#161922;border:1.5px solid var(--edge);color:var(--mute);font-weight:600;font-size:.9rem}
+
+#trap{background:radial-gradient(ellipse at 50% 40%,#2a2208 0%,#050508 65%);z-index:30}
+.trap-inner{text-align:center;padding:20px;max-width:460px;width:100%}
+.trap-frame{width:min(80vw,280px);height:auto;margin:0 auto 8px;animation:heatUp .55s ease;filter:drop-shadow(0 0 28px rgba(93,255,176,.35))}
+.trap-badge{display:inline-block;font-size:clamp(1.4rem,5.5vw,2rem);font-weight:900;color:var(--trap);text-shadow:0 0 30px rgba(255,229,102,.55);letter-spacing:.05em;animation:glowTrap 1.2s ease infinite;padding:10px 18px;border:3px solid var(--trap);border-radius:8px}
+.trap-badge.alt{font-size:clamp(1rem,3.8vw,1.35rem);margin-top:6px;border-width:2px}
+.trap-heat{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+.chip{background:rgba(255,77,109,.15);border:1px solid var(--hot);color:var(--hot);font-size:.75rem;padding:4px 10px;border-radius:999px;animation:heatUp .45s ease both}
+.chip:nth-child(2){animation-delay:.1s}
+.chip:nth-child(3){animation-delay:.2s}
+.trap-sub{color:var(--mute);font-size:.88rem;line-height:1.55;margin:10px 0 18px}
+.trap-cast{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+.trap-cast img{width:52px;height:52px;border-radius:10px;border:1px solid var(--edge);object-fit:contain;background:rgba(0,0,0,.4);animation:charPop .4s ease both}
+.btn-primary{background:linear-gradient(135deg,var(--amber),var(--amber-dim));color:#1a1000;font-weight:700;padding:12px 28px;border-radius:999px;font-size:1rem;box-shadow:0 8px 24px rgba(255,184,77,.3);opacity:0;pointer-events:none;transition:opacity .4s}
+.btn-primary.ready{opacity:1;pointer-events:auto}
+
+/* REWIND — dual video + scrub */
+#rewind{background:#06070c;z-index:35;align-items:stretch;padding:0;overflow:hidden}
+.rw-head{padding:12px 14px 6px;display:flex;justify-content:space-between;align-items:baseline;flex-shrink:0}
+.rw-head h2{font-size:1.05rem;color:var(--hot)}
+.rw-head span{font-size:.75rem;color:var(--mute)}
+.rw-videos{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 10px;align-content:center}
+.rw-vid{position:relative;border:1px solid var(--edge);border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9}
+.rw-vid label{position:absolute;top:6px;left:6px;z-index:2;font-size:.65rem;background:rgba(0,0,0,.75);padding:2px 8px;border-radius:999px;color:var(--amber)}
+.rw-vid.raw label{color:var(--mint)}
+.rw-vid .flash-cut{position:absolute;inset:0;border:3px solid var(--hot);opacity:0;pointer-events:none;z-index:3;border-radius:10px}
+.rw-vid .flash-cut.on{animation:cutFlash 1s ease}
+.rw-knife{flex-shrink:0;padding:8px 14px;max-height:38%;overflow-y:auto}
+.rw-knife .cut-label{font-size:.72rem;letter-spacing:.12em;color:var(--amber);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.rw-knife .cut-label img{width:28px;height:28px}
+.rw-knife h3{font-size:1.05rem;margin-bottom:6px;line-height:1.3}
+.rw-knife .punch{color:var(--trap);font-weight:700;font-size:.92rem;margin:8px 0;line-height:1.4}
+.rw-knife p{color:var(--mute);font-size:.8rem;line-height:1.45}
+.rw-timeline{flex-shrink:0;padding:8px 14px 12px;background:#0c0e14;border-top:1px solid var(--edge)}
+.rw-scrub{position:relative;height:28px;background:#1a1e2a;border-radius:8px;cursor:pointer;margin-bottom:8px}
+.rw-scrub .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#3a5080,var(--mint));border-radius:8px;pointer-events:none}
+.rw-scrub .omits{position:absolute;inset:0;pointer-events:none}
+.rw-scrub .omit{position:absolute;top:2px;bottom:2px;background:rgba(255,77,109,.45);border-radius:3px;border:1px solid var(--hot)}
+.rw-actions{display:flex;gap:8px;align-items:center}
+.rw-actions .btn-next{margin-left:auto;background:var(--amber);color:#1a1000;font-weight:700;padding:10px 18px;border-radius:999px}
+.stamp-fly{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:100;pointer-events:none;display:none;text-align:center}
+.stamp-fly.on{display:block;animation:stampPop .7s ease both}
+.stamp-fly img{width:96px;height:96px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.5))}
+.stamp-fly .txt{margin-top:6px;font-weight:800;color:var(--hot);font-size:1.1rem}
+
+#gallery{background:#07080c;z-index:40;padding:20px 16px;overflow-y:auto;justify-content:flex-start}
+.gal-inner{width:min(96vw,480px);padding-bottom:40px}
+.gal-inner h1{font-size:1.4rem;margin-bottom:6px}
+.gal-inner .sub{color:var(--mute);font-size:.85rem;line-height:1.5;margin-bottom:16px}
+.gal-card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;animation:slideUp .4s ease both}
+.gal-card img{width:56px;height:56px;flex-shrink:0}
+.gal-card h3{font-size:.95rem;margin-bottom:4px}
+.gal-card .punch{color:var(--trap);font-size:.82rem;line-height:1.4}
+.gal-shame{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.3);border-radius:12px;padding:12px;margin:14px 0;font-size:.82rem;line-height:1.5;color:var(--mute)}
+.gal-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.label-meta{margin-top:18px;font-size:.68rem;color:var(--mute);line-height:1.5;text-align:center}
+
+.toast{position:fixed;bottom:18%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);border:1px solid var(--edge);padding:8px 14px;border-radius:999px;font-size:.8rem;z-index:120;opacity:0;pointer-events:none;transition:opacity .3s}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="filterTint"></div>
+<div class="toast" id="toast"></div>
+
+<section id="hallway" class="screen on" role="button" tabindex="0" aria-label="走進剪接室">
+  <svg class="hall-art" viewBox="0 0 560 360" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a1528"/><stop offset="100%" stop-color="#050508"/></linearGradient></defs>
+    <rect width="560" height="360" fill="url(#g)"/>
+    <polygon points="180,360 380,360 340,80 220,80" fill="#12101a"/>
+    <rect x="250" y="100" width="60" height="140" rx="4" fill="#0a0810" stroke="#ffb84d" stroke-opacity=".35"/>
+    <rect x="258" y="110" width="44" height="70" fill="#5dffb0" opacity=".15">
+      <animate attributeName="opacity" values=".12;.28;.12" dur="2.4s" repeatCount="indefinite"/>
+    </rect>
+    <circle cx="300" cy="200" r="3" fill="#ffb84d"/>
+    <text x="280" y="320" text-anchor="middle" fill="#8b90a0" font-size="14" font-family="system-ui">三樓</text>
+  </svg>
+  <div class="hall-copy">
+    <h1>深夜三樓｜剪接室</h1>
+    <p>門縫漏著螢幕光。裡面有人剛走——<br>時間軸還開著，兩台監看機還燙手。</p>
+    <div class="hall-hint">點一下。推門進剪接室。</div>
+  </div>
+</section>
+
+<section id="room" class="screen">
+  <div class="room-stage">
+    <img class="room-bg" src="art/room-bg.svg" alt="">
+    <div class="room-chrome">
+      <span class="tag">CONTENT · 虛構情境 · 自製紀錄風格短片</span>
+      <span class="clock" id="clock">02:17</span>
+    </div>
+    <button class="hotspot active" id="hs-left" type="button"><span class="hs-label">▶ 播「完整版」</span></button>
+    <div class="hotspot locked" id="hs-right"><span class="hs-label">B 待命</span></div>
+    <div class="hotspot locked" id="hs-timeline"><span class="hs-label">時間軸｜先別碰</span></div>
+    <div class="cast" id="cast">
+      <div class="char" data-id="follower"><img src="art/chars/follower-idle.svg" alt=""><span class="name">跟風仔</span></div>
+      <div class="char" data-id="lazy"><img src="art/chars/lazy-idle.svg" alt=""><span class="name">懶人包派</span></div>
+      <div class="char" data-id="extreme"><img src="art/chars/extreme-idle.svg" alt=""><span class="name">極端派</span></div>
+    </div>
+    <div class="npc-feed" id="npcFeed"></div>
+    <div class="room-prompt on" id="roomPrompt">兩台監看機。左邊還在跑「完整版」。點它。</div>
+  </div>
+</section>
+
+<section id="monitor" class="screen">
+  <div class="mon-frame">
+    <div class="mon-top">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="mon-title" id="monTitle">A · 完整版</span>
+    </div>
+    <div class="mon-canvas">
+      <video id="viralVideo" playsinline webkit-playsinline preload="auto">
+        <source src="video/viral-cut.mp4" type="video/mp4">
+        <source src="video/viral-cut.webm" type="video/webm">
+      </video>
+      <div class="mon-overlay" id="monOverlay">
+        <div class="extreme-title">強行通過＝定案</div>
+        <div class="heat-ui"><span>🔥 熱度 +999</span><span>#青石橋早知</span><span>轉發潮</span></div>
+      </div>
+      <div class="cut-mark" id="cutMark"></div>
+    </div>
+    <div class="mon-bar">
+      <div class="prog" id="viralProg"><i id="viralFill"></i></div>
+      <span class="time-label" id="viralTime">0:00 / 0:18</span>
+      <button type="button" class="btn-replay" id="btnReplay">再看一次</button>
+      <button type="button" class="btn-send" id="btnSend">送上熱搜</button>
+      <div class="mon-note">自製紀錄風格短片 · 虛構情境 · 非新聞來源</div>
+    </div>
+  </div>
+</section>
+
+<section id="judge" class="screen">
+  <div class="judge-wrap fade-in">
+    <div class="judge-card">
+      <h2>就這樣發？</h2>
+      <p class="hint">你剛看完「完整版」。熱搜缺口還開著。要送嗎？</p>
+      <button type="button" class="btn-big hot" id="btnPublish">就這樣發 · 送上熱搜</button>
+      <button type="button" class="btn-big ghost" id="btnRewatch">……再看一次監看機</button>
+    </div>
+  </div>
+</section>
+
+<section id="trap" class="screen">
+  <div class="trap-inner">
+    <img class="trap-frame" src="art/ui/celebrate-frame.svg" alt="">
+    <div class="trap-badge" id="trapBadge">你答對了！</div>
+    <div class="trap-badge alt" id="trapBadge2">當然答對了。</div>
+    <div class="trap-heat">
+      <span class="chip" id="chipHeat">熱度 +1288</span>
+      <span class="chip">#青石橋早知</span>
+      <span class="chip" id="chipShare">已轉發 2.4 萬</span>
+    </div>
+    <div class="trap-cast">
+      <img src="art/chars/follower-eager.svg" alt="">
+      <img src="art/chars/lazy-smug.svg" alt="">
+      <img src="art/chars/extreme-smug.svg" alt="">
+    </div>
+    <p class="trap-sub" id="trapSub">判斷已鎖定。燈光突然好暖。<br>牆開始刷：早就知道了。</p>
+    <p class="trap-sub" id="trapSub2" style="display:none;color:var(--hot);font-weight:700">……等等。你答對的是哪一版？</p>
+    <button type="button" class="btn-primary" id="btnRewind">靠。倒帶。看時間軸 →</button>
+  </div>
+</section>
+
+<section id="rewind" class="screen">
+  <div class="rw-head">
+    <h2>倒帶。</h2>
+    <span id="rwStep">刀口 1 / 3</span>
+  </div>
+  <div class="rw-videos">
+    <div class="rw-vid viral">
+      <label>誤導剪（你剛信的）</label>
+      <video id="rwViral" playsinline muted preload="auto">
+        <source src="video/viral-cut.mp4" type="video/mp4">
+        <source src="video/viral-cut.webm" type="video/webm">
+      </video>
+      <div class="flash-cut" id="flashViral"></div>
+    </div>
+    <div class="rw-vid raw">
+      <label>較完整軌 · 有聲</label>
+      <video id="rwRaw" playsinline preload="auto">
+        <source src="video/raw-ish.mp4" type="video/mp4">
+        <source src="video/raw-ish.webm" type="video/webm">
+      </video>
+      <div class="flash-cut" id="flashRaw"></div>
+    </div>
+  </div>
+  <div class="rw-knife" id="rwKnife">
+    <div class="cut-label"><img id="rwStampImg" src="art/ui/stamp-omit.svg" alt=""><span id="rwTag">省略</span></div>
+    <h3 id="rwTitle">第一刀：空席是剪出來的</h3>
+    <p class="punch" id="rwPunch">空席很安靜，是因為嘴被剪掉了。</p>
+    <p id="rwBody">看右邊——反對發言還在。聽完這段再蓋章。</p>
+  </div>
+  <div class="rw-timeline">
+    <div class="rw-scrub" id="rwScrub" title="刮時間軸">
+      <div class="fill" id="rwFill"></div>
+      <div class="omits" id="rwOmits"></div>
+    </div>
+    <div class="rw-actions">
+      <span class="time-label" id="rwTime">0:00</span>
+      <span id="audioPill" style="font-size:.68rem;color:var(--mute);padding:2px 8px;border:1px solid var(--edge);border-radius:999px">聲音：…</span>
+      <button type="button" class="btn-replay" id="btnUnmute" style="display:none;border-color:var(--mint);color:var(--mint)">🔊 開啟聲音</button>
+      <button type="button" class="btn-replay" id="btnPlaySeg" style="display:inline-block">▶ 看回這段</button>
+      <button type="button" class="btn-next" id="btnNextKnife" disabled>蓋章（先看完）</button>
+    </div>
+  </div>
+</section>
+
+<div class="stamp-fly" id="stampFly">
+  <img id="stampFlyImg" src="art/ui/stamp-omit.svg" alt="">
+  <div class="txt" id="stampFlyTxt">中招｜省略</div>
+</div>
+
+<section id="gallery" class="screen">
+  <div class="gal-inner fade-in">
+    <h1>中招圖鑑</h1>
+    <p class="sub">今晚這三刀，帶著你走完一輪。<br>羞恥可收藏。不收藏，下次還會踩。</p>
+    <div id="galCards"></div>
+    <div class="gal-shame" id="galShame"></div>
+    <div class="gal-actions">
+      <button type="button" class="btn-big hot" id="btnAltTitle">再來一刀（換標題）</button>
+      <button type="button" class="btn-big ghost" id="btnReplayAll">同一標題再騙一次</button>
+      <button type="button" class="btn-big ghost" id="btnHall">從走廊重來</button>
+    </div>
+    <p class="label-meta">去濾鏡機｜先騙你一次｜夜間剪接室 v5<br>【虛構情境】青石鎮、人物與對白皆創作，不是真實新聞。<br>影音為自製紀錄風格短片（v5 · Ink plates · 2026-10-07），無第三方肖像。</p>
+  </div>
+</section>
+
+<script>
+const SFX = {
+  door: new Audio('sfx/door-enter.ogg'),
+  mon: new Audio('sfx/monitor-on.ogg'),
+  trap: new Audio('sfx/trap-correct.ogg'),
+  rewind: new Audio('sfx/rewind.ogg'),
+  stamp: new Audio('sfx/stamp-gotcha.ogg'),
+};
+Object.values(SFX).forEach(a=>{a.preload='auto';a.volume=.55});
+function play(k){try{const a=SFX[k];a.currentTime=0;a.play().catch(()=>{})}catch(e){}}
+
+const LINES = {
+  follower:['熱搜都在罵了吧？','不轉一下都對不起演算法。','反正大家都這樣講。','看吧，我就說嘛。'],
+  lazy:['我只看過 15 秒那個。','完整版太長了，重點不是都在片頭？','誰有空把毛片看完啊。','等等，原來後面還有？'],
+  extreme:['還有什麼好辯的。','看一眼標題就夠了。','你還在猶豫？立場很明顯了吧。','早該定案了。'],
+};
+const CUTS = [
+  {id:'omit', tag:'省略', stamp:'art/ui/stamp-omit.svg',
+   title:'第一刀：空席',
+   punch:'空席很安靜——嘴被剪掉了。',
+   body:'看右邊那 8 秒。',
+   viralSeek:2.5, rawSeek:7.5, watch:8.0,
+   omitRanges:[{start:7.5,end:15.5,total:21.4}]},
+  {id:'order', tag:'順序', stamp:'art/ui/stamp-order.svg',
+   title:'第二刀：時序',
+   punch:'時間一倒，結論就換邊。',
+   body:'先聽雜音，再看表決。',
+   viralSeek:9.5, rawSeek:1.5, watch:3.0,
+   omitRanges:[{start:1.5,end:4.5,total:21.4}]},
+  {id:'av-guide', tag:'標題餵藥', stamp:'art/ui/stamp-av-guide.svg',
+   title:'第三刀：標題',
+   punch:'結論寫在標題裡。',
+   body:'對照片頭兩個字差。',
+   viralSeek:0.0, rawSeek:0.0, watch:2.5,
+   omitRanges:[{start:0,end:1.5,total:21.4}]},
+];
+
+const ALT_TITLES = [
+  {id:'default', extreme:'強行通過＝定案', mon:'A · 完整版', heat:'#青石橋早知'},
+  {id:'alt', extreme:'預算灌水＝定案', mon:'A · 完整版（換皮）', heat:'#橋墩早就長了'},
+];
+let titleVariant = 0;
+
+let filterId = null;
+let knifeIdx = 0;
+let knifeWatched = false; window._kw=()=>knifeWatched; window._setKW=v=>{knifeWatched=v;};
+let viralEnded = false;
+
+const $ = (id)=>document.getElementById(id);
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  $(id).classList.add('on');
+}
+function toast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1800);
+}
+function bubble(who, text){
+  const feed=$('npcFeed');
+  const el=document.createElement('div');
+  el.className='npc-bubble on '+who;
+  el.innerHTML=`<span class="who">${who==='follower'?'跟風仔':who==='lazy'?'懶人包派':'極端派'}</span>${text}`;
+  feed.appendChild(el);
+  while(feed.children.length>3)feed.removeChild(feed.firstChild);
+  setTimeout(()=>el.classList.remove('on'),4200);
+}
+function tickClock(){
+  const el=$('clock');
+  let m=2,s=17;
+  setInterval(()=>{s=(s+1)%60;if(!s)m++;el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')},1000);
+}
+
+/* Hallway */
+$('hallway').addEventListener('click', enterRoom);
+$('hallway').addEventListener('keydown', e=>{if(e.key==='Enter'||e.key===' ')enterRoom()});
+function enterRoom(){
+  play('door');
+  show('room');
+  document.querySelectorAll('.char').forEach(c=>c.classList.add('on'));
+  setTimeout(()=>bubble('follower', LINES.follower[0]),600);
+  setTimeout(()=>bubble('lazy', LINES.lazy[0]),1400);
+  setTimeout(()=>bubble('extreme', LINES.extreme[0]),2200);
+}
+
+/* Characters = filters */
+document.querySelectorAll('.char').forEach(ch=>{
+  ch.addEventListener('click',()=>{
+    const id=ch.dataset.id;
+    if(filterId===id){clearFilter();toast('濾鏡剝落');return;}
+    applyFilter(id);
+  });
+});
+function applyFilter(id){
+  filterId=id;
+  const tint=$('filterTint');
+  tint.className='on '+id;
+  document.querySelectorAll('.char').forEach(c=>c.classList.toggle('active',c.dataset.id===id));
+  const overlay=$('monOverlay');
+  overlay.className='mon-overlay '+id;
+  const v=$('viralVideo');
+  if(id==='lazy'){
+    toast('懶人包濾鏡：只給你前 5 秒循環');
+    bubble('lazy', LINES.lazy[1]);
+    if(!v.paused){/* loop handled in timeupdate */}
+  } else if(id==='extreme'){
+    toast('極端濾鏡：自動疊憤怒標題');
+    bubble('extreme', LINES.extreme[1]);
+  } else if(id==='follower'){
+    toast('跟風濾鏡：假熱度 UI 開啟');
+    bubble('follower', LINES.follower[1]);
+  }
+}
+function clearFilter(){
+  filterId=null;
+  const tint=$('filterTint');
+  tint.classList.add('peel');
+  setTimeout(()=>{tint.className='';},800);
+  document.querySelectorAll('.char').forEach(c=>c.classList.remove('active'));
+  $('monOverlay').className='mon-overlay';
+}
+function peelFilters(){
+  if(!filterId)return;
+  clearFilter();
+  document.querySelectorAll('.char img').forEach((img,i)=>{
+    const ids=['follower','lazy','extreme'];
+    img.src=`art/chars/${ids[i]}-caught.svg`;
+  });
+  bubble('lazy', LINES.lazy[3]);
+}
+
+/* Monitor */
+$('hs-left').addEventListener('click', openMonitor);
+function openMonitor(){
+  play('mon');
+  $('roomPrompt').classList.remove('on');
+  $('hs-left').classList.remove('active');
+  show('monitor');
+  const v=$('viralVideo');
+  viralEnded=false;
+  $('btnSend').classList.remove('on');
+  $('btnReplay').classList.remove('on');
+  v.currentTime=0;
+  v.play().catch(()=>toast('點一下畫面開始播'));
+}
+$('viralVideo').addEventListener('click',()=>{
+  const v=$('viralVideo');
+  if(v.paused)v.play();else v.pause();
+});
+$('viralVideo').addEventListener('timeupdate',()=>{
+  const v=$('viralVideo');
+  const dur=v.duration||18.4;
+  const t=v.currentTime;
+  $('viralFill').style.width=(t/dur*100)+'%';
+  $('viralTime').textContent=fmt(t)+' / '+fmt(dur);
+  if(filterId==='lazy' && t>=5){
+    v.currentTime=0.05;
+  }
+});
+$('viralVideo').addEventListener('ended',()=>{
+  viralEnded=true;
+  $('btnSend').classList.add('on');
+  $('btnReplay').classList.add('on');
+  bubble('follower', LINES.follower[2]);
+  bubble('extreme', LINES.extreme[2]);
+});
+$('btnReplay').addEventListener('click',()=>{
+  const v=$('viralVideo');v.currentTime=0;v.play();
+  $('btnSend').classList.remove('on');
+});
+$('btnSend').addEventListener('click',()=>show('judge'));
+$('viralProg').addEventListener('click',e=>{
+  const v=$('viralVideo');
+  const r=e.currentTarget.getBoundingClientRect();
+  const p=(e.clientX-r.left)/r.width;
+  v.currentTime=p*(v.duration||18.4);
+});
+
+/* Judge — not a quiz */
+$('btnPublish').addEventListener('click', triggerTrap);
+$('btnRewatch').addEventListener('click',()=>show('monitor'));
+
+function triggerTrap(){
+  play('trap');
+  show('trap');
+  bubble('follower', LINES.follower[3]);
+  bubble('extreme', LINES.extreme[3]);
+  // escalating heat beat
+  let heat=1288;
+  const chip=$('chipHeat');
+  const tick=setInterval(()=>{
+    heat+=Math.floor(37+Math.random()*90);
+    chip.textContent='熱度 +'+heat;
+    if(heat>4200){clearInterval(tick);$('chipShare').textContent='已轉發 2.4 萬';}
+  },180);
+  setTimeout(()=>{
+    $('trapBadge2').textContent='當然答對了。熱搜都站你。';
+  },900);
+  setTimeout(()=>{
+    $('trapSub2').style.display='block';
+    $('trapSub').style.opacity='.55';
+  },2200);
+  setTimeout(()=>$('btnRewind').classList.add('ready'),2800);
+}
+$('btnRewind').addEventListener('click', startRewind);
+
+/* Rewind */
+const RAW_DUR = 21.4;
+const VIRAL_DUR = 18.33;
+function mediaDur(v, fallback){
+  const d = v && v.duration;
+  return (Number.isFinite(d) && d > 1) ? d : fallback;
+}
+let rwTimeHandler = null;
+let rwSegTimer = null;
+let rwScrubbing = false;
+let rwKeyAccum = 0;
+let rwLastT = null;
+let audioUnlocked = false;
+
+function setAudioPill(ok){
+  const p = $('audioPill');
+  if(!p) return;
+  if(ok){
+    p.textContent = '聲音：開';
+    p.style.color = 'var(--mint)';
+    p.style.borderColor = 'var(--mint)';
+  } else {
+    p.textContent = '聲音：關';
+    p.style.color = 'var(--hot)';
+    p.style.borderColor = 'var(--hot)';
+  }
+}
+function unlockRewindAudio(){
+  const rv = $('rwRaw'), vv = $('rwViral');
+  rv.muted = false;
+  rv.volume = 1;
+  vv.muted = true;
+  audioUnlocked = true;
+  setAudioPill(true);
+  const btn = $('btnUnmute');
+  if(btn) btn.style.display = 'none';
+  // gesture-linked play attempt keeps autoplay policy happy
+  try {
+    const p = rv.play();
+    if(p && p.catch) p.catch(()=>{});
+  } catch(e) {}
+}
+function clearRwHandlers(){
+  const rv = $('rwRaw');
+  if(rwTimeHandler){
+    rv.removeEventListener('timeupdate', rwTimeHandler);
+    rwTimeHandler = null;
+  }
+  if(rwSegTimer){
+    clearTimeout(rwSegTimer);
+    rwSegTimer = null;
+  }
+}
+function markKnifeWatched(reason){
+  if(knifeWatched) return;
+  knifeWatched = true;
+  clearRwHandlers();
+  $('btnNextKnife').disabled = false;
+  $('btnNextKnife').textContent = knifeIdx < 2 ? '蓋章 · 下一刀' : '蓋進圖鑑';
+  toast(reason || '看過了。可以蓋章。');
+}
+function seekEl(el, t){
+  const target = Math.max(0, t);
+  const apply = ()=>{
+    try { el.currentTime = target; } catch(e) {}
+  };
+  if(el.readyState >= 1) apply();
+  else el.addEventListener('loadedmetadata', apply, {once:true});
+}
+
+function startRewind(){
+  play('rewind');
+  peelFilters();
+  knifeIdx = 0;
+  // CTA click = user gesture → unmute raw (opposition murmur)
+  unlockRewindAudio();
+  show('rewind');
+  $('hs-timeline').classList.remove('locked');
+  setupKnife(0);
+}
+function setupKnife(i){
+  knifeIdx = i;
+  knifeWatched = false;
+  rwKeyAccum = 0;
+  rwLastT = null;
+  clearRwHandlers();
+  const c = CUTS[i];
+  $('rwStep').textContent = `刀口 ${i+1} / 3`;
+  $('rwTag').textContent = c.tag;
+  $('rwStampImg').src = c.stamp;
+  $('rwTitle').textContent = c.title;
+  $('rwPunch').textContent = c.punch;
+  $('rwBody').textContent = c.body;
+  $('btnNextKnife').disabled = true;
+  $('btnNextKnife').textContent = '蓋章（先看／聽完）';
+  const om = $('rwOmits'); om.innerHTML = '';
+  (c.omitRanges||[]).forEach(r=>{
+    const el = document.createElement('div');
+    el.className = 'omit';
+    const total = r.total || RAW_DUR;
+    el.style.left = (r.start/total*100)+'%';
+    el.style.width = ((r.end-r.start)/total*100)+'%';
+    om.appendChild(el);
+  });
+  playSegment(c);
+}
+function playSegment(c){
+  const vv = $('rwViral'), rv = $('rwRaw');
+  clearRwHandlers();
+  rwKeyAccum = 0;
+  rwLastT = null;
+  vv.pause(); rv.pause();
+  // audio policy: raw must be audible during rewind
+  rv.muted = false;
+  rv.volume = 1;
+  vv.muted = true;
+  if(!audioUnlocked){
+    $('btnUnmute').style.display = 'inline-block';
+    setAudioPill(false);
+  } else {
+    setAudioPill(true);
+  }
+
+  seekEl(vv, c.viralSeek);
+  seekEl(rv, c.rawSeek);
+
+  $('flashRaw').classList.remove('on');
+  void $('flashRaw').offsetWidth;
+  $('flashRaw').classList.add('on');
+
+  const startRaw = c.rawSeek;
+  const endRaw = c.rawSeek + c.watch;
+  const need = Math.max(1.2, c.watch * 0.55);
+
+  const tryPlay = ()=>{
+    const pr = rv.play();
+    if(pr && pr.catch){
+      pr.catch(()=>{
+        $('btnUnmute').style.display = 'inline-block';
+        setAudioPill(false);
+        toast('點「開啟聲音」聽反對席');
+      });
+    }
+    vv.play().catch(()=>{});
+  };
+  // allow seek to commit before play
+  setTimeout(tryPlay, 80);
+
+  rwTimeHandler = ()=>{
+    if(rwScrubbing) return;
+    const t = rv.currentTime;
+    const total = mediaDur(rv, RAW_DUR);
+    $('rwFill').style.width = (Math.min(t, total)/total*100)+'%';
+    $('rwTime').textContent = fmt(t);
+
+    // accumulate time spent inside the key segment (handles seek failures / short loops)
+    if(t >= startRaw - 0.35 && t <= endRaw + 0.4){
+      if(rwLastT != null && t >= rwLastT){
+        rwKeyAccum += Math.min(0.5, t - rwLastT);
+      } else if(rwLastT == null){
+        rwKeyAccum += 0.05;
+      }
+      rwLastT = t;
+      if(rwKeyAccum >= need || t >= endRaw - 0.2){
+        rv.pause(); vv.pause();
+        markKnifeWatched(c.id==='omit' ? '反對席聽完了。可以蓋章。' : '看過了。可以蓋章。');
+      }
+    } else {
+      rwLastT = t;
+    }
+  };
+  rv.addEventListener('timeupdate', rwTimeHandler);
+
+  // wall-clock backup if timeupdate/seek flaky but playback runs
+  rwSegTimer = setTimeout(()=>{
+    if(knifeWatched) return;
+    if(rwKeyAccum >= need * 0.5 || (!rv.paused && rv.currentTime >= startRaw)){
+      rv.pause(); vv.pause();
+      markKnifeWatched('可以蓋章了。');
+    }
+  }, (c.watch + 2.2) * 1000);
+}
+
+$('btnPlaySeg').addEventListener('click', ()=>{
+  unlockRewindAudio();
+  playSegment(CUTS[knifeIdx]);
+});
+$('btnUnmute').addEventListener('click', ()=>{
+  unlockRewindAudio();
+  const rv = $('rwRaw');
+  rv.play().catch(()=>{});
+  toast('右邊較完整軌已開聲');
+});
+
+function scrubTo(clientX){
+  const rv = $('rwRaw'), vv = $('rwViral');
+  const rect = $('rwScrub').getBoundingClientRect();
+  const p = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  // ALWAYS map against canonical duration — never Infinity / partial WebM duration
+  const total = RAW_DUR;
+  const t = p * total;
+  const maxR = Math.max(0.05, mediaDur(rv, RAW_DUR) - 0.05);
+  const maxV = Math.max(0.05, mediaDur(vv, VIRAL_DUR) - 0.05);
+  try { rv.currentTime = Math.min(t, maxR); } catch(e) {}
+  try { vv.currentTime = Math.min(t * (VIRAL_DUR / RAW_DUR), maxV); } catch(e) {}
+  $('rwFill').style.width = (p*100)+'%';
+  $('rwTime').textContent = fmt(t);
+  // scrubbing into key range counts as acknowledgment progress
+  const c = CUTS[knifeIdx];
+  if(t >= c.rawSeek && t <= c.rawSeek + c.watch){
+    rwKeyAccum = Math.max(rwKeyAccum, Math.min(c.watch, t - c.rawSeek));
+    if(rwKeyAccum >= Math.max(1.2, c.watch * 0.55)){
+      markKnifeWatched(c.id==='omit' ? '刮到反對席了。可以蓋章。' : '看過刀口了。可以蓋章。');
+    }
+  }
+}
+(function bindScrub(){
+  const bar = $('rwScrub');
+  const onDown = (e)=>{
+    rwScrubbing = true;
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    scrubTo(x);
+    e.preventDefault();
+  };
+  const onMove = (e)=>{
+    if(!rwScrubbing) return;
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    scrubTo(x);
+    e.preventDefault();
+  };
+  const onUp = ()=>{
+    if(!rwScrubbing) return;
+    rwScrubbing = false;
+    // after scrub, resume raw briefly so user hears where they landed (gesture already held)
+    const rv = $('rwRaw'), vv = $('rwViral');
+    rv.muted = false;
+    rv.play().catch(()=>{});
+    vv.play().catch(()=>{});
+  };
+  bar.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  bar.addEventListener('touchstart', onDown, {passive:false});
+  bar.addEventListener('touchmove', onMove, {passive:false});
+  bar.addEventListener('touchend', onUp);
+})();
+
+$('btnNextKnife').addEventListener('click', ()=>{
+  if(!knifeWatched){ toast('先看／聽完被剪掉的那段'); return; }
+  const c = CUTS[knifeIdx];
+  play('stamp');
+  $('stampFlyImg').src = c.stamp;
+  $('stampFlyTxt').textContent = '中招｜'+c.tag;
+  $('stampFly').classList.remove('on');
+  void $('stampFly').offsetWidth;
+  $('stampFly').classList.add('on');
+  // pause videos between knives
+  $('rwRaw').pause();
+  $('rwViral').pause();
+  setTimeout(()=>{
+    if(knifeIdx < 2) setupKnife(knifeIdx+1);
+    else openGallery();
+  }, 750);
+});
+
+function openGallery(){
+  show('gallery');
+  const box=$('galCards');box.innerHTML='';
+  CUTS.forEach((c,i)=>{
+    const el=document.createElement('div');
+    el.className='gal-card';
+    el.style.animationDelay=(i*.1)+'s';
+    el.innerHTML=`<img src="${c.stamp}" alt=""><div><h3>${c.title.replace(/^第.刀：/,'')}</h3><p class="punch">${c.punch}</p></div>`;
+    box.appendChild(el);
+  });
+  $('galShame').textContent='你跟熱搜站同邊——而且爽到。跟風仔在牆角比讚。燈再亮，再說。';
+}
+$('btnReplayAll').addEventListener('click',()=>location.reload());
+$('btnHall').addEventListener('click',()=>{show('hallway');});
+$('btnAltTitle').addEventListener('click',()=>{
+  titleVariant = 1;
+  const alt = ALT_TITLES[1];
+  // swap overlay framing only — same viral cut, new title skin
+  document.querySelector('.mon-overlay .extreme-title').textContent = alt.extreme;
+  $('monTitle').textContent = alt.mon;
+  document.querySelectorAll('.trap-heat .chip')[1].textContent = alt.heat;
+  // soft reset into monitor with new framing
+  knifeIdx=0; filterId=null; viralEnded=false;
+  clearFilter();
+  document.querySelectorAll('.char img').forEach((img,i)=>{
+    img.src=`art/chars/${['follower','lazy','extreme'][i]}-idle.svg`;
+  });
+  show('monitor');
+  const v=$('viralVideo');
+  $('btnSend').classList.remove('on');
+  $('btnReplay').classList.remove('on');
+  v.currentTime=0;
+  play('mon');
+  v.play().catch(()=>toast('點一下畫面開始播'));
+  toast('標題換皮。片子沒換——還會中嗎？');
+  bubble('extreme', '換個標題而已，結論一樣。');
+  bubble('follower', '這個更好轉啊。');
+});
+
+function fmt(t){
+  t=Math.max(0,t||0);
+  const m=Math.floor(t/60), s=Math.floor(t%60);
+  return m+':'+String(s).padStart(2,'0');
+}
+
+tickClock();
+// unlock audio on first gesture
+document.body.addEventListener('click',()=>{Object.values(SFX).forEach(a=>{try{a.load()}catch(e){}})}, {once:true});
+</script>
+</body>
+</html>

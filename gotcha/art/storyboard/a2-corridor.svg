@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140" width="320" height="140" role="img">
+  <rect width="320" height="140" rx="8" fill="#5a3030"/>
+  
+  <rect x="0" y="50" width="320" height="90" fill="#3a2020"/>
+  <rect x="60" y="30" width="50" height="100" fill="#2a1818"/>
+  <rect x="200" y="30" width="50" height="100" fill="#2a1818"/>
+  <!-- empty seats silhouette -->
+  <rect x="120" y="90" width="30" height="24" rx="2" fill="#1a1010"/>
+  <rect x="160" y="90" width="30" height="24" rx="2" fill="#1a1010"/>
+  <rect x="200" y="90" width="30" height="24" rx="2" fill="#1a1010"/>
+
+  <text x="12" y="22" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#e8eaf0">② 走廊空鏡</text>
+  <text x="308" y="128" text-anchor="end" font-size="10" fill="#ffe566" font-family="system-ui,sans-serif">完整版</text>
+</svg>
