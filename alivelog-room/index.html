@@ -1,0 +1,47 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>alivelog 頂樓房．新聞電視</title>
+<style>
+html,body{margin:0;height:100%;background:#120f1a;overflow:hidden}
+#stage{position:absolute;width:480px;height:270px;background:url(room_dusk.png) no-repeat;background-size:100% 100%;image-rendering:pixelated}
+#tv{position:absolute;border:0;background:#000}
+#tv.big{z-index:5}
+#zoom{position:absolute;z-index:6;font:14px sans-serif;background:#24222c;color:#f0b25a;border:2px solid #f0b25a;padding:4px 10px;cursor:pointer}
+</style></head><body>
+<div id="stage"></div><div id="tv"><div id="player"></div></div>
+<button id="zoom" type="button">放大播放</button>
+<script>
+// 電視螢幕在 480x270 底圖中的像素座標（final2.py：R(M,115,135,40,24)）
+const SCREEN={x:115,y:135,w:40,h:24};
+const VIDEO_ID='ylYJSBUgaMA';                 // 民視新聞 24 小時直播
+const CHANNEL_ID='UC2VmWn8dAqkzlQqvy02E1PA';  // 民視新聞網 @FTV_News
+let big=false,player,usedFallback=false;
+const stage=document.getElementById('stage'),tv=document.getElementById('tv'),zoom=document.getElementById('zoom');
+function layout(){
+  const s=Math.max(1,Math.floor(Math.min(innerWidth/480,innerHeight/270)));   // 只用整數倍
+  const ox=Math.floor((innerWidth-480*s)/2),oy=Math.floor((innerHeight-270*s)/2);
+  Object.assign(stage.style,{left:ox+'px',top:oy+'px',width:480*s+'px',height:270*s+'px'});
+  let r;
+  if(big){const w=Math.min(innerWidth*.9,innerHeight*.9*16/9);r={x:(innerWidth-w)/2,y:(innerHeight-w*9/16)/2,w,h:w*9/16};}
+  else r={x:ox+SCREEN.x*s,y:oy+SCREEN.y*s,w:SCREEN.w*s,h:SCREEN.h*s};
+  Object.assign(tv.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
+  const f=tv.querySelector('iframe');if(f){f.width=r.w;f.height=r.h;f.style.width=r.w+'px';f.style.height=r.h+'px'}
+  zoom.style.left=(big?r.x+r.w-90:ox+SCREEN.x*s)+'px';
+  zoom.style.top=(big?r.y-36:oy+(SCREEN.y+SCREEN.h+4)*s)+'px';
+}
+function fallback(){ // 影片 ID 換掉時：改用頻道的 live_stream 嵌入
+  if(usedFallback)return;usedFallback=true;
+  tv.innerHTML='<iframe id="ytf" src="https://www.youtube.com/embed/live_stream?channel='+CHANNEL_ID+'&autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen frameborder="0"></iframe>';
+  layout();
+}
+window.onYouTubeIframeAPIReady=function(){
+  player=new YT.Player('player',{videoId:VIDEO_ID,width:'100%',height:'100%',
+    playerVars:{autoplay:1,mute:1,playsinline:1,rel:0},
+    events:{onReady:layout,onError:fallback}});
+};
+const t=setTimeout(()=>{if(!player||!player.getIframe)fallback()},8000); // API 載不到也改用備用
+zoom.onclick=()=>{big=!big;tv.classList.toggle('big',big);zoom.textContent=big?'縮回電視':'放大播放';layout()};
+addEventListener('resize',layout);layout();
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+</body></html>

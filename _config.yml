@@ -1,0 +1,12 @@
+# GitHub Pages runs Jekyll only when the root has no .nojekyll file.
+# archive/ is kept in the repo and left out of the published site.
+# Setting exclude replaces Jekyll's defaults, so the defaults stay listed.
+exclude:
+  - archive
+  - .sass-cache
+  - .jekyll-cache
+  - gemfiles
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
