@@ -30,14 +30,19 @@ html,body{margin:0;height:100%;touch-action:none;-webkit-text-size-adjust:100%;o
 #rc b.pw{background:#c03a2c;color:#fff}
 #chsel{position:absolute;left:4%;top:6%;z-index:4;display:none;background:#120f1a;border:2px solid #f0b25a;color:#f0b25a;font:bold 14px monospace;padding:6px 10px;cursor:pointer;box-shadow:3px 3px 0 #05070a}
 #chsel small{display:block;color:#8a8494;font-size:10px;margin-top:3px}
-#poweroff{position:absolute;inset:0;background:#05070a;z-index:2;display:none;pointer-events:none} #tv.pass iframe{pointer-events:auto}   /* 還沒播放時讓第一下直接點到 YouTube 播放器（iOS 必須） */
+#poweroff{position:absolute;inset:0;background:#05070a;z-index:2;pointer-events:none;opacity:1;transition:opacity .45s ease-out,background-color .25s}
+#poweroff.bl{background:#16161c} #poweroff.hide{opacity:0} #tv.pass #poweroff{opacity:.35}
+#poweroff i{position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:#e8e8f0;opacity:0}
+#poweroff.on i{animation:lnOpen .6s steps(12) forwards} #poweroff.off i{animation:lnClose .35s steps(8) forwards}
+@keyframes lnOpen{0%{opacity:0;transform:scaleX(.08)}35%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1) scaleY(30)}}
+@keyframes lnClose{0%{opacity:1;transform:scaleY(30)}55%{opacity:1;transform:scaleY(1)}85%{opacity:1;transform:scaleX(.03) scaleY(1)}100%{opacity:0;transform:scaleX(0)}} #tv.pass iframe{pointer-events:auto}   /* 還沒播放時讓第一下直接點到 YouTube 播放器（iOS 必須） */
 #mon{position:absolute;cursor:pointer;image-rendering:pixelated;background:#000}
 #mon.big{z-index:6;box-shadow:0 0 0 100vmax rgba(10,8,16,.8)}
 #remote{position:absolute;cursor:pointer;z-index:4}
 </style></head><body>
 <div id="sky" class="px"></div><canvas id="planes" width="480" height="270"></canvas><canvas id="wx" class="px" width="480" height="270"></canvas><div id="tint" class="px" style="pointer-events:none"></div><div id="fg" class="px"></div><canvas id="amb" class="px" width="480" height="270" style="pointer-events:none"></canvas>
 <div id="win"><div id="sheer" class="px"></div><div id="dl" class="px"></div><div id="dr" class="px"></div></div>
-<div id="tv"><div id="slot"><div id="yt"></div></div><div id="poweroff"></div><div id="chsel"></div><canvas id="osd" width="106" height="60"></canvas><div id="hit"></div></div>
+<div id="tv"><div id="slot"><div id="yt"></div></div><div id="poweroff" class="bl" data-off="0"><i></i></div><div id="chsel"></div><canvas id="osd" width="106" height="60"></canvas><div id="hit"></div></div>
 <div id="remote"></div>
 <div id="rc"><b class="pw" data-k="pw">⏻</b><b data-k="chu">CH+</b><b data-k="vu">VOL+</b><b data-k="mu">MUTE</b><b data-k="ok" style="background:#f0b25a;color:#120f1a">OK</b><b data-k="vd">VOL-</b><b data-k="login" style="font-size:11px">YT登入</b><b data-k="chd">CH-</b><i></i></div><canvas id="mon" width="38" height="24"></canvas>
 <script>
@@ -106,7 +111,7 @@ function tune(i){if(altMode){altMode=false;$('slot').innerHTML='<div id="yt"></d
 let passT=null,hintT=null,iframeTap=false;
 // 點進 YouTube iframe 時主頁面會失去焦點，用這個判斷「真的有人點了播放器」
 addEventListener('blur',()=>{setTimeout(()=>{if(document.activeElement&&document.activeElement.tagName==='IFRAME'){iframeTap=true;log('iframe tap')}},0)});
-function playState(st){clearTimeout(passT);if(typeof powered!=='undefined'&&$('poweroff').style.display==='block')return;if(st===1){if($('tv').classList.contains('pass')&&!unlocked&&iframeTap){unlocked=true;log('unlock via iframe tap');if(vol>0)player.unMute()}$('tv').classList.remove('pass');clearInterval(hintT);hintT=null;g.clearRect(0,0,106,60);spatial();return}
+function playState(st){clearTimeout(passT);if($('poweroff').dataset.off==='1')return;if(st===1){if(scrWait){scrWait=false;setTimeout(()=>{if($('poweroff').dataset.off!=='1')$('poweroff').classList.add('hide')},1400)}if($('tv').classList.contains('pass')&&!unlocked&&iframeTap){unlocked=true;log('unlock via iframe tap');if(vol>0)player.unMute()}$('tv').classList.remove('pass');clearInterval(hintT);hintT=null;g.clearRect(0,0,106,60);spatial();return}
   if(!unlocked&&!powered){return}   // 使用者還沒操作前不進穿透模式，避免攔走滑動手勢
   if(st===3){if(CH[ch].ids&&!playState.skipped)passT=setTimeout(()=>{if(player.getPlayerState()===3){playState.skipped=true;log('stall next');player.nextVideo()}},25000);return}
   passT=setTimeout(()=>{const s2=player.getPlayerState&&player.getPlayerState();if(s2===1||s2===3)return;
@@ -154,13 +159,18 @@ function cancelCh(){pre=null;clearTimeout(preT);$('chsel').style.display='none'}
 function confirmCh(){if(pre===null)return;const t=pre;cancelCh();if(t!==ch)tune(t)}
 $('chsel').addEventListener('pointerdown',e=>{e.stopPropagation();confirmCh()});
 document.addEventListener('pointerdown',e=>{if(pre!==null&&!$('rc').contains(e.target)&&!$('tv').contains(e.target)&&e.target!==$('remote'))cancelCh()},true);
+// ---- 開關機畫面：黑 → 背光暗灰 → 中央亮線展開 → 等到真的在播才淡出（蓋住 YouTube 縮圖/紅色播放鍵/標題）----
+let scrWait=true;
+function screenOn(){const o=$('poweroff');o.dataset.off='0';o.className='bl';void o.offsetWidth;o.classList.add('on');scrWait=true;
+  setTimeout(()=>{if(scrWait&&ready&&player.getPlayerState()===1){scrWait=false;setTimeout(()=>{if(o.dataset.off!=='1')o.classList.add('hide')},1400)}},650)}
+function screenOff(){const o=$('poweroff');o.dataset.off='1';scrWait=false;o.className='';void o.offsetWidth;o.classList.add('off')}
 let powered=false,userMuted=false;   // 一進門電視是「靜音待機播放」；第一次按電源＝開聲音播放，之後才是開/關
 $('remote').addEventListener('pointerup',e=>{e.stopPropagation();$('rc').style.display=$('rc').style.display==='grid'?'none':'grid'});
 document.addEventListener('pointerdown',e=>{if($('rc').style.display==='grid'&&!$('rc').contains(e.target)&&e.target!==$('remote'))$('rc').style.display='none'},true);
 function power(){ // 必須在按下的當下同步呼叫，iOS 才算使用者手勢
   if(!ready)return;const st=player.getPlayerState();
-  if(powered){player.pauseVideo();clearTimeout(passT);$('tv').classList.remove('pass');powered=false;$('poweroff').style.display='block';log('power off');return}
-  powered=true;$('poweroff').style.display='none';unlocked=true;if(!userMuted&&vol>0)player.unMute();player.setVolume(Math.round(vol*spatialF));player.playVideo();log('power on');audio();
+  if(powered){player.pauseVideo();clearTimeout(passT);$('tv').classList.remove('pass');powered=false;screenOff();log('power off');return}
+  powered=true;screenOn();unlocked=true;if(!userMuted&&vol>0)player.unMute();player.setVolume(Math.round(vol*spatialF));player.playVideo();log('power on');audio();
   // iOS 若仍不播：放大電視並讓下一下直接點到 YouTube 播放器（只有淡淡的框，不閃字）
   setTimeout(()=>{const s2=player.getPlayerState();if(s2!==1&&s2!==3){$('rc').style.display='none';zoom('tv');$('tv').classList.add('pass');log('power needs iframe tap',s2)}},1500)}
 $('rc').addEventListener('pointerdown',e=>{e.stopPropagation();const k=e.target.dataset&&e.target.dataset.k;if(!k)return;unlock();
@@ -215,6 +225,6 @@ const n=ac.createBufferSource(),len=ac.sampleRate*2,b=ac.createBuffer(1,len,ac.s
   n.connect(lp).connect(gn).connect(ac.destination);n.start(t);n.stop(t+sec+.1)}
 addEventListener('resize',layout);layout();noise(300,()=>osdText('CH 1',1500));requestAnimationFrame(tick);schedule();
 </script>
-<script src="mon.js"></script><script src="cat.js"></script><script src="world.js"></script>
+<script src="mon.js"></script><script src="cat.js"></script><script src="world.js"></script><script src="bias.js"></script><script src="lights.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 </body></html>
