@@ -1,0 +1,10 @@
+{
+  "_說明": "這是範例。把 holdings 換成你自己的持股：symbol=代號、name=名稱、shares=股數、avgCost=平均成本。price 留 null 就會用示範價（=成本）；想自己填價格就寫數字。example 改成 false 就不會顯示「範例」。",
+  "example": true,
+  "currency": "TWD",
+  "holdings": [
+    {"symbol": "2330", "name": "台積電", "shares": 100, "avgCost": 600, "price": null},
+    {"symbol": "0050", "name": "元大台灣50", "shares": 500, "avgCost": 120, "price": null},
+    {"symbol": "VOO",  "name": "Vanguard S&P 500", "shares": 5, "avgCost": 450, "price": null}
+  ]
+}
