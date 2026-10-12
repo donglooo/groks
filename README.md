@@ -1,8 +1,5 @@
 # groks
 
-《先騙你一次》夜間剪接室在 [`gotcha/`](gotcha/)。用手機開 GitHub Pages 的 `/gotcha/`（`index.html`）。
+網站入口是 [`alivelog-room/`](alivelog-room/)（alivelog 頂樓房）。
 
-- 虛構情境
-- 自製紀錄風格短片（請勿當成真實影片素材）
-- **請勿靜音**
-- 倒帶可點「開啟聲音」／「看回這段」
+《先騙你一次》夜間剪接室已從 GitHub Pages 下線，程式留在 [`archive/gotcha-game/`](archive/gotcha-game/)，不會被發布。
