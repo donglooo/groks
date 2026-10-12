@@ -54,6 +54,6 @@ window.drawMon=draw;
 async function live(){try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),4000);
   const d=await (await fetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',{signal:ctl.signal})).json();
   P.holdings.forEach(h=>{const m=d.find(x=>x.Code===h.symbol);if(m&&+m.ClosingPrice)h._live=+m.ClosingPrice});calc();draw()}catch(e){window.MONLOG='price fetch failed: '+e}}
-fetch('portfolio.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{P=j;calc();draw();live()}).catch(e=>{window.MONLOG='portfolio.json failed: '+e;calc();draw()});
+fetch('portfolio.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{P=j;calc();draw()})   // 證交所 OpenAPI 沒開 CORS，瀏覽器抓不到，所以不去抓.catch(e=>{window.MONLOG='portfolio.json failed: '+e;calc();draw()});
 calc();draw();setInterval(()=>{tape+=1;draw()},120);
 })();

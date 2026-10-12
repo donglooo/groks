@@ -22,6 +22,7 @@ html,body{margin:0;height:100%;touch-action:none;overscroll-behavior:none;backgr
 #tv iframe,#tv #yt{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
 #osd{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:2}
 #hit{position:absolute;inset:0;z-index:3;cursor:pointer;touch-action:none}
+#tv.pass #hit{pointer-events:none} #tv.pass iframe{pointer-events:auto}   /* 還沒播放時讓第一下直接點到 YouTube 播放器（iOS 必須） */
 #mon{position:absolute;cursor:pointer;image-rendering:pixelated;background:#000}
 #mon.big{z-index:6;box-shadow:0 0 0 100vmax rgba(10,8,16,.8)}
 #remote{position:absolute;cursor:pointer;z-index:4}
@@ -47,7 +48,8 @@ let vol=+(localStorage.getItem('alivelog.tv.volume')??40);
 // ---- 版面：整數倍放大 ----
 let panX=null,panY=null,ox=0,oy=0;
 function layout(){
-  const W=innerWidth,H=innerHeight;
+  let W=innerWidth,H=innerHeight;
+  if(navigator.standalone){const P=H>=W,a=Math.max(screen.width,screen.height),b=Math.min(screen.width,screen.height);if(P)H=Math.max(H,a);else W=Math.max(W,a),H=Math.max(H,b)}   // iOS 主畫面模式：用整個螢幕高度，避免底部黑條
   // 填滿畫面（不留黑邊）：取能蓋滿螢幕的最小整數倍，多出來的部分用拖曳平移
   const cov=Math.max(W/480,H/270),ci=Math.ceil(cov-0.02);s=ci/cov>1.1?Math.ceil(cov*100)/100:Math.max(1,ci);   // 能用整數倍就用整數倍，差太多（如直式手機）才用非整數以免畫面被放太大
   const sw=480*s,sh=270*s;
@@ -65,18 +67,21 @@ function layout(){
   if(big){const w=Math.min(innerWidth*.94,innerHeight*.9*16/9);r={x:(innerWidth-w)/2,y:(innerHeight-w*9/16)/2,w,h:w*9/16}}
   box($('tv'),r);
   const m=$('mon');if(zoomed==='mon'){const k=Math.max(1,Math.floor(Math.min(innerWidth*.92/256,innerHeight*.92/144)));box(m,{x:(innerWidth-256*k)/2|0,y:(innerHeight-144*k)/2|0,w:256*k,h:144*k})}else box(m,at(MON));
-  dispatchEvent(new Event('alivelog:layout'));
+  dispatchEvent(new Event('alivelog:layout'));if(typeof spatial==='function')spatial();
 }
 // ---- 電視：只建立一次 YT.Player，換台用 API（不重建 iframe）----
 // 公視 live 影片 ID 於 10/12 由 /channel/.../live 解析；失效時改用 live_stream 嵌入
 CH[2]={name:'公視',vid:'quwqlazU-c8',alt:'live_stream?channel=UCexpzYDEnfmAvPSfG4xbcjA'};
-CH[0].vid='ylYJSBUgaMA';CH[1].vid='m_dhMSvUCIc';CH[3].list='UUPRWWKG0VkBA0Pqa4Jr5j0Q';
+const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);window.IOS=IOS;
+CH[0].vid='ylYJSBUgaMA';CH[1].vid='m_dhMSvUCIc';CH[3].list='UULFPRWWKG0VkBA0Pqa4Jr5j0Q';   // 公開長片清單（備用）
+// 10/12 從公開長片清單取的最新影片（拿掉會員限時公開那支，它在嵌入裡會卡住）
+CH[3].ids=['qY4NdSN__Q0','OPI_9iQIEIA','lU_gjuCHFoQ','FO38gLrxRxo','WJqp--kvmhc','mZUewl7DbUE','it6Dp9QVn80','oXDuWJvZCQo','7qI8kmT2a0A','OqlHIUQVQmI'];
 const PV={autoplay:1,mute:1,controls:0,disablekb:1,modestbranding:1,playsinline:1,rel:0,iv_load_policy:3,fs:0,enablejsapi:1,origin:location.origin};
 let ready=false,altMode=false,watchT=null;window.TVLOG=[];
 const log=(...a)=>{TVLOG.push(a.join(' '));if(TVLOG.length>200)TVLOG.shift()};
 function load(){const c=CH[ch];if(!ready)return;
   if(!unlocked)player.mute();else{player.unMute();player.setVolume(vol)}
-  if(c.list){player.loadPlaylist({listType:'playlist',list:c.list,index:0});log('loadPlaylist',c.list)}
+  if(c.ids){player.loadPlaylist(c.ids,0);log('loadPlaylist ids')}else if(c.list){player.loadPlaylist({listType:'playlist',list:c.list,index:0});log('loadPlaylist',c.list)}
   else{player.loadVideoById(c.vid);log('loadVideoById',c.vid)}
   clearTimeout(watchT);watchT=setTimeout(watch,6000)}
 // 換台後 3 秒還沒播：先確保播放（必要時靜音播），之後下一次碰觸再開聲音
@@ -89,24 +94,39 @@ function useAlt(){altMode=true;log('alt',CH[ch].alt);$('slot').innerHTML='';cons
   f.src='https://www.youtube.com/embed/'+CH[ch].alt+'&autoplay=1&mute=1&controls=0&playsinline=1&rel=0&fs=0&iv_load_policy=3';$('slot').appendChild(f)}
 function tune(i){if(altMode){altMode=false;$('slot').innerHTML='<div id="yt"></div>';ready=false;make()}
   ch=(i+CH.length)%CH.length;load();noise(300,()=>osdText('CH '+(ch+1),1500))}
+// ---- 播放狀態：沒在播就開「穿透」讓下一下點到播放器，並在螢幕閃 TAP ----
+let passT=null,hintT=null;
+function playState(st){clearTimeout(passT);if(st===1){if($('tv').classList.contains('pass')&&!unlocked){unlocked=true;log('unlock via iframe tap');if(vol>0)player.unMute()}$('tv').classList.remove('pass');clearInterval(hintT);hintT=null;g.clearRect(0,0,106,60);spatial();return}
+  if(st===3){passT=setTimeout(()=>{if(player.getPlayerState()===3&&CH[ch].ids){log('stall next');player.nextVideo()}},10000);return}
+  passT=setTimeout(()=>{const s2=player.getPlayerState&&player.getPlayerState();if(s2===1||s2===3)return;
+    $('tv').classList.add('pass');log('pass on',s2);if(!hintT){let on=0;hintT=setInterval(()=>{on^=1;if(on)osdText('TAP',700)},800)}},IOS?1200:2500)}
+// ---- 空間音效：電視在畫面中的比例 × 離畫面中心的距離 ----
+let spatialF=1,iosAway=false;window.SPATIAL=()=>({f:spatialF,iosAway});
+function spatial(){const r=$('tv').getBoundingClientRect(),W=innerWidth,H=innerHeight;
+  const vis=Math.max(0,Math.min(r.right,W)-Math.max(r.left,0))*Math.max(0,Math.min(r.bottom,H)-Math.max(r.top,0))/(r.width*r.height||1);
+  const d=Math.hypot(r.left+r.width/2-W/2,r.top+r.height/2-H/2)/Math.hypot(W/2,H/2);
+  spatialF=big?1:Math.max(0,Math.min(1,vis*(1-0.6*Math.min(1,d))));
+  if(!ready||altMode||!unlocked)return;
+  if(IOS){const away=spatialF<0.25;if(away!==iosAway){iosAway=away;if(away)player.mute();else if(vol>0)player.unMute()}}   // iOS 不能調音量，只能靜音／開聲音
+  else player.setVolume(Math.round(vol*spatialF))}
 function make(){const c=CH[ch];const opt={width:'100%',height:'100%',playerVars:Object.assign({},PV),events:{
   onReady:e=>{ready=true;log('ready');load()},
-  onStateChange:e=>{log('state',e.data);if(e.data===5||e.data===-1&&ready)setTimeout(()=>{if(player.getPlayerState()===5)player.playVideo()},300)},
+  onStateChange:e=>{log('state',e.data);playState(e.data);if(e.data===5||e.data===-1&&ready)setTimeout(()=>{if(player.getPlayerState()===5)player.playVideo()},300)},
   onError:e=>{log('error',e.data);if(CH[ch].alt&&!altMode)useAlt();else tune(ch+1)}}};
   player=new YT.Player('yt',opt)}
 window.onYouTubeIframeAPIReady=()=>{apiReady=true;make()};
 // ---- 螢幕 OSD：像素雜訊、台號、音量條 ----
 const osd=$('osd'),g=osd.getContext('2d');let osdTimer;
-const FONT={C:'111100100100111',H:'101101111101101',' ':'000000000000000',V:'101101101101010',O:'111101101101111',L:'100100100100111'};
+const FONT={C:'111100100100111',H:'101101111101101',' ':'000000000000000',V:'101101101101010',O:'111101101101111',L:'100100100100111',T:'111010010010010',A:'010101111101101',P:'111101111100100'};
 for(let d=0;d<10;d++)FONT[d]=['111101101101111','010110010010111','111001111100111','111001111001111','101101111001001','111100111001111','111100111101111','111001001001001','111101111101111','111101111001111'][d];
 function text(t,x,y,c){g.fillStyle=c;[...t].forEach((k,i)=>{const b=FONT[k]||FONT[' '];for(let j=0;j<15;j++)if(b[j]=='1')g.fillRect(x+i*4+j%3,y+(j/3|0),1,1)})}
 function noise(ms,done){clearTimeout(osdTimer);const t0=performance.now();(function f(){const im=g.createImageData(106,60);for(let i=0;i<im.data.length;i+=4){const v=Math.random()<.5?40:200;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}g.putImageData(im,0,0);if(performance.now()-t0<ms)requestAnimationFrame(f);else{g.clearRect(0,0,106,60);done&&done()}})()}
 function osdText(t,ms){g.clearRect(0,0,106,60);g.fillStyle='#120f1a';g.fillRect(3,3,t.length*4+3,9);text(t,5,5,'#f0b25a');clearTimeout(osdTimer);osdTimer=setTimeout(()=>g.clearRect(0,0,106,60),ms)}
 function osdVol(){g.clearRect(0,0,106,60);g.fillStyle='#120f1a';g.fillRect(3,48,62,9);text('VOL',5,50,'#e0cbb8');const n=Math.round(vol/10);for(let i=0;i<10;i++){g.fillStyle=i<n?'#f0b25a':'#3c3c44';g.fillRect(19+i*4,50,3,5)}clearTimeout(osdTimer);osdTimer=setTimeout(()=>g.clearRect(0,0,106,60),1200)}
-function setVol(v){vol=Math.max(0,Math.min(100,Math.round(v)));localStorage.setItem('alivelog.tv.volume',vol);if(ready&&!altMode){if(vol>0){player.unMute();needUnmute=false}else player.mute();player.setVolume(vol);log('vol',vol)}osdVol()}
+function setVol(v){vol=Math.max(0,Math.min(100,Math.round(v)));localStorage.setItem('alivelog.tv.volume',vol);if(ready&&!altMode){if(vol>0){player.unMute();needUnmute=false}else player.mute();player.setVolume(Math.round(vol*spatialF));log('vol',vol)}osdVol()}
 // ---- 手勢（觸控與滑鼠拖曳都走 pointer events）----
 let st=null;
-$('hit').addEventListener('pointerdown',e=>{st={x:e.clientX,y:e.clientY,v:vol,moved:false};$('hit').setPointerCapture(e.pointerId)});
+$('hit').addEventListener('pointerdown',e=>{if(ready&&!altMode&&player.getPlayerState()!==1){player.playVideo()}st={x:e.clientX,y:e.clientY,v:vol,moved:false};$('hit').setPointerCapture(e.pointerId)});
 $('hit').addEventListener('pointermove',e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
   if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>8){st.moved='v';setVol(st.v-dy/($('tv').clientHeight)*100)}});
 $('hit').addEventListener('pointerup',e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y,m=st.moved;st=null;
@@ -125,8 +145,8 @@ addEventListener('pointermove',e=>{if(!pan)return;const sw=480*s-innerWidth,sh=2
   if(Math.abs(dx)+Math.abs(dy)>6)pan.moved=true;if(sw>0)panX=Math.max(0,Math.min(1,pan.px-dx/sw));if(sh>0)panY=Math.max(0,Math.min(1,pan.py-dy/sh));layout()});
 addEventListener('pointerup',()=>{if(pan&&pan.moved)window.PANNED=(window.PANNED||0)+1;pan=null});
 // ---- 第一次碰觸頁面：開聲音、啟動音效 ----
-function unlock(){if(needUnmute&&ready){needUnmute=false;player.unMute();player.setVolume(vol);player.playVideo()}
-  if(unlocked)return;unlocked=true;if(ready&&!altMode){player.unMute();player.setVolume(vol);player.playVideo();log('unlock')}audio()}
+function unlock(){if(needUnmute&&ready){needUnmute=false;player.unMute();player.setVolume(Math.round(vol*spatialF));player.playVideo();spatial()}
+  if(unlocked)return;unlocked=true;if(ready&&!altMode){player.unMute();player.setVolume(Math.round(vol*spatialF));player.playVideo();spatial();log('unlock')}audio()}
 addEventListener('pointerdown',unlock,{capture:true});addEventListener('keydown',unlock,{capture:true});
 // ---- 窗簾：點擊依序開、拖曳開關 ----
 function setCurtain(c){$('win').classList.add('ready');clearTimeout(setCurtain.t);setCurtain.t=setTimeout(()=>$('win').classList.remove('ready'),1000);curtain=Math.max(0,Math.min(2,c));layout()}
