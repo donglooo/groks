@@ -1,12 +1,13 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="alivelog">
 <meta name="theme-color" content="#120f1a"><link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png">
 <title>alivelog 頂樓房</title>
 <style>
-html,body{margin:0;height:100%;touch-action:none;overscroll-behavior:none;background:#120f1a;overflow:hidden;user-select:none}
+*{-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;touch-action:none;-webkit-text-size-adjust:100%;overscroll-behavior:none;background:#120f1a;overflow:hidden;user-select:none}
 .px{position:absolute;image-rendering:pixelated;background-repeat:no-repeat}
 #sky{background-image:url(sky.png);background-size:100% 100%}
 #planes{position:absolute;image-rendering:pixelated}
@@ -177,6 +178,11 @@ addEventListener('pointerdown',e=>{if(e.target===document.body||e.target.id==='f
 addEventListener('pointermove',e=>{if(!pan)return;const sw=480*s-innerWidth,sh=270*s-innerHeight,dx=e.clientX-pan.x,dy=e.clientY-pan.y;
   if(Math.abs(dx)+Math.abs(dy)>6)pan.moved=true;if(sw>0)panX=Math.max(0,Math.min(1,pan.px-dx/sw));if(sh>0)panY=Math.max(0,Math.min(1,pan.py-dy/sh));layout()});
 addEventListener('pointerup',()=>{if(pan&&pan.moved)window.PANNED=(window.PANNED||0)+1;pan=null});
+// ---- 禁止整頁縮放（iOS 會忽略 user-scalable，所以再用事件擋：雙指縮放、連點兩下）----
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+let lastTouchEnd=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTouchEnd<300&&e.target.tagName!=='IFRAME'){e.preventDefault()}lastTouchEnd=n},{passive:false});
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 // ---- 第一次碰觸頁面：開聲音、啟動音效 ----
 function unlock(){if(needUnmute&&ready){needUnmute=false;player.unMute();player.setVolume(Math.round(vol*spatialF));player.playVideo();spatial()}
   if(unlocked)return;unlocked=true;if(ready&&!altMode){player.unMute();player.setVolume(Math.round(vol*spatialF));player.playVideo();spatial();log('unlock')}audio()}
