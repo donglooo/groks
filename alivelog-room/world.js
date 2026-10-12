@@ -88,6 +88,6 @@ function feedTimes(){try{return JSON.parse(localStorage.getItem('alivelog.feeder
 setInterval(()=>{const t=tpe(),hm=String(t.h).padStart(2,'0')+':'+String(t.m).padStart(2,'0');if(feedTimes().includes(hm)&&feeding<performance.now()-60000)feeding=performance.now()+4000},20000);
 window.feedNow=()=>feeding=performance.now()+4000;
 let last=performance.now(),acc=0;
-function loop(now){const dt=Math.min(.2,(now-last)/1000);last=now;acc+=dt;if(acc>=1/12){wxDraw(acc);amb(now);acc=0}requestAnimationFrame(loop)}
+function loop(now){const dt=Math.min(.2,(now-last)/1000);last=now;acc+=dt;if(acc>=1/8&&!document.hidden){wxDraw(acc);amb(now);acc=0}requestAnimationFrame(loop)}
 requestAnimationFrame(loop);fetchWx();setInterval(fetchWx,15*60e3);setInterval(apply,60e3);window.applyWeather=apply;
 })();
