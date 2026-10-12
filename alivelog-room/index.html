@@ -2,77 +2,120 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>alivelog 頂樓房</title>
 <style>
-html,body{margin:0;height:100%;background:#120f1a;overflow:hidden}
+html,body{margin:0;height:100%;background:#120f1a;overflow:hidden;user-select:none}
 .px{position:absolute;image-rendering:pixelated;background-repeat:no-repeat}
-#stage{background-image:url(room_dusk.png);background-size:100% 100%}
+#sky{background-image:url(sky.png);background-size:100% 100%}
+#planes{position:absolute;image-rendering:pixelated}
+#fg{background-image:url(room_fg.png);background-size:100% 100%}
 #win{position:absolute;cursor:grab;touch-action:none}
 #win .px{top:0;height:100%;background-size:auto 100%}
-/* 用 steps() 讓收合寬度一格一格跳，維持像素格 */
 #sheer{left:0;background-image:url(sheer.png)}
-.ready #sheer{transition:width .9s steps(12)}
 #dl{left:0;background-image:url(drape_l.png)}
-.ready #dl{transition:width .7s steps(10)}
 #dr{right:0;background-image:url(drape_r.png);background-position:right top}
-.ready #dr{transition:width .7s steps(10)}
+.ready #sheer{transition:width .9s steps(12)} .ready #dl,.ready #dr{transition:width .7s steps(10)}
 #tv{position:absolute;background:#000}
 #tv.big{z-index:5;box-shadow:0 0 0 100vmax rgba(10,8,16,.75)}
-#hit{position:absolute;inset:0;z-index:2;cursor:zoom-in}
-#tv.big #hit{display:none}
-#tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+#tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
+#osd{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:2}
+#hit{position:absolute;inset:0;z-index:3;cursor:pointer;touch-action:none}
+#remote{position:absolute;cursor:pointer;z-index:4}
 </style></head><body>
-<div id="stage" class="px"></div>
+<div id="sky" class="px"></div><canvas id="planes" width="480" height="270"></canvas><div id="fg" class="px"></div>
 <div id="win"><div id="sheer" class="px"></div><div id="dl" class="px"></div><div id="dr" class="px"></div></div>
-<div id="tv"><div id="player"></div><div id="hit" title=""></div></div>
+<div id="tv"><div id="slot"></div><canvas id="osd" width="106" height="60"></canvas><div id="hit"></div></div>
+<div id="remote"></div>
 <script>
-// 底圖 480x270 的像素座標（final3.py）
-const SCREEN={x:92,y:40,w:128,h:72};      // 大電視螢幕
-const WIN={x:5,y:73,w:60,h:158};          // 落地窗開口（窗簾圖層同尺寸）
-const VIDEO_ID='ylYJSBUgaMA';              // 民視新聞 24 小時直播
-const CHANNEL_ID='UC2VmWn8dAqkzlQqvy02E1PA';// 民視新聞網 @FTV_News
+// ---- 座標（底圖 480x270，final4.py）----
+const SCREEN={x:102,y:46,w:106,h:60}, WIN={x:5,y:73,w:60,h:158}, REMOTE={x:162,y:191,w:9,h:13};
+// 實測（10/12 headless）：民視、TVBS 的 live_stream?channel= 嵌入顯示「This video is unavailable」，
+// 所以這兩台先用目前的 24h 直播影片 ID，播放器報錯才改用 live_stream；公視 live_stream 可以直接播。
+const CH=[
+ {name:'民視',src:'ylYJSBUgaMA',alt:'live_stream?channel=UC2VmWn8dAqkzlQqvy02E1PA'},
+ {name:'TVBS',src:'m_dhMSvUCIc',alt:'live_stream?channel=UC5nwNW4KdC0SzrhF9BXEYOQ'},
+ {name:'公視',src:'live_stream?channel=UCexpzYDEnfmAvPSfG4xbcjA'},
+ {name:'Joeman',src:'videoseries?list=UUPRWWKG0VkBA0Pqa4Jr5j0Q'}];
+const PARAMS='autoplay=1&mute=1&controls=0&disablekb=1&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&fs=0&enablejsapi=1&origin='+encodeURIComponent(location.origin);
 const $=id=>document.getElementById(id);
-let s=1,big=false,player,usedFallback=false;
-// 窗簾狀態：0 全關、1 灰簾拉開（白紗還在）、2 全開
-let curtain=0;
+let s=1,big=false,curtain=0,ch=0,player=null,apiReady=false,unlocked=false;
+let vol=+(localStorage.getItem('alivelog.tv.volume')??40);
+// ---- 版面：整數倍放大 ----
 function layout(){
   s=Math.max(1,Math.floor(Math.min(innerWidth/480,innerHeight/270)));
   const ox=Math.floor((innerWidth-480*s)/2),oy=Math.floor((innerHeight-270*s)/2);
   const box=(el,r)=>Object.assign(el.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
-  box($('stage'),{x:ox,y:oy,w:480*s,h:270*s});
-  box($('win'),{x:ox+WIN.x*s,y:oy+WIN.y*s,w:WIN.w*s,h:WIN.h*s});
-  const half=WIN.w/2, gather=4;                 // 收起後每邊剩 4 格寬
+  const at=r=>({x:ox+r.x*s,y:oy+r.y*s,w:r.w*s,h:r.h*s});
+  for(const id of['sky','fg','planes'])box($(id),{x:ox,y:oy,w:480*s,h:270*s});
+  box($('win'),at(WIN));box($('remote'),at(REMOTE));
   const pc=n=>(n/WIN.w*100)+'%';
-  $('dl').style.width=pc(curtain>=1?gather:half);
-  $('dr').style.width=pc(curtain>=1?gather:half);
-  $('sheer').style.width=pc(curtain>=2?gather:WIN.w);
-  let r;
+  $('dl').style.width=$('dr').style.width=pc(curtain>=1?4:WIN.w/2);
+  $('sheer').style.width=pc(curtain>=2?4:WIN.w);
+  let r=at(SCREEN);
   if(big){const w=Math.min(innerWidth*.9,innerHeight*.9*16/9);r={x:(innerWidth-w)/2,y:(innerHeight-w*9/16)/2,w,h:w*9/16}}
-  else r={x:ox+SCREEN.x*s,y:oy+SCREEN.y*s,w:SCREEN.w*s,h:SCREEN.h*s};
   box($('tv'),r);
 }
-function setCurtain(c){$('win').classList.add('ready');clearTimeout(setCurtain.t);setCurtain.t=setTimeout(()=>$('win').classList.remove('ready'),1000);curtain=Math.max(0,Math.min(2,c));layout()}
-// 點擊：依序 灰簾開→白紗開→全關；拖曳：往外拉開、往內拉上
-let down=null;
-$('win').addEventListener('pointerdown',e=>{down=e.clientX;$('win').setPointerCapture(e.pointerId)});
-$('win').addEventListener('pointerup',e=>{
-  if(down===null)return;const dx=e.clientX-down;down=null;
-  if(Math.abs(dx)<6*s)setCurtain((curtain+1)%3);
-  else setCurtain(curtain+(Math.abs(dx)>0&&dx<0?1:-1)*(1)); // 向左拖＝拉開一層，向右拖＝拉上一層
-});
-// 電視：點螢幕放大（透明點擊層），放大後點擊層隱藏，可直接操作 YouTube；點其他地方縮回
-$('hit').addEventListener('click',e=>{e.stopPropagation();big=true;$('tv').classList.add('big');layout()});
-document.addEventListener('click',e=>{if(big&&!$('tv').contains(e.target)){big=false;$('tv').classList.remove('big');layout()}});
-function fallback(){ // 影片 ID 失效時改用頻道 live_stream
-  if(usedFallback)return;usedFallback=true;
-  const f=document.createElement('iframe');
-  f.src='https://www.youtube.com/embed/live_stream?channel='+CHANNEL_ID+'&autoplay=1&mute=1&playsinline=1';
-  f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';f.allowFullscreen=true;
-  const old=$('tv').querySelector('iframe,#player');if(old)old.remove();
-  $('tv').insertBefore(f,$('hit'));
+// ---- 電視 ----
+function tune(i,useAlt){
+  ch=(i+CH.length)%CH.length;const src=useAlt&&CH[ch].alt?CH[ch].alt:CH[ch].src;
+  if(!useAlt)tune.alt=false;
+  if(player&&player.destroy)try{player.destroy()}catch(e){}
+  $('slot').innerHTML='';const f=document.createElement('iframe');f.id='yt';
+  f.allow='autoplay; encrypted-media; picture-in-picture';
+  f.src='https://www.youtube.com/embed/'+src+(src.includes('?')?'&':'?')+PARAMS;
+  $('slot').appendChild(f);
+  player=null;if(apiReady)bind();
+  if(!useAlt)noise(300,()=>osdText('CH '+(ch+1),1500));
 }
-window.onYouTubeIframeAPIReady=()=>{player=new YT.Player('player',{videoId:VIDEO_ID,
-  playerVars:{autoplay:1,mute:1,playsinline:1,rel:0},events:{onError:fallback}})};
-setTimeout(()=>{if(!player||!player.getIframe)fallback()},8000);
-addEventListener('resize',layout);layout();
+function bind(){player=new YT.Player('yt',{events:{onReady:e=>{if(unlocked){e.target.unMute();e.target.setVolume(vol)}else e.target.mute();e.target.playVideo()},onError:()=>{if(CH[ch].alt&&!tune.alt){tune.alt=true;tune(ch,true)}}}})}
+window.onYouTubeIframeAPIReady=()=>{apiReady=true;if(document.getElementById('yt'))bind()};
+// ---- 螢幕 OSD：像素雜訊、台號、音量條 ----
+const osd=$('osd'),g=osd.getContext('2d');let osdTimer;
+const FONT={C:'111100100100111',H:'101101111101101',' ':'000000000000000',V:'101101101101010',O:'111101101101111',L:'100100100100111'};
+for(let d=0;d<10;d++)FONT[d]=['111101101101111','010110010010111','111001111100111','111001111001111','101101111001001','111100111001111','111100111101111','111001001001001','111101111101111','111101111001111'][d];
+function text(t,x,y,c){g.fillStyle=c;[...t].forEach((k,i)=>{const b=FONT[k]||FONT[' '];for(let j=0;j<15;j++)if(b[j]=='1')g.fillRect(x+i*4+j%3,y+(j/3|0),1,1)})}
+function noise(ms,done){clearTimeout(osdTimer);const t0=performance.now();(function f(){const im=g.createImageData(106,60);for(let i=0;i<im.data.length;i+=4){const v=Math.random()<.5?40:200;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}g.putImageData(im,0,0);if(performance.now()-t0<ms)requestAnimationFrame(f);else{g.clearRect(0,0,106,60);done&&done()}})()}
+function osdText(t,ms){g.clearRect(0,0,106,60);g.fillStyle='#120f1a';g.fillRect(3,3,t.length*4+3,9);text(t,5,5,'#f0b25a');clearTimeout(osdTimer);osdTimer=setTimeout(()=>g.clearRect(0,0,106,60),ms)}
+function osdVol(){g.clearRect(0,0,106,60);g.fillStyle='#120f1a';g.fillRect(3,48,62,9);text('VOL',5,50,'#e0cbb8');const n=Math.round(vol/10);for(let i=0;i<10;i++){g.fillStyle=i<n?'#f0b25a':'#3c3c44';g.fillRect(19+i*4,50,3,5)}clearTimeout(osdTimer);osdTimer=setTimeout(()=>g.clearRect(0,0,106,60),1200)}
+function setVol(v){vol=Math.max(0,Math.min(100,Math.round(v)));localStorage.setItem('alivelog.tv.volume',vol);if(player&&player.setVolume){player.setVolume(vol);if(vol>0&&unlocked)player.unMute()}osdVol()}
+// ---- 手勢（觸控與滑鼠拖曳都走 pointer events）----
+let st=null;
+$('hit').addEventListener('pointerdown',e=>{st={x:e.clientX,y:e.clientY,v:vol,moved:false};$('hit').setPointerCapture(e.pointerId)});
+$('hit').addEventListener('pointermove',e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
+  if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>8){st.moved='v';setVol(st.v-dy/($('tv').clientHeight)*100)}});
+$('hit').addEventListener('pointerup',e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y,m=st.moved;st=null;
+  if(m==='v')return;
+  if(Math.abs(dx)>30&&Math.abs(dx)>Math.abs(dy)){tune(ch+(dx<0?1:-1));return}
+  if(Math.abs(dx)<6&&Math.abs(dy)<6&&!big){big=true;$('tv').classList.add('big');layout()}});
+$('remote').addEventListener('click',e=>{e.stopPropagation();tune(ch+1)});
+document.addEventListener('click',e=>{if(big&&!$('tv').contains(e.target)){big=false;$('tv').classList.remove('big');layout()}});
+// ---- 第一次碰觸頁面：開聲音、啟動音效 ----
+function unlock(){if(unlocked)return;unlocked=true;if(player&&player.unMute){player.unMute();player.setVolume(vol)}audio()}
+addEventListener('pointerdown',unlock,{capture:true});addEventListener('keydown',unlock,{capture:true});
+// ---- 窗簾：點擊依序開、拖曳開關 ----
+function setCurtain(c){$('win').classList.add('ready');clearTimeout(setCurtain.t);setCurtain.t=setTimeout(()=>$('win').classList.remove('ready'),1000);curtain=Math.max(0,Math.min(2,c));layout()}
+let wd=null;$('win').addEventListener('pointerdown',e=>{wd=e.clientX;$('win').setPointerCapture(e.pointerId)});
+$('win').addEventListener('pointerup',e=>{if(wd===null)return;const dx=e.clientX-wd;wd=null;if(Math.abs(dx)<6*s)setCurtain((curtain+1)%3);else setCurtain(curtain+(dx<0?1:-1))});
+// ---- 小飛機（只畫在天空層，被建築和房間蓋住）----
+const pg=$('planes').getContext('2d');
+const LIVERY=[{body:'#2e4a3a',tail:'#d0703a',stripe:'#d0703a'},   // 墨綠＋橘
+              {body:'#2a2a3c',tail:'#c8a050',stripe:'#c8a050'},   // 深色＋金
+              {body:'#c890c0',tail:'#8a5aa8',stripe:'#e0cbb8'}];  // 粉紫
+let plane=null;
+function spawn(){const dir=Math.random()<.5?1:-1;plane={x:dir>0?-20:500,y:28+Math.random()*60|0,dir,v:(14+Math.random()*8),c:LIVERY[Math.random()*3|0],t0:performance.now()};engine(480/plane.v)}
+function drawPlane(p){const x=Math.round(p.x),y=p.y,d=p.dir,R=(dx,dy,w,h,c)=>{pg.fillStyle=c;pg.fillRect(d>0?x+dx:x-dx-w+1,y+dy,w,h)};
+  R(0,0,14,2,p.c.body);R(0,1,14,1,'#24222c');R(12,0,2,1,'#e0cbb8');R(-1,-3,3,3,p.c.tail);R(5,2,4,1,p.c.body);R(4,-1,4,1,p.c.body);R(2,0,8,1,p.c.stripe)}
+let last=performance.now();
+function tick(now){const dt=(now-last)/1000;last=now;pg.clearRect(0,0,480,270);
+  if(plane){plane.x+=plane.dir*plane.v*dt;drawPlane(plane);if(plane.x<-30||plane.x>510){plane=null;schedule()}}
+  requestAnimationFrame(tick)}
+function schedule(){setTimeout(spawn,(40+Math.random()*80)*1000)}
+// ---- 引擎聲：Web Audio 合成低頻噪音，淡入淡出，很小聲 ----
+let ac=null;function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}}
+function engine(sec){if(!ac||!unlocked)return;const n=ac.createBufferSource(),len=ac.sampleRate*2,b=ac.createBuffer(1,len,ac.sampleRate),d=b.getChannelData(0);
+  let l=0;for(let i=0;i<len;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3.5}
+  n.buffer=b;n.loop=true;const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=140;const gn=ac.createGain(),t=ac.currentTime;
+  gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(.025,t+sec*.45);gn.gain.linearRampToValueAtTime(0,t+sec);
+  n.connect(lp).connect(gn).connect(ac.destination);n.start(t);n.stop(t+sec+.1)}
+addEventListener('resize',layout);layout();tune(0);requestAnimationFrame(tick);schedule();
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
 </body></html>
