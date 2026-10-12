@@ -10,8 +10,8 @@ function T(t,x,y,c){g.fillStyle=c;[...String(t).toUpperCase()].forEach((k,i)=>{c
 const tw=t=>String(t).length*4;
 // 中文：用系統字畫，再把半透明像素二值化，保持硬邊
 const off=document.createElement('canvas'),og=off.getContext('2d');
-function CJK(t,x,y,c,px=8){off.width=t.length*px+4;off.height=px+4;og.font='bold '+px+'px sans-serif';og.textBaseline='top';og.fillStyle='#fff';og.fillText(t,0,1);
-  const d=og.getImageData(0,0,off.width,off.height).data;g.fillStyle=c;for(let yy=0;yy<off.height;yy++)for(let xx=0;xx<off.width;xx++)if(d[(yy*off.width+xx)*4+3]>110)g.fillRect(x+xx,y+yy,1,1)}
+const CJKC={};function CJK(t,x,y,c,px=8){const key=t+c+px;if(CJKC[key]){g.drawImage(CJKC[key],x,y);return}const cc=document.createElement('canvas'),cg=cc.getContext('2d');off.width=t.length*px+4;off.height=px+4;og.font='bold '+px+'px sans-serif';og.textBaseline='top';og.fillStyle='#fff';og.fillText(t,0,1);
+  const d=og.getImageData(0,0,off.width,off.height).data;cc.width=off.width;cc.height=off.height;cg.fillStyle=c;for(let yy=0;yy<off.height;yy++)for(let xx=0;xx<off.width;xx++)if(d[(yy*off.width+xx)*4+3]>110)cg.fillRect(xx,yy,1,1);CJKC[key]=cc;g.drawImage(cc,x,y)}
 const fmt=(n,d=2)=>n>=1000?Math.round(n).toString():n.toFixed(d);
 function seed(s){let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))|0;return()=>{h=(h*1103515245+12345)|0;return((h>>>16)&0x7fff)/0x7fff}}
 function calc(){rows=P.holdings.map(h=>{const price=(typeof h.price==='number')?h.price:(h._live??h.avgCost);
@@ -55,5 +55,5 @@ async function live(){try{const ctl=new AbortController();setTimeout(()=>ctl.abo
   const d=await (await fetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',{signal:ctl.signal})).json();
   P.holdings.forEach(h=>{const m=d.find(x=>x.Code===h.symbol);if(m&&+m.ClosingPrice)h._live=+m.ClosingPrice});calc();draw()}catch(e){window.MONLOG='price fetch failed: '+e}}
 fetch('portfolio.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{P=j;calc();draw()})   // 證交所 OpenAPI 沒開 CORS，瀏覽器抓不到，所以不去抓.catch(e=>{window.MONLOG='portfolio.json failed: '+e;calc();draw()});
-calc();draw();setInterval(()=>{tape+=1;draw()},120);
+calc();draw();setInterval(()=>{if(document.hidden)return;tape+=2;draw()},250);   // 降低重畫頻率
 })();
