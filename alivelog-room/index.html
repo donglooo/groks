@@ -1,46 +1,77 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>alivelog 頂樓房．新聞電視</title>
+<title>alivelog 頂樓房</title>
 <style>
 html,body{margin:0;height:100%;background:#120f1a;overflow:hidden}
-#stage{position:absolute;width:480px;height:270px;background:url(room_dusk.png) no-repeat;background-size:100% 100%;image-rendering:pixelated}
-#tv{position:absolute;border:0;background:#000}
-#tv.big{z-index:5}
-#zoom{position:absolute;z-index:6;font:14px sans-serif;background:#24222c;color:#f0b25a;border:2px solid #f0b25a;padding:4px 10px;cursor:pointer}
+.px{position:absolute;image-rendering:pixelated;background-repeat:no-repeat}
+#stage{background-image:url(room_dusk.png);background-size:100% 100%}
+#win{position:absolute;cursor:grab;touch-action:none}
+#win .px{top:0;height:100%;background-size:auto 100%}
+/* 用 steps() 讓收合寬度一格一格跳，維持像素格 */
+#sheer{left:0;background-image:url(sheer.png)}
+.ready #sheer{transition:width .9s steps(12)}
+#dl{left:0;background-image:url(drape_l.png)}
+.ready #dl{transition:width .7s steps(10)}
+#dr{right:0;background-image:url(drape_r.png);background-position:right top}
+.ready #dr{transition:width .7s steps(10)}
+#tv{position:absolute;background:#000}
+#tv.big{z-index:5;box-shadow:0 0 0 100vmax rgba(10,8,16,.75)}
+#hit{position:absolute;inset:0;z-index:2;cursor:zoom-in}
+#tv.big #hit{display:none}
+#tv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 </style></head><body>
-<div id="stage"></div><div id="tv"><div id="player"></div></div>
-<button id="zoom" type="button">放大播放</button>
+<div id="stage" class="px"></div>
+<div id="win"><div id="sheer" class="px"></div><div id="dl" class="px"></div><div id="dr" class="px"></div></div>
+<div id="tv"><div id="player"></div><div id="hit" title=""></div></div>
 <script>
-// 電視螢幕在 480x270 底圖中的像素座標（final2.py：R(M,115,135,40,24)）
-const SCREEN={x:115,y:135,w:40,h:24};
-const VIDEO_ID='ylYJSBUgaMA';                 // 民視新聞 24 小時直播
-const CHANNEL_ID='UC2VmWn8dAqkzlQqvy02E1PA';  // 民視新聞網 @FTV_News
-let big=false,player,usedFallback=false;
-const stage=document.getElementById('stage'),tv=document.getElementById('tv'),zoom=document.getElementById('zoom');
+// 底圖 480x270 的像素座標（final3.py）
+const SCREEN={x:92,y:40,w:128,h:72};      // 大電視螢幕
+const WIN={x:5,y:73,w:60,h:158};          // 落地窗開口（窗簾圖層同尺寸）
+const VIDEO_ID='ylYJSBUgaMA';              // 民視新聞 24 小時直播
+const CHANNEL_ID='UC2VmWn8dAqkzlQqvy02E1PA';// 民視新聞網 @FTV_News
+const $=id=>document.getElementById(id);
+let s=1,big=false,player,usedFallback=false;
+// 窗簾狀態：0 全關、1 灰簾拉開（白紗還在）、2 全開
+let curtain=0;
 function layout(){
-  const s=Math.max(1,Math.floor(Math.min(innerWidth/480,innerHeight/270)));   // 只用整數倍
+  s=Math.max(1,Math.floor(Math.min(innerWidth/480,innerHeight/270)));
   const ox=Math.floor((innerWidth-480*s)/2),oy=Math.floor((innerHeight-270*s)/2);
-  Object.assign(stage.style,{left:ox+'px',top:oy+'px',width:480*s+'px',height:270*s+'px'});
+  const box=(el,r)=>Object.assign(el.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
+  box($('stage'),{x:ox,y:oy,w:480*s,h:270*s});
+  box($('win'),{x:ox+WIN.x*s,y:oy+WIN.y*s,w:WIN.w*s,h:WIN.h*s});
+  const half=WIN.w/2, gather=4;                 // 收起後每邊剩 4 格寬
+  const pc=n=>(n/WIN.w*100)+'%';
+  $('dl').style.width=pc(curtain>=1?gather:half);
+  $('dr').style.width=pc(curtain>=1?gather:half);
+  $('sheer').style.width=pc(curtain>=2?gather:WIN.w);
   let r;
-  if(big){const w=Math.min(innerWidth*.9,innerHeight*.9*16/9);r={x:(innerWidth-w)/2,y:(innerHeight-w*9/16)/2,w,h:w*9/16};}
+  if(big){const w=Math.min(innerWidth*.9,innerHeight*.9*16/9);r={x:(innerWidth-w)/2,y:(innerHeight-w*9/16)/2,w,h:w*9/16}}
   else r={x:ox+SCREEN.x*s,y:oy+SCREEN.y*s,w:SCREEN.w*s,h:SCREEN.h*s};
-  Object.assign(tv.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
-  const f=tv.querySelector('iframe');if(f){f.width=r.w;f.height=r.h;f.style.width=r.w+'px';f.style.height=r.h+'px'}
-  zoom.style.left=(big?r.x+r.w-90:ox+SCREEN.x*s)+'px';
-  zoom.style.top=(big?r.y-36:oy+(SCREEN.y+SCREEN.h+4)*s)+'px';
+  box($('tv'),r);
 }
-function fallback(){ // 影片 ID 換掉時：改用頻道的 live_stream 嵌入
+function setCurtain(c){$('win').classList.add('ready');clearTimeout(setCurtain.t);setCurtain.t=setTimeout(()=>$('win').classList.remove('ready'),1000);curtain=Math.max(0,Math.min(2,c));layout()}
+// 點擊：依序 灰簾開→白紗開→全關；拖曳：往外拉開、往內拉上
+let down=null;
+$('win').addEventListener('pointerdown',e=>{down=e.clientX;$('win').setPointerCapture(e.pointerId)});
+$('win').addEventListener('pointerup',e=>{
+  if(down===null)return;const dx=e.clientX-down;down=null;
+  if(Math.abs(dx)<6*s)setCurtain((curtain+1)%3);
+  else setCurtain(curtain+(Math.abs(dx)>0&&dx<0?1:-1)*(1)); // 向左拖＝拉開一層，向右拖＝拉上一層
+});
+// 電視：點螢幕放大（透明點擊層），放大後點擊層隱藏，可直接操作 YouTube；點其他地方縮回
+$('hit').addEventListener('click',e=>{e.stopPropagation();big=true;$('tv').classList.add('big');layout()});
+document.addEventListener('click',e=>{if(big&&!$('tv').contains(e.target)){big=false;$('tv').classList.remove('big');layout()}});
+function fallback(){ // 影片 ID 失效時改用頻道 live_stream
   if(usedFallback)return;usedFallback=true;
-  tv.innerHTML='<iframe id="ytf" src="https://www.youtube.com/embed/live_stream?channel='+CHANNEL_ID+'&autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen frameborder="0"></iframe>';
-  layout();
+  const f=document.createElement('iframe');
+  f.src='https://www.youtube.com/embed/live_stream?channel='+CHANNEL_ID+'&autoplay=1&mute=1&playsinline=1';
+  f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';f.allowFullscreen=true;
+  const old=$('tv').querySelector('iframe,#player');if(old)old.remove();
+  $('tv').insertBefore(f,$('hit'));
 }
-window.onYouTubeIframeAPIReady=function(){
-  player=new YT.Player('player',{videoId:VIDEO_ID,width:'100%',height:'100%',
-    playerVars:{autoplay:1,mute:1,playsinline:1,rel:0},
-    events:{onReady:layout,onError:fallback}});
-};
-const t=setTimeout(()=>{if(!player||!player.getIframe)fallback()},8000); // API 載不到也改用備用
-zoom.onclick=()=>{big=!big;tv.classList.toggle('big',big);zoom.textContent=big?'縮回電視':'放大播放';layout()};
+window.onYouTubeIframeAPIReady=()=>{player=new YT.Player('player',{videoId:VIDEO_ID,
+  playerVars:{autoplay:1,mute:1,playsinline:1,rel:0},events:{onError:fallback}})};
+setTimeout(()=>{if(!player||!player.getIframe)fallback()},8000);
 addEventListener('resize',layout);layout();
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
