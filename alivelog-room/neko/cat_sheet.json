@@ -217,6 +217,468 @@
    "y": 160,
    "w": 84,
    "h": 32
+  },
+  "walk_left_0": {
+   "x": 0,
+   "y": 192,
+   "w": 84,
+   "h": 32
+  },
+  "walk_left_1": {
+   "x": 84,
+   "y": 192,
+   "w": 84,
+   "h": 32
+  },
+  "walk_left_2": {
+   "x": 168,
+   "y": 192,
+   "w": 84,
+   "h": 32
+  },
+  "walk_left_3": {
+   "x": 252,
+   "y": 192,
+   "w": 84,
+   "h": 32
+  },
+  "walk_left_4": {
+   "x": 336,
+   "y": 192,
+   "w": 84,
+   "h": 32
+  },
+  "walk_left_5": {
+   "x": 420,
+   "y": 192,
+   "w": 84,
+   "h": 32
+  },
+  "walk_right_0": {
+   "x": 0,
+   "y": 224,
+   "w": 84,
+   "h": 32
+  },
+  "walk_right_1": {
+   "x": 84,
+   "y": 224,
+   "w": 84,
+   "h": 32
+  },
+  "walk_right_2": {
+   "x": 168,
+   "y": 224,
+   "w": 84,
+   "h": 32
+  },
+  "walk_right_3": {
+   "x": 252,
+   "y": 224,
+   "w": 84,
+   "h": 32
+  },
+  "walk_right_4": {
+   "x": 336,
+   "y": 224,
+   "w": 84,
+   "h": 32
+  },
+  "walk_right_5": {
+   "x": 420,
+   "y": 224,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_left_0": {
+   "x": 0,
+   "y": 256,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_left_1": {
+   "x": 84,
+   "y": 256,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_left_2": {
+   "x": 168,
+   "y": 256,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_left_3": {
+   "x": 252,
+   "y": 256,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_right_0": {
+   "x": 0,
+   "y": 288,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_right_1": {
+   "x": 84,
+   "y": 288,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_right_2": {
+   "x": 168,
+   "y": 288,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_run_right_3": {
+   "x": 252,
+   "y": 288,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_skid_left_0": {
+   "x": 0,
+   "y": 320,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_skid_left_1": {
+   "x": 84,
+   "y": 320,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_skid_left_2": {
+   "x": 168,
+   "y": 320,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_skid_right_0": {
+   "x": 0,
+   "y": 352,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_skid_right_1": {
+   "x": 84,
+   "y": 352,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_skid_right_2": {
+   "x": 168,
+   "y": 352,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_turn_to_right_0": {
+   "x": 0,
+   "y": 384,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_turn_to_right_1": {
+   "x": 84,
+   "y": 384,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_turn_to_right_2": {
+   "x": 168,
+   "y": 384,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_turn_to_left_0": {
+   "x": 0,
+   "y": 416,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_turn_to_left_1": {
+   "x": 84,
+   "y": 416,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_turn_to_left_2": {
+   "x": 168,
+   "y": 416,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_pant_0": {
+   "x": 0,
+   "y": 448,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_pant_1": {
+   "x": 84,
+   "y": 448,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_pant_2": {
+   "x": 168,
+   "y": 448,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_pant_3": {
+   "x": 252,
+   "y": 448,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_nonchalant_0": {
+   "x": 0,
+   "y": 480,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_nonchalant_1": {
+   "x": 84,
+   "y": 480,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_nonchalant_2": {
+   "x": 168,
+   "y": 480,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_nonchalant_3": {
+   "x": 252,
+   "y": 480,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_0": {
+   "x": 0,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_1": {
+   "x": 84,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_2": {
+   "x": 168,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_3": {
+   "x": 252,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_4": {
+   "x": 336,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_5": {
+   "x": 420,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_6": {
+   "x": 504,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "zoom_bump_plant_7": {
+   "x": 588,
+   "y": 512,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_0": {
+   "x": 0,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_1": {
+   "x": 84,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_2": {
+   "x": 168,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_3": {
+   "x": 252,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_4": {
+   "x": 336,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_5": {
+   "x": 420,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_6": {
+   "x": 504,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sit_gaze_window_7": {
+   "x": 588,
+   "y": 544,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_sit_0": {
+   "x": 0,
+   "y": 576,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_sit_1": {
+   "x": 84,
+   "y": 576,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_sit_2": {
+   "x": 168,
+   "y": 576,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_sit_3": {
+   "x": 252,
+   "y": 576,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_sit_4": {
+   "x": 336,
+   "y": 576,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_sit_5": {
+   "x": 420,
+   "y": 576,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_lie_0": {
+   "x": 0,
+   "y": 608,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_lie_1": {
+   "x": 84,
+   "y": 608,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_lie_2": {
+   "x": 168,
+   "y": 608,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_lie_3": {
+   "x": 252,
+   "y": 608,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_lie_4": {
+   "x": 336,
+   "y": 608,
+   "w": 84,
+   "h": 32
+  },
+  "sneeze_lie_5": {
+   "x": 420,
+   "y": 608,
+   "w": 84,
+   "h": 32
+  },
+  "dust_shake_0": {
+   "x": 0,
+   "y": 640,
+   "w": 84,
+   "h": 32
+  },
+  "dust_shake_1": {
+   "x": 84,
+   "y": 640,
+   "w": 84,
+   "h": 32
+  },
+  "dust_shake_2": {
+   "x": 168,
+   "y": 640,
+   "w": 84,
+   "h": 32
+  },
+  "duster_paw_0": {
+   "x": 0,
+   "y": 672,
+   "w": 84,
+   "h": 32
+  },
+  "duster_paw_1": {
+   "x": 84,
+   "y": 672,
+   "w": 84,
+   "h": 32
+  },
+  "duster_paw_2": {
+   "x": 168,
+   "y": 672,
+   "w": 84,
+   "h": 32
+  },
+  "duster_paw_3": {
+   "x": 252,
+   "y": 672,
+   "w": 84,
+   "h": 32
+  },
+  "rub_face_0": {
+   "x": 0,
+   "y": 704,
+   "w": 84,
+   "h": 32
+  },
+  "rub_face_1": {
+   "x": 84,
+   "y": 704,
+   "w": 84,
+   "h": 32
   }
  },
  "animations": {
@@ -229,7 +691,8 @@
     900,
     900
    ],
-   "loop": true
+   "loop": true,
+   "fps": 1.11
   },
   "blink": {
    "frames": [
@@ -244,7 +707,8 @@
     120,
     80
    ],
-   "loop": false
+   "loop": false,
+   "fps": 10.0
   },
   "tail_swish": {
    "frames": [
@@ -267,7 +731,8 @@
     120,
     120
    ],
-   "loop": true
+   "loop": true,
+   "fps": 8.33
   },
   "ear_twitch": {
    "frames": [
@@ -288,7 +753,8 @@
     90,
     600
    ],
-   "loop": false
+   "loop": false,
+   "fps": 5.56
   },
   "lick": {
    "frames": [
@@ -307,7 +773,8 @@
     180,
     300
    ],
-   "loop": false
+   "loop": false,
+   "fps": 4.92
   },
   "stretch": {
    "frames": [
@@ -330,7 +797,535 @@
     180,
     300
    ],
+   "loop": false,
+   "fps": 3.77
+  },
+  "walk_left": {
+   "frames": [
+    "walk_left_0",
+    "walk_left_1",
+    "walk_left_2",
+    "walk_left_3",
+    "walk_left_4",
+    "walk_left_5"
+   ],
+   "durations_ms": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "fps": 10,
+   "loop": true
+  },
+  "walk_right": {
+   "frames": [
+    "walk_right_0",
+    "walk_right_1",
+    "walk_right_2",
+    "walk_right_3",
+    "walk_right_4",
+    "walk_right_5"
+   ],
+   "durations_ms": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+   ],
+   "fps": 10,
+   "loop": true
+  },
+  "zoom_run_left": {
+   "frames": [
+    "zoom_run_left_0",
+    "zoom_run_left_1",
+    "zoom_run_left_2",
+    "zoom_run_left_3"
+   ],
+   "durations_ms": [
+    62,
+    62,
+    62,
+    62
+   ],
+   "fps": 16,
+   "loop": true
+  },
+  "zoom_run_right": {
+   "frames": [
+    "zoom_run_right_0",
+    "zoom_run_right_1",
+    "zoom_run_right_2",
+    "zoom_run_right_3"
+   ],
+   "durations_ms": [
+    62,
+    62,
+    62,
+    62
+   ],
+   "fps": 16,
+   "loop": true
+  },
+  "zoom_skid_left": {
+   "frames": [
+    "zoom_skid_left_0",
+    "zoom_skid_left_1",
+    "zoom_skid_left_2"
+   ],
+   "durations_ms": [
+    83,
+    83,
+    83
+   ],
+   "fps": 12,
+   "loop": false
+  },
+  "zoom_skid_right": {
+   "frames": [
+    "zoom_skid_right_0",
+    "zoom_skid_right_1",
+    "zoom_skid_right_2"
+   ],
+   "durations_ms": [
+    83,
+    83,
+    83
+   ],
+   "fps": 12,
+   "loop": false
+  },
+  "zoom_turn_to_right": {
+   "frames": [
+    "zoom_turn_to_right_0",
+    "zoom_turn_to_right_1",
+    "zoom_turn_to_right_2"
+   ],
+   "durations_ms": [
+    100,
+    100,
+    100
+   ],
+   "fps": 10,
+   "loop": false
+  },
+  "zoom_turn_to_left": {
+   "frames": [
+    "zoom_turn_to_left_0",
+    "zoom_turn_to_left_1",
+    "zoom_turn_to_left_2"
+   ],
+   "durations_ms": [
+    100,
+    100,
+    100
+   ],
+   "fps": 10,
+   "loop": false
+  },
+  "zoom_pant": {
+   "frames": [
+    "zoom_pant_0",
+    "zoom_pant_1",
+    "zoom_pant_2",
+    "zoom_pant_3"
+   ],
+   "durations_ms": [
+    167,
+    167,
+    167,
+    167
+   ],
+   "fps": 6,
+   "loop": true
+  },
+  "zoom_nonchalant": {
+   "frames": [
+    "zoom_nonchalant_0",
+    "zoom_nonchalant_1",
+    "zoom_nonchalant_2",
+    "zoom_nonchalant_3"
+   ],
+   "durations_ms": [
+    333,
+    333,
+    333,
+    333
+   ],
+   "fps": 3,
+   "loop": true
+  },
+  "zoom_bump_plant": {
+   "frames": [
+    "zoom_bump_plant_0",
+    "zoom_bump_plant_1",
+    "zoom_bump_plant_2",
+    "zoom_bump_plant_3",
+    "zoom_bump_plant_4",
+    "zoom_bump_plant_5",
+    "zoom_bump_plant_6",
+    "zoom_bump_plant_7"
+   ],
+   "durations_ms": [
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125,
+    125
+   ],
+   "fps": 8,
+   "loop": false
+  },
+  "sit_gaze_window": {
+   "frames": [
+    "sit_gaze_window_0",
+    "sit_gaze_window_1",
+    "sit_gaze_window_2",
+    "sit_gaze_window_3",
+    "sit_gaze_window_4",
+    "sit_gaze_window_5",
+    "sit_gaze_window_6",
+    "sit_gaze_window_7"
+   ],
+   "durations_ms": [
+    250,
+    250,
+    250,
+    250,
+    250,
+    250,
+    250,
+    250
+   ],
+   "fps": 4,
+   "loop": true
+  },
+  "sneeze_sit": {
+   "frames": [
+    "sneeze_sit_0",
+    "sneeze_sit_1",
+    "sneeze_sit_2",
+    "sneeze_sit_3",
+    "sneeze_sit_4",
+    "sneeze_sit_5"
+   ],
+   "durations_ms": [
+    250,
+    300,
+    150,
+    100,
+    100,
+    250
+   ],
+   "fps": 8,
+   "loop": false,
+   "achoo_frame": 2
+  },
+  "sneeze_lie": {
+   "frames": [
+    "sneeze_lie_0",
+    "sneeze_lie_1",
+    "sneeze_lie_2",
+    "sneeze_lie_3",
+    "sneeze_lie_4",
+    "sneeze_lie_5"
+   ],
+   "durations_ms": [
+    250,
+    300,
+    150,
+    100,
+    100,
+    250
+   ],
+   "fps": 8,
+   "loop": false,
+   "achoo_frame": 2
+  },
+  "dust_shake": {
+   "frames": [
+    "dust_shake_0",
+    "dust_shake_1",
+    "dust_shake_2"
+   ],
+   "durations_ms": [
+    83,
+    83,
+    83
+   ],
+   "fps": 12,
+   "loop": false
+  },
+  "duster_paw": {
+   "frames": [
+    "duster_paw_0",
+    "duster_paw_1",
+    "duster_paw_2",
+    "duster_paw_3"
+   ],
+   "durations_ms": [
+    167,
+    167,
+    167,
+    167
+   ],
+   "fps": 6,
+   "loop": false,
+   "swipe_frames": [
+    2,
+    3
+   ]
+  },
+  "rub_face": {
+   "frames": [
+    "rub_face_0",
+    "rub_face_1"
+   ],
+   "durations_ms": [
+    200,
+    200
+   ],
+   "fps": 5,
    "loop": false
   }
+ },
+ "facing_note": "side-view sprites face LEFT by default; *_right are mirrored. Sprite anchor = frame top-left; feet at local y=30.",
+ "spots": {
+  "ac_perch": {
+   "desc": "balcony AC outdoor unit (lying pose)",
+   "frame_topleft": [
+    356,
+    150
+   ],
+   "anim": [
+    "breathe",
+    "blink",
+    "tail_swish",
+    "ear_twitch",
+    "lick",
+    "stretch"
+   ]
+  },
+  "window_gaze": {
+   "desc": "floor in front of left window (right of plant), sitting facing left",
+   "frame_topleft": [
+    22,
+    206
+   ],
+   "feet_y": 236,
+   "anim": [
+    "sit_gaze_window",
+    "blink"
+   ]
+  },
+  "floor_mid": {
+   "desc": "living-room floor center (rug/desk area)",
+   "frame_topleft": [
+    150,
+    206
+   ],
+   "feet_y": 236
+  },
+  "walkway_lie": {
+   "desc": "high cat walkway shelf (Nook plan B dust zone, x0-92,y61)",
+   "frame_topleft": [
+    4,
+    30
+   ],
+   "anim": [
+    "breathe",
+    "sneeze_lie"
+   ],
+   "assumption": "shelf top y=61 from nook/README.md; no NEKO_SPEC.md found"
+  },
+  "walkway_sit": {
+   "desc": "cat walkway shelf, sitting",
+   "frame_topleft": [
+    30,
+    31
+   ],
+   "feet_y": 61,
+   "anim": [
+    "sit_gaze_window",
+    "sneeze_sit",
+    "dust_shake",
+    "duster_paw",
+    "rub_face"
+   ]
+  }
+ },
+ "paths": {
+  "floor_walk": {
+   "points": [
+    [
+     22,
+     206
+    ],
+    [
+     230,
+     206
+    ]
+   ],
+   "anim_left": "walk_left",
+   "anim_right": "walk_right",
+   "speed_px_s": 24
+  },
+  "zoomies": {
+   "speed_px_s": 140,
+   "sequence": [
+    {
+     "anim": "zoom_run_right",
+     "from": [
+      20,
+      206
+     ],
+     "to": [
+      220,
+      206
+     ]
+    },
+    {
+     "anim": "zoom_skid_right",
+     "at": [
+      220,
+      206
+     ]
+    },
+    {
+     "anim": "zoom_turn_to_left",
+     "at": [
+      220,
+      206
+     ]
+    },
+    {
+     "anim": "zoom_run_left",
+     "from": [
+      220,
+      206
+     ],
+     "to": [
+      30,
+      206
+     ]
+    },
+    {
+     "anim": "zoom_bump_plant",
+     "at": [
+      30,
+      206
+     ],
+     "impact_frame": 0,
+     "impact_cat_topleft": [
+      30,
+      206
+     ],
+     "impact_contact_px": [
+      36,
+      221
+     ],
+     "plant_hint_bbox": [
+      3,
+      215,
+      36,
+      268
+     ],
+     "note": "cat-only frames; plant reaction drawn by objects agent, trigger at impact_frame"
+    },
+    {
+     "anim": "zoom_turn_to_right",
+     "at": [
+      30,
+      206
+     ]
+    },
+    {
+     "anim": "zoom_run_right",
+     "from": [
+      30,
+      206
+     ],
+     "to": [
+      150,
+      206
+     ]
+    },
+    {
+     "anim": "zoom_skid_right",
+     "at": [
+      150,
+      206
+     ]
+    },
+    {
+     "anim": "zoom_pant",
+     "at": [
+      150,
+      206
+     ],
+     "repeat": 3,
+     "alt": "zoom_nonchalant"
+    }
+   ]
+  },
+  "balcony_transition": {
+   "note": "AC perch is outside the glass wall (x>318). No transition frames are drawn; integration handles it with a fade.",
+   "enter": {
+    "type": "fade_in",
+    "ms": 400,
+    "at": [
+     356,
+     150
+    ],
+    "pose": "breathe"
+   },
+   "exit": {
+    "type": "fade_out",
+    "ms": 400,
+    "from": [
+     356,
+     150
+    ]
+   },
+   "indoor_side": {
+    "type": "fade",
+    "at": [
+     230,
+     206
+    ],
+    "ms": 400
+   }
+  }
+ },
+ "events": {
+  "sneeze": {
+   "by_pose": {
+    "sit": "sneeze_sit",
+    "lie": "sneeze_lie"
+   },
+   "default": "sneeze_sit",
+   "then": "dust_shake",
+   "fx_hint": "achoo text/particles at achoo_frame (Nook)"
+  },
+  "dust_shake": {
+   "anim": "dust_shake"
+  },
+  "duster_paw": {
+   "anim": "duster_paw",
+   "note": "play while duster passes within ~40px"
+  },
+  "rub_face": {
+   "anim": "rub_face",
+   "optional": true
+  },
+  "pose_map_note": "lie = ac_perch / any lying anim (breathe, blink, tail_swish, ear_twitch, lick, stretch); sit = sit_gaze_window, zoom_pant, zoom_nonchalant, walkway_sit"
  }
 }
