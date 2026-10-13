@@ -17,12 +17,12 @@ async function fetchWx(){W.loc=where();const[la,lo]=LOC[W.loc];
     W.rise=Date.parse(j.daily.sunrise[0]+':00+08:00');W.set=Date.parse(j.daily.sunset[0]+':00+08:00');W.kind=W.precip>0?'rain':kind(W.code);W.src='Open-Meteo '+j.current.time}
   catch(e){W.src='取得失敗：'+e}apply()}
 // 只有黃昏底圖：白天/夜晚用濾鏡＋色層近似
-const LOOK={day:{sky:'hue-rotate(185deg) saturate(.7) brightness(1.45)',fg:'brightness(1.08)',tint:'rgba(0,0,0,0)'},
+const LOOK={day:{sky:'none',fg:'brightness(1.08)',tint:'rgba(0,0,0,0)'},
   dusk:{sky:'none',fg:'none',tint:'rgba(0,0,0,0)'},
   night:{sky:'hue-rotate(200deg) saturate(.5) brightness(.38)',fg:'brightness(.78) saturate(.85)',tint:'rgba(10,14,40,.18)'}};
 function apply(){W.phase=window.FORCE_PHASE||phase();const k=window.FORCE_KIND||W.kind,L=LOOK[W.phase];
   let sky=L.sky;if(k!=='clear')sky=(sky==='none'?'':sky+' ')+'saturate(.45) brightness('+(k==='rain'?.7:.85)+')';
-  $('sky').style.filter=sky||'none';$('fg').style.filter=L.fg;$('tint').style.background=L.tint;W.shown=W.phase+'/'+k}
+  $('sky').style.backgroundImage=W.phase==='day'?'url(sky_day.png)':'';$('sky').style.filter=sky||'none';$('fg').style.filter=L.fg;$('tint').style.background=L.tint;W.shown=W.phase+'/'+k}
 // 雲與雨（畫在天空層，在建築與房間後面）
 const wx=$('wx').getContext('2d');let drops=[],clouds=[];
 for(let i=0;i<5;i++)clouds.push({x:Math.random()*600,y:6+Math.random()*194|0,w:30+Math.random()*40|0,v:1+Math.random()*2});
@@ -72,7 +72,7 @@ function amb(now){a.clearRect(0,0,600,420);const sl=sleeping(),T=(now-t0)/1000;
   // （電視櫃小盆栽已移除，搖擺動畫一併拿掉）
   // 檯燈極輕微閃爍
   // 馬克杯＋蒸氣
-  R(321,313,5,5,'#c8c0b4');R(321,313,5,1,P.white);R(326,314,1,2,'#c8c0b4');R(322,314,3,1,'#5a3a2a');   // W_v3：書桌右移 40
+  R(321,317,5,5,'#c8c0b4');R(321,317,5,1,P.white);R(326,318,1,2,'#c8c0b4');R(322,318,3,1,'#5a3a2a');   // W_v3：書桌右移 40
   for(let i=0;i<3;i++){const ph=(T*0.9+i/3)%1,y=311-ph*12|0,x=323+Math.round(Math.sin(ph*6+i)*1.2);a.fillStyle=`rgba(224,203,184,${(.5*(1-ph)).toFixed(2)})`;a.fillRect(x,y,1,2)}
   clock();a.save();a.translate(120,150);feeder(now);a.restore()}   // live23：餵食器在陽台側 → x+120、y+150
 // 窗簾微微擺動（1px，步進）

@@ -7,11 +7,14 @@
 <title>alivelog 頂樓房</title>
 <style>
 *{-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;touch-action:none;-webkit-text-size-adjust:100%;overscroll-behavior:none;background:#2a2a3c;overflow:hidden;user-select:none}
+html,body{margin:0;height:100%;touch-action:none;-webkit-text-size-adjust:100%;overscroll-behavior:none;background:#2a2a3c;overflow:hidden;overflow:clip;user-select:none}
+body{position:fixed;inset:0}
 #back{position:fixed;left:0;right:0;top:0;background:#3a3e52;pointer-events:none}
 .px{position:absolute;image-rendering:pixelated;background-repeat:no-repeat}
 #sky{background-image:url(sky.png);background-size:100% 100%}
 #planes{position:absolute;image-rendering:pixelated}
+#land{background-image:url(land.png);background-size:100% 100%}
+#traffic{image-rendering:pixelated}
 #fg{background-image:url(room_fg.png);background-size:100% 100%}
 #win{position:absolute;cursor:grab;touch-action:none}
 #win .px{top:0;height:100%;background-size:auto 100%}
@@ -42,14 +45,14 @@ html,body{margin:0;height:100%;touch-action:none;-webkit-text-size-adjust:100%;o
 #mon.big{z-index:6;box-shadow:0 0 0 100vmax rgba(10,8,16,.8)}
 #remote{position:absolute;cursor:pointer;z-index:4}
 </style></head><body>
-<div id="back"></div><div id="sky" class="px"></div><canvas id="planes" width="600" height="420"></canvas><canvas id="wx" class="px" width="600" height="420"></canvas><div id="tint" class="px" style="pointer-events:none"></div><div id="fg" class="px"></div><canvas id="amb" class="px" width="600" height="420" style="pointer-events:none"></canvas>
+<div id="back"></div><div id="sky" class="px"></div><canvas id="planes" width="600" height="420"></canvas><div id="land" class="px"></div><canvas id="traffic" class="px" width="600" height="420"></canvas><canvas id="wx" class="px" width="600" height="420"></canvas><div id="tint" class="px" style="pointer-events:none"></div><div id="fg" class="px"></div><canvas id="amb" class="px" width="600" height="420" style="pointer-events:none"></canvas>
 <div id="win"><div id="sheer" class="px"></div><div id="dl" class="px"></div><div id="dr" class="px"></div></div>
 <div id="tv"><div id="slot"><div id="yt"></div></div><div id="poweroff" class="bl" data-off="0"><i></i></div><div id="chsel"></div><canvas id="osd" width="106" height="60"></canvas><div id="hit"></div></div>
 <div id="remote"></div>
 <div id="rc"></div><canvas id="mon" width="38" height="24"></canvas>
 <script>
 // ---- 座標（底圖 600x420 樓中樓，Nook loft_final/coords.md）----
-const SCREEN={x:102,y:196,w:106,h:60}, WIN={x:5,y:223,w:60,h:158}, REMOTE={x:197,y:341,w:9,h:13}, MON={x:276,y:287,w:38,h:24};
+const SCREEN={x:102,y:196,w:106,h:60}, WIN={x:5,y:223,w:60,h:158}, REMOTE={x:197,y:341,w:9,h:13}, MON={x:276,y:291,w:38,h:24};
 // 實測（10/12 headless）：民視、TVBS 的 live_stream?channel= 嵌入顯示「This video is unavailable」，
 // 所以這兩台先用目前的 24h 直播影片 ID，播放器報錯才改用 live_stream；公視 live_stream 可以直接播。
 const CH=[
@@ -62,16 +65,20 @@ const $=id=>document.getElementById(id);
 let s=1,big=false,curtain=0,ch=0,player=null,apiReady=false,unlocked=false;
 let vol=+(localStorage.getItem('alivelog.tv.volume')??40);
 // ---- 版面：整張縮放（contain，不平移；接近整數倍才取整數裝置像素）----
-const STAGE={w:600,h:420};let ox=0,oy=0;
+const STAGE={w:600,h:420};let ox=0,oy=0,panX=0.26,PORTRAIT=false;   // 直拿：高度滿版＋左右平移（panX 0=最左 1=最右）
 function layout(){
   let W=innerWidth,H=innerHeight;
   if(navigator.standalone){const P=H>=W,a=Math.max(screen.width,screen.height),b=Math.min(screen.width,screen.height);if(P)H=Math.max(H,a);else W=Math.max(W,a),H=Math.max(H,b)}
-  const dpr=devicePixelRatio||1;s=Math.min(W/STAGE.w,H/STAGE.h);const sd=Math.floor(s*dpr);if(sd>=1&&sd/dpr>=s*0.9)s=sd/dpr;
-  const cw=Math.round(STAGE.w*s),ch=Math.round(STAGE.h*s);ox=Math.floor((W-cw)/2);oy=Math.floor((H-ch)/2);
+  const dpr=devicePixelRatio||1;PORTRAIT=H>W&&H/STAGE.h>W/STAGE.w;
+  if(PORTRAIT){s=H/STAGE.h;const sc=Math.ceil(s*dpr)/dpr;if(sc/s<=1.02)s=sc}   // 直拿：蓋滿高度（接近整數裝置像素就取整，只會略大不會留白）
+  else{s=Math.min(W/STAGE.w,H/STAGE.h);const sd=Math.floor(s*dpr);if(sd>=1&&sd/dpr>=s*0.9)s=sd/dpr}
+  const cw=Math.round(STAGE.w*s),ch=Math.round(STAGE.h*s);
+  if(PORTRAIT){panX=Math.max(0,Math.min(1,panX));ox=-Math.round((cw-W)*panX);oy=Math.floor((H-ch)/2)}else{ox=Math.floor((W-cw)/2);oy=Math.floor((H-ch)/2)}
+  document.body.classList.toggle('portrait-pan',PORTRAIT);
   window.VIEW={s,ox,oy};$('back').style.height=(oy+Math.round(ch*0.55))+'px';
   const box=(el,r)=>Object.assign(el.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
   const at=r=>({x:Math.round(ox+r.x*s),y:Math.round(oy+r.y*s),w:Math.round(r.w*s),h:Math.round(r.h*s)});
-  for(const id of["sky","wx","fg","tint","planes","amb"].filter(i=>$(i)))box($(id),{x:ox,y:oy,w:cw,h:ch});
+  for(const id of["sky","land","traffic","wx","fg","tint","planes","amb"].filter(i=>$(i)))box($(id),{x:ox,y:oy,w:cw,h:ch});
   box($('win'),at(WIN));box($('remote'),at(REMOTE));
   const pc=n=>(n/WIN.w*100)+'%';
   $('dl').style.width=$('dr').style.width=pc(curtain>=1?4:WIN.w/2);
@@ -187,8 +194,20 @@ let zoomed=null;function zoom(id){if(zoomed&&zoomed!==id)unzoom();zoomed=id;big=
 function unzoom(){if(!zoomed)return;$(zoomed).classList.remove('big');zoomed=null;big=false;layout();window.drawMon&&drawMon()}
 document.addEventListener('pointerdown',e=>{if(zoomed&&!$(zoomed).contains(e.target)&&!$('rc').contains(e.target)){unzoom();e.stopPropagation();st=null}},true);   // 點旁邊（按下當下）就縮回，不受之後 click 位置影響
 $('mon').addEventListener('pointerup',e=>{if(zoomed!=='mon')zoom('mon')});
-// ---- 不平移：整張都看得到；PANKEEP 保留成空函式給 cat.js／dust.js 呼叫 ----
-let userPanAt=0;window.AUTOPAN={n:0,last:null};window.PANKEEP=()=>false;
+// ---- 平移：只有直拿時，左右拖曳空白處；橫拿／桌機整張看得到不平移 ----
+let userPanAt=0,pan=null,apT=null;window.AUTOPAN={n:0,last:null};
+const spanX=()=>Math.round(STAGE.w*s)-innerWidth;
+addEventListener('pointerdown',e=>{if(!PORTRAIT||big||zoomed)return;const t=e.target;if(t===document.body||t.id==='fg'||t.id==='amb'||t.id==='sky'||t.id==='land'||t.id==='traffic'||t.id==='wx'||t.id==='back')pan={x:e.clientX,px:panX,moved:false}});
+addEventListener('pointermove',e=>{if(!pan)return;const sw=spanX(),dx=e.clientX-pan.x;if(Math.abs(dx)>6){pan.moved=true;userPanAt=Date.now()}if(sw>0&&pan.moved){panX=Math.max(0,Math.min(1,pan.px-dx/sw));cancelAnimationFrame(apT);layout()}});
+addEventListener('pointerup',()=>{if(pan&&pan.moved)window.PANNED=(window.PANNED||0)+1;pan=null});addEventListener('pointercancel',()=>pan=null);
+addEventListener('wheel',e=>{if(!PORTRAIT)return;const sw=spanX();if(sw>0){panX=Math.max(0,Math.min(1,panX+(e.deltaX||e.deltaY)/sw));userPanAt=Date.now();layout()}},{passive:true});
+// 自動平移：直拿時讓貓／撢子留在畫面內；使用者 8 秒內滑過就不搶
+window.PANKEEP=function(x0,x1){if(!PORTRAIT||big||zoomed||pan||Date.now()-userPanAt<8000)return false;
+  const sw=spanX();if(sw<=0||x0==null)return false;const v0=-ox/s,vw=innerWidth/s,m=12;let L;
+  if(x1-x0+2*m>vw)L=(x0+x1)/2-vw/2;else if(x0-m<v0)L=x0-m;else if(x1+m>v0+vw)L=x1+m-vw;else return false;
+  const tx=Math.max(0,Math.min(1,L*s/sw));if(Math.abs(tx-panX)<.002)return false;AUTOPAN.n++;AUTOPAN.last={tx,at:Date.now()};cancelAnimationFrame(apT);
+  (function step(){if(pan||Date.now()-userPanAt<8000)return;panX+=(tx-panX)*.15;if(Math.abs(tx-panX)<.002){panX=tx;layout();return}layout();apT=requestAnimationFrame(step)})();return true};
+window.PANVIEW={get x(){return panX},set(v){panX=v;layout()},get portrait(){return PORTRAIT}};
 window.toRoom=e=>{const V=window.VIEW;return{x:(e.clientX-V.ox)/V.s,y:(e.clientY-V.oy)/V.s}};
 // ---- 禁止整頁縮放（iOS 會忽略 user-scalable，所以再用事件擋：雙指縮放、連點兩下）----
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
@@ -225,8 +244,8 @@ const n=ac.createBufferSource(),len=ac.sampleRate*2,b=ac.createBuffer(1,len,ac.s
   n.buffer=b;n.loop=true;const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=140;const gn=ac.createGain(),t=ac.currentTime;
   gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(.025,t+sec*.45);gn.gain.linearRampToValueAtTime(0,t+sec);
   n.connect(lp).connect(gn).connect(ac.destination);n.start(t);n.stop(t+sec+.1)}
-addEventListener('resize',layout);layout();noise(300,()=>osdText('CH 1',1500));requestAnimationFrame(tick);schedule();
+addEventListener('resize',layout);addEventListener('scroll',()=>{if(scrollX||scrollY)scrollTo(0,0)});layout();noise(300,()=>osdText('CH 1',1500));requestAnimationFrame(tick);schedule();
 </script>
-<script src="mon.js"></script><script src="cat.js"></script><script src="world.js"></script><script src="bias.js"></script><script src="lights.js"></script><script src="knock.js"></script><script src="board.js"></script><script src="dust.js"></script><script src="remote.js"></script>
+<script src="mon.js"></script><script src="cat.js"></script><script src="world.js"></script><script src="traffic.js"></script><script src="bias.js"></script><script src="lights.js"></script><script src="knock.js"></script><script src="board.js"></script><script src="dust.js"></script><script src="remote.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 </body></html>
