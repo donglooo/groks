@@ -1,6 +1,6 @@
 // ---- 貓咪行為紀錄：點貓開選單，一點就記；長按貓匯出 JSON ----
 (function(){
-const KEY='alivelog.cat.log',B=['睡','吃','玩','討摸','窗邊','躲起來'],CAT={x:364,y:150,w:70,h:34};
+const KEY='alivelog.cat.log',B=['睡','吃','玩','討摸','窗邊','躲起來'],CAT={x:356,y:150,w:84,h:32};   // 會被 cat_sheet.json 的 anchor/frameSize 覆蓋
 const $=id=>document.getElementById(id);
 const hit=document.createElement('div');hit.id='cathit';hit.style.cssText='position:absolute;z-index:4;cursor:pointer;touch-action:none';
 const cv=document.createElement('canvas');cv.width=CAT.w;cv.height=CAT.h;cv.style.cssText='position:absolute;z-index:3;pointer-events:none;image-rendering:pixelated';
@@ -10,10 +10,37 @@ B.forEach(b=>{const d=document.createElement('div');d.textContent=b;d.dataset.b=
 document.body.append(cv,hit,menu);
 const get=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}};
 function add(b){const d=new Date(),L=get();L.push({ts:d.toISOString(),behavior:b,weekday:d.getDay(),hour:d.getHours()});localStorage.setItem(KEY,JSON.stringify(L));pose();flash(b)}
-function pose(){const g=cv.getContext('2d');g.clearRect(0,0,CAT.w,CAT.h);const last=get().slice(-1)[0];
-  if(last&&last.behavior==='睡'){const R=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x-CAT.x,y-CAT.y,w,h)};
-    for(const ex of[374,383]){R(ex,166,4,4,'#4e566a');R(ex,168,4,1,'#120f1a');R(ex,167,1,1,'#120f1a');R(ex+3,167,1,1,'#120f1a')}
-    R(392,154,3,1,'#e0cbb8');R(393,155,1,1,'#e0cbb8');R(392,156,3,1,'#e0cbb8');R(397,151,2,1,'#e0cbb8');R(397,152,2,1,'#e0cbb8')}}
+// ---- Neko 的貓 sprite 播放器（依 neko/cat_sheet.json；Neko 換新圖只要覆蓋這兩個檔）----
+let SHEET=null,IMG=null,cur=null,fi=0,tmr=null,nextAt={};
+const sleepNow=()=>{const l=get().slice(-1)[0];return !!(l&&l.behavior==='睡')};
+function frameDraw(name){const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);const f=SHEET&&SHEET.frames[name];if(!f||!IMG)return;
+  g.drawImage(IMG,f.x,f.y,f.w,f.h,0,0,f.w,f.h);cv.dataset.frame=name;cv.style.filter=document.getElementById('fg').style.filter||'none';
+  if(sleepNow()){g.fillStyle='#e0cbb8';const z=(x,y)=>{g.fillRect(x,y,3,1);g.fillRect(x+1,y+1,1,1);g.fillRect(x,y+2,3,1)};z(34,3);z(39,0)}}
+const has=a=>SHEET&&SHEET.animations&&SHEET.animations[a];
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function schedule(now){const sl=sleepNow();nextAt={blink:now+rnd(3e3,7e3),ear_twitch:now+rnd(5e3,11e3),tail_swish:now+rnd(7e3,15e3),
+  lick:now+rnd(45e3,90e3),stretch:now+rnd(120e3,240e3)};if(sl){nextAt.blink=Infinity;nextAt.lick=Infinity;nextAt.stretch=Infinity;nextAt.tail_swish=now+rnd(20e3,40e3)}}
+function play(anim,times=1){if(!has(anim))anim='breathe';cur={anim,times,n:0};fi=0;step()}
+function step(){clearTimeout(tmr);if(!SHEET)return;const A=SHEET.animations[cur.anim],now=performance.now();
+  if(fi>=A.frames.length){fi=0;cur.n++;if(cur.anim!=='breathe'&&(!A.loop||cur.n>=cur.times)){return pickNext()}}
+  let name=A.frames[fi];
+  if(sleepNow()&&cur.anim==='breathe'&&has('blink')){const bf=SHEET.animations.blink.frames;name=bf[Math.min(1,bf.length-1)]}   // 睡覺＝用眨眼的閉眼格
+  frameDraw(name);const d=(A.durations_ms||[])[fi]||150;fi++;tmr=setTimeout(step,cur.anim==='breathe'&&sleepNow()?d*1.6:d)}
+function pickNext(){play('breathe')}
+// 呼吸迴圈每跑完一輪檢查要不要插入小動作
+const _step=step;
+function boot(){fetch('neko/cat_sheet.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SHEET=j;
+  if(j.anchor_in_room_fg){CAT.x=j.anchor_in_room_fg[0];CAT.y=j.anchor_in_room_fg[1]}if(j.frameSize){CAT.w=j.frameSize[0];CAT.h=j.frameSize[1]}
+  cv.width=CAT.w;cv.height=CAT.h;place();IMG=new Image();IMG.onload=()=>{schedule(performance.now());play('breathe')};IMG.src='neko/cat_sheet.png?v='+Date.now()}).catch(e=>window.CATERR=String(e))}
+// 呼吸是 loop：每輪結束時（fi 回到 0）判斷插播
+const origStep=step;
+step=function(){if(cur&&cur.anim==='breathe'&&SHEET&&fi>=SHEET.animations.breathe.frames.length){fi=0;const now=performance.now();
+    for(const a of['stretch','lick','tail_swish','ear_twitch','blink'])if(now>=nextAt[a]&&has(a)){nextAt[a]=now+({blink:rnd(3e3,7e3),ear_twitch:rnd(5e3,11e3),tail_swish:rnd(7e3,15e3),lick:rnd(45e3,90e3),stretch:rnd(120e3,240e3)})[a];
+      if(sleepNow()&&a!=='ear_twitch'&&a!=='tail_swish')continue;cur={anim:a,times:a==='tail_swish'?2:1,n:0};break}}
+  origStep()};
+function pose(){if(SHEET&&cur){if(sleepNow())schedule(performance.now());frameDraw(cv.dataset.frame||'breathe_0')}}
+window.CATSPRITE={get anim(){return cur&&cur.anim},get frame(){return cv.dataset.frame},play:(a,t)=>play(a,t),reload:boot};
+boot();
 function flash(b){const f=document.createElement('div');f.textContent='已記：'+b;f.style.cssText=menu.style.cssText+';display:block;padding:8px;pointer-events:none';
   const r=hit.getBoundingClientRect();f.style.left=r.left+'px';f.style.top=Math.max(0,r.top-40)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1200)}
 function place(){const {s,ox,oy}=window.VIEW||{s:1,ox:0,oy:0};

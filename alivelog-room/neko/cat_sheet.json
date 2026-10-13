@@ -1,0 +1,336 @@
+{
+ "frameSize": [
+  84,
+  32
+ ],
+ "anchor_in_room_fg": [
+  356,
+  150
+ ],
+ "frames": {
+  "breathe_0": {
+   "x": 0,
+   "y": 0,
+   "w": 84,
+   "h": 32
+  },
+  "breathe_1": {
+   "x": 84,
+   "y": 0,
+   "w": 84,
+   "h": 32
+  },
+  "blink_0": {
+   "x": 0,
+   "y": 32,
+   "w": 84,
+   "h": 32
+  },
+  "blink_1": {
+   "x": 84,
+   "y": 32,
+   "w": 84,
+   "h": 32
+  },
+  "blink_2": {
+   "x": 168,
+   "y": 32,
+   "w": 84,
+   "h": 32
+  },
+  "blink_3": {
+   "x": 252,
+   "y": 32,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_0": {
+   "x": 0,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_1": {
+   "x": 84,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_2": {
+   "x": 168,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_3": {
+   "x": 252,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_4": {
+   "x": 336,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_5": {
+   "x": 420,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_6": {
+   "x": 504,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "tail_swish_7": {
+   "x": 588,
+   "y": 64,
+   "w": 84,
+   "h": 32
+  },
+  "ear_twitch_0": {
+   "x": 0,
+   "y": 96,
+   "w": 84,
+   "h": 32
+  },
+  "ear_twitch_1": {
+   "x": 84,
+   "y": 96,
+   "w": 84,
+   "h": 32
+  },
+  "ear_twitch_2": {
+   "x": 168,
+   "y": 96,
+   "w": 84,
+   "h": 32
+  },
+  "ear_twitch_3": {
+   "x": 252,
+   "y": 96,
+   "w": 84,
+   "h": 32
+  },
+  "ear_twitch_4": {
+   "x": 336,
+   "y": 96,
+   "w": 84,
+   "h": 32
+  },
+  "ear_twitch_5": {
+   "x": 420,
+   "y": 96,
+   "w": 84,
+   "h": 32
+  },
+  "ear_twitch_6": {
+   "x": 504,
+   "y": 96,
+   "w": 84,
+   "h": 32
+  },
+  "lick_0": {
+   "x": 0,
+   "y": 128,
+   "w": 84,
+   "h": 32
+  },
+  "lick_1": {
+   "x": 84,
+   "y": 128,
+   "w": 84,
+   "h": 32
+  },
+  "lick_2": {
+   "x": 168,
+   "y": 128,
+   "w": 84,
+   "h": 32
+  },
+  "lick_3": {
+   "x": 252,
+   "y": 128,
+   "w": 84,
+   "h": 32
+  },
+  "lick_4": {
+   "x": 336,
+   "y": 128,
+   "w": 84,
+   "h": 32
+  },
+  "lick_5": {
+   "x": 420,
+   "y": 128,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_0": {
+   "x": 0,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_1": {
+   "x": 84,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_2": {
+   "x": 168,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_3": {
+   "x": 252,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_4": {
+   "x": 336,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_5": {
+   "x": 420,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_6": {
+   "x": 504,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  },
+  "stretch_7": {
+   "x": 588,
+   "y": 160,
+   "w": 84,
+   "h": 32
+  }
+ },
+ "animations": {
+  "breathe": {
+   "frames": [
+    "breathe_0",
+    "breathe_1"
+   ],
+   "durations_ms": [
+    900,
+    900
+   ],
+   "loop": true
+  },
+  "blink": {
+   "frames": [
+    "blink_0",
+    "blink_1",
+    "blink_2",
+    "blink_3"
+   ],
+   "durations_ms": [
+    120,
+    80,
+    120,
+    80
+   ],
+   "loop": false
+  },
+  "tail_swish": {
+   "frames": [
+    "tail_swish_0",
+    "tail_swish_1",
+    "tail_swish_2",
+    "tail_swish_3",
+    "tail_swish_4",
+    "tail_swish_5",
+    "tail_swish_6",
+    "tail_swish_7"
+   ],
+   "durations_ms": [
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120,
+    120
+   ],
+   "loop": true
+  },
+  "ear_twitch": {
+   "frames": [
+    "ear_twitch_0",
+    "ear_twitch_1",
+    "ear_twitch_2",
+    "ear_twitch_3",
+    "ear_twitch_4",
+    "ear_twitch_5",
+    "ear_twitch_6"
+   ],
+   "durations_ms": [
+    200,
+    90,
+    70,
+    90,
+    120,
+    90,
+    600
+   ],
+   "loop": false
+  },
+  "lick": {
+   "frames": [
+    "lick_0",
+    "lick_1",
+    "lick_2",
+    "lick_3",
+    "lick_4",
+    "lick_5"
+   ],
+   "durations_ms": [
+    200,
+    180,
+    180,
+    180,
+    180,
+    300
+   ],
+   "loop": false
+  },
+  "stretch": {
+   "frames": [
+    "stretch_0",
+    "stretch_1",
+    "stretch_2",
+    "stretch_3",
+    "stretch_4",
+    "stretch_5",
+    "stretch_6",
+    "stretch_7"
+   ],
+   "durations_ms": [
+    200,
+    180,
+    180,
+    600,
+    300,
+    180,
+    180,
+    300
+   ],
+   "loop": false
+  }
+ }
+}
