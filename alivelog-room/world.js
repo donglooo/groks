@@ -19,7 +19,7 @@ async function fetchWx(){W.loc=where();const[la,lo]=LOC[W.loc];
 // 只有黃昏底圖：白天/夜晚用濾鏡＋色層近似
 const LOOK={day:{sky:'none',fg:'brightness(1.08)',tint:'rgba(0,0,0,0)'},
   dusk:{sky:'none',fg:'none',tint:'rgba(0,0,0,0)'},
-  night:{sky:'hue-rotate(200deg) saturate(.5) brightness(.38)',fg:'brightness(.78) saturate(.85)',tint:'rgba(10,14,40,.18)'}};
+  night:{sky:'hue-rotate(200deg) saturate(.55) brightness(.56)',fg:'brightness(.78) saturate(.85)',tint:'rgba(10,14,40,.18)'}};
 function apply(){W.phase=window.FORCE_PHASE||phase();const k=window.FORCE_KIND||W.kind,L=LOOK[W.phase];
   let sky=L.sky;if(k!=='clear')sky=(sky==='none'?'':sky+' ')+'saturate(.45) brightness('+(k==='rain'?.7:.85)+')';
   $('sky').style.backgroundImage=W.phase==='day'?'url(sky_day.png)':'';$('sky').style.filter=sky||'none';$('fg').style.filter=L.fg;$('tint').style.background=L.tint;W.shown=W.phase+'/'+k}
