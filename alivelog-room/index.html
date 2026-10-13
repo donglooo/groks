@@ -15,6 +15,7 @@ body{position:fixed;inset:0}
 #planes{position:absolute;image-rendering:pixelated}
 #land{background-image:url(land.png);background-size:100% 100%}
 #traffic{image-rendering:pixelated}
+#tint,#dim{-webkit-mask-image:url(room_fg.png);mask-image:url(room_fg.png);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}   /* live28：室內暗色只蓋房間，窗玻璃（room_fg 透明處）透出的景色不吃 */
 #fg{background-image:url(room_fg.png);background-size:100% 100%}
 #win{position:absolute;cursor:grab;touch-action:none}
 #win .px{top:0;height:100%;background-size:auto 100%}
@@ -24,7 +25,7 @@ body{position:fixed;inset:0}
 .ready #sheer{transition:width .9s steps(12)} .ready #dl,.ready #dr{transition:width .7s steps(10)}
 #tv{position:absolute;background:#000}
 #tv.big{z-index:5;box-shadow:0 0 0 100vmax rgba(10,8,16,.75)}
-#tv iframe,#tv #yt{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
+#tv iframe,#tv #yt{position:absolute;left:0;top:0;width:480px;height:270px;border:0;pointer-events:none;transform-origin:0 0;transform:scale(var(--tvsx,1),var(--tvsy,1))}   /* live28：YouTube 播放器小於約 200px 寬會改用小尺寸版面（iPhone 橫拿電視只有 ~98px → 左半黑）；固定用 480×270 播放再縮放到像素電視框 */
 #osd{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:2}
 #hit{position:absolute;inset:0;z-index:3;cursor:pointer;touch-action:none}
 #tv.pass #hit{pointer-events:none} #tv.pass{box-shadow:0 0 0 2px rgba(240,178,90,.35)} #tv.big.pass{box-shadow:0 0 0 2px rgba(240,178,90,.35),0 0 0 100vmax rgba(10,8,16,.75)}
@@ -65,16 +66,18 @@ const $=id=>document.getElementById(id);
 let s=1,big=false,curtain=0,ch=0,player=null,apiReady=false,unlocked=false;
 let vol=+(localStorage.getItem('alivelog.tv.volume')??40);
 // ---- 版面：整張縮放（contain，不平移；接近整數倍才取整數裝置像素）----
-const STAGE={w:600,h:420};let ox=0,oy=0,panX=0.26,PORTRAIT=false;   // 直拿：高度滿版＋左右平移（panX 0=最左 1=最右）
+const STAGE={w:600,h:420};let ox=0,oy=0,panX=0.23,panY=0.55,PORTRAIT=false,LANDFILL=false,VW=0,VH=0;   // live28：手機橫拿也滿版（寬度蓋滿、上下平移 panY）   // 直拿：高度滿版＋左右平移（panX 0=最左 1=最右）
 function layout(){
-  let W=innerWidth,H=innerHeight;
+  const vv=window.visualViewport;let W=Math.round(vv?vv.width:innerWidth)||innerWidth,H=Math.round(vv?vv.height:innerHeight)||innerHeight;
   if(navigator.standalone){const P=H>=W,a=Math.max(screen.width,screen.height),b=Math.min(screen.width,screen.height);if(P)H=Math.max(H,a);else W=Math.max(W,a),H=Math.max(H,b)}
   const dpr=devicePixelRatio||1;PORTRAIT=H>W&&H/STAGE.h>W/STAGE.w;
+  const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;LANDFILL=!PORTRAIT&&touch&&W/H>STAGE.w/STAGE.h*1.02;VW=W;VH=H;
   if(PORTRAIT){s=H/STAGE.h;const sc=Math.ceil(s*dpr)/dpr;if(sc/s<=1.02)s=sc}   // 直拿：蓋滿高度（接近整數裝置像素就取整，只會略大不會留白）
+  else if(LANDFILL){s=W/STAGE.w;const sc=Math.ceil(s*dpr)/dpr;if(sc/s<=1.02)s=sc}   // 橫拿：手機比 600:420 寬，蓋滿寬度、上下可滑（不留左右白邊）
   else{s=Math.min(W/STAGE.w,H/STAGE.h);const sd=Math.floor(s*dpr);if(sd>=1&&sd/dpr>=s*0.9)s=sd/dpr}
   const cw=Math.round(STAGE.w*s),ch=Math.round(STAGE.h*s);
-  if(PORTRAIT){panX=Math.max(0,Math.min(1,panX));ox=-Math.round((cw-W)*panX);oy=Math.floor((H-ch)/2)}else{ox=Math.floor((W-cw)/2);oy=Math.floor((H-ch)/2)}
-  document.body.classList.toggle('portrait-pan',PORTRAIT);
+  if(PORTRAIT){panX=Math.max(0,Math.min(1,panX));ox=-Math.round((cw-W)*panX);oy=Math.floor((H-ch)/2)}else if(LANDFILL){panY=Math.max(0,Math.min(1,panY));ox=Math.floor((W-cw)/2);oy=-Math.round((ch-H)*panY)}else{ox=Math.floor((W-cw)/2);oy=Math.floor((H-ch)/2)}
+  document.body.classList.toggle('portrait-pan',PORTRAIT||LANDFILL);
   window.VIEW={s,ox,oy};$('back').style.height=(oy+Math.round(ch*0.55))+'px';
   const box=(el,r)=>Object.assign(el.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
   const at=r=>({x:Math.round(ox+r.x*s),y:Math.round(oy+r.y*s),w:Math.round(r.w*s),h:Math.round(r.h*s)});
@@ -84,8 +87,8 @@ function layout(){
   $('dl').style.width=$('dr').style.width=pc(curtain>=1?4:WIN.w/2);
   $('sheer').style.width=pc(curtain>=2?4:WIN.w);
   let r=at(SCREEN);
-  if(big){const w=Math.min(innerWidth*.94,innerHeight*.9*16/9);r={x:(innerWidth-w)/2,y:(innerHeight-w*9/16)/2,w,h:w*9/16}}
-  box($('tv'),r);
+  if(big){const w=Math.min(W*.94,H*.9*16/9);r={x:(W-w)/2,y:(H-w*9/16)/2,w,h:w*9/16}}
+  box($('tv'),r);$('tv').style.setProperty('--tvsx',(Math.round(r.w)/480).toFixed(5));$('tv').style.setProperty('--tvsy',(Math.round(r.h)/270).toFixed(5));
   const m=$('mon');if(zoomed==='mon'){const k=Math.max(1,Math.floor(Math.min(innerWidth*.92/256,innerHeight*.92/144)));box(m,{x:(innerWidth-256*k)/2|0,y:(innerHeight-144*k)/2|0,w:256*k,h:144*k})}else box(m,at(MON));
   dispatchEvent(new Event('alivelog:layout'));if(typeof spatial==='function'){clearTimeout(layout.sp);layout.sp=setTimeout(spatial,120)}
 }
@@ -196,18 +199,24 @@ document.addEventListener('pointerdown',e=>{if(zoomed&&!$(zoomed).contains(e.tar
 $('mon').addEventListener('pointerup',e=>{if(zoomed!=='mon')zoom('mon')});
 // ---- 平移：只有直拿時，左右拖曳空白處；橫拿／桌機整張看得到不平移 ----
 let userPanAt=0,pan=null,apT=null;window.AUTOPAN={n:0,last:null};
-const spanX=()=>Math.round(STAGE.w*s)-innerWidth;
-addEventListener('pointerdown',e=>{if(!PORTRAIT||big||zoomed)return;const t=e.target;if(t===document.body||t.id==='fg'||t.id==='amb'||t.id==='sky'||t.id==='land'||t.id==='traffic'||t.id==='wx'||t.id==='back')pan={x:e.clientX,px:panX,moved:false}});
-addEventListener('pointermove',e=>{if(!pan)return;const sw=spanX(),dx=e.clientX-pan.x;if(Math.abs(dx)>6){pan.moved=true;userPanAt=Date.now()}if(sw>0&&pan.moved){panX=Math.max(0,Math.min(1,pan.px-dx/sw));cancelAnimationFrame(apT);layout()}});
+const spanX=()=>PORTRAIT?Math.round(STAGE.w*s)-VW:0,spanY=()=>LANDFILL?Math.round(STAGE.h*s)-VH:0,PANON=()=>PORTRAIT||LANDFILL;
+addEventListener('pointerdown',e=>{if(!PANON()||big||zoomed)return;const t=e.target;if(t===document.body||t.id==='fg'||t.id==='amb'||t.id==='sky'||t.id==='land'||t.id==='traffic'||t.id==='wx'||t.id==='back')pan={x:e.clientX,y:e.clientY,px:panX,py:panY,moved:false}});
+addEventListener('pointermove',e=>{if(!pan)return;const sw=spanX(),sh=spanY(),dx=e.clientX-pan.x,dy=e.clientY-pan.y;if(Math.abs(sw>0?dx:dy)>6){pan.moved=true;userPanAt=Date.now()}if(pan.moved){if(sw>0)panX=Math.max(0,Math.min(1,pan.px-dx/sw));if(sh>0)panY=Math.max(0,Math.min(1,pan.py-dy/sh));cancelAnimationFrame(apT);layout()}});
 addEventListener('pointerup',()=>{if(pan&&pan.moved)window.PANNED=(window.PANNED||0)+1;pan=null});addEventListener('pointercancel',()=>pan=null);
-addEventListener('wheel',e=>{if(!PORTRAIT)return;const sw=spanX();if(sw>0){panX=Math.max(0,Math.min(1,panX+(e.deltaX||e.deltaY)/sw));userPanAt=Date.now();layout()}},{passive:true});
+addEventListener('wheel',e=>{if(!PANON())return;const sw=spanX(),sh=spanY();if(sw>0)panX=Math.max(0,Math.min(1,panX+(e.deltaX||e.deltaY)/sw));else if(sh>0)panY=Math.max(0,Math.min(1,panY+e.deltaY/sh));else return;userPanAt=Date.now();layout()},{passive:true});
 // 自動平移：直拿時讓貓／撢子留在畫面內；使用者 8 秒內滑過就不搶
-window.PANKEEP=function(x0,x1){if(!PORTRAIT||big||zoomed||pan||Date.now()-userPanAt<8000)return false;
+window.PANKEEP=function(x0,x1,ya,yb){if(LANDFILL)return keepY(ya,yb);if(!PORTRAIT||big||zoomed||pan||Date.now()-userPanAt<8000)return false;
   const sw=spanX();if(sw<=0||x0==null)return false;const v0=-ox/s,vw=innerWidth/s,m=12;let L;
   if(x1-x0+2*m>vw)L=(x0+x1)/2-vw/2;else if(x0-m<v0)L=x0-m;else if(x1+m>v0+vw)L=x1+m-vw;else return false;
   const tx=Math.max(0,Math.min(1,L*s/sw));if(Math.abs(tx-panX)<.002)return false;AUTOPAN.n++;AUTOPAN.last={tx,at:Date.now()};cancelAnimationFrame(apT);
   (function step(){if(pan||Date.now()-userPanAt<8000)return;panX+=(tx-panX)*.15;if(Math.abs(tx-panX)<.002){panX=tx;layout();return}layout();apT=requestAnimationFrame(step)})();return true};
-window.PANVIEW={get x(){return panX},set(v){panX=v;layout()},get portrait(){return PORTRAIT}};
+// 橫拿：讓貓留在上下可見範圍
+function keepY(ya,yb){if(big||zoomed||pan||Date.now()-userPanAt<8000)return false;const c=window.CATPOS,sh=spanY();if(sh<=0||(ya==null&&!c))return false;
+  const v0=-oy/s,vh=VH/s,m=10,y0=ya!=null?ya:c.y,y1=yb!=null?yb:c.y+c.h;let T;if(y0-m<v0)T=y0-m;else if(y1+m>v0+vh)T=y1+m-vh;else return false;
+  const ty=Math.max(0,Math.min(1,T*s/sh));if(Math.abs(ty-panY)<.002)return false;AUTOPAN.n++;AUTOPAN.last={ty,at:Date.now()};cancelAnimationFrame(apT);
+  (function step(){if(pan||Date.now()-userPanAt<8000)return;panY+=(ty-panY)*.15;if(Math.abs(ty-panY)<.002){panY=ty;layout();return}layout();apT=requestAnimationFrame(step)})();return true}
+window.PANVIEW={get x(){return panX},set(v){panX=v;layout()},get y(){return panY},setY(v){panY=v;layout()},get portrait(){return PORTRAIT},get landfill(){return LANDFILL}};
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>layout());
 window.toRoom=e=>{const V=window.VIEW;return{x:(e.clientX-V.ox)/V.s,y:(e.clientY-V.oy)/V.s}};
 // ---- 禁止整頁縮放（iOS 會忽略 user-scalable，所以再用事件擋：雙指縮放、連點兩下）----
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));

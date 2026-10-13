@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id),KEY='alivelog.lights',LAMPS=[272,316];
 let on=localStorage.getItem(KEY)!=='off';
 const cv=document.createElement('canvas');cv.width=600;cv.height=420;cv.className='px';cv.style.pointerEvents='none';
-const dim=document.createElement('div');dim.className='px';dim.style.cssText='pointer-events:none;background:#05070f;opacity:0;transition:opacity .25s steps(4)';
+const dim=document.createElement('div');dim.id='dim';dim.className='px';dim.style.cssText='pointer-events:none;background:#05070f;opacity:0;transition:opacity .25s steps(4)';
 $('fg').after(dim);dim.after(cv);   // 順序：房間 → 調暗層 → 光錐 →（背光、電視在更上面）
 const g=cv.getContext('2d'),B=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5].map(v=>(v+.5)/16);
 function draw(){g.clearRect(0,0,600,420);
