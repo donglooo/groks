@@ -39,6 +39,11 @@ step=function(){if(cur&&cur.anim==='breathe'&&SHEET&&fi>=SHEET.animations.breath
       if(sleepNow()&&a!=='ear_twitch'&&a!=='tail_swish')continue;cur={anim:a,times:a==='tail_swish'?2:1,n:0};break}}
   origStep()};
 function pose(){if(SHEET&&cur){if(sleepNow())schedule(performance.now());frameDraw(cv.dataset.frame||'breathe_0')}}
+// ---- 事件掛鉤：onCatEvent('knock'|'zoomies'...)；Neko 有對應動畫就播，沒有就用佔位（小跳＋驚嘆號）----
+window.onCatEvent=function(type,detail){dispatchEvent(new CustomEvent('alivelog:cat',{detail:Object.assign({type},detail||{})}));
+  if(has(type)){play(type);return}
+  if(type==='knock'){const t=cv.style.transform;cv.style.transform='translateY(-6%)';setTimeout(()=>cv.style.transform=t||'',180);
+    const r=hit.getBoundingClientRect(),d=document.createElement('div');d.textContent='!';d.style.cssText='position:absolute;z-index:6;pointer-events:none;font:bold 18px monospace;color:#f0b25a;text-shadow:2px 2px 0 #05070a;left:'+(r.left+r.width*.2)+'px;top:'+(r.top-20)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),700)}};
 window.CATSPRITE={get anim(){return cur&&cur.anim},get frame(){return cv.dataset.frame},play:(a,t)=>play(a,t),reload:boot};
 boot();
 function flash(b){const f=document.createElement('div');f.textContent='已記：'+b;f.style.cssText=menu.style.cssText+';display:block;padding:8px;pointer-events:none';
