@@ -5,7 +5,7 @@ const q=new URLSearchParams(location.search).get('bias');
 let mode=(q||localStorage.getItem('alivelog.bias')||'A').toUpperCase();if(q)localStorage.setItem('alivelog.bias',mode);
 const el=document.createElement('div');el.id='bias';el.style.cssText='position:absolute;pointer-events:none;border-radius:6px;opacity:0;transition:opacity .9s ease,box-shadow 1.6s ease';
 document.getElementById('fg').after(el);
-const TV={x:100,y:44,w:110,h:64};
+const TV={x:100,y:194,w:110,h:64};
 const CHC=['95,211,138','224,96,90','106,140,192','240,178,90'],A='232,200,150';
 function on(){const o=document.getElementById('poweroff');return mode!=='OFF'&&!(o&&o.dataset.off==='1')}
 function upd(){const V=window.VIEW;if(!V)return;const s=V.s,c=mode==='B'?CHC[(typeof ch!=='undefined'?ch:0)%4]:A,r=Math.round(9*s);
