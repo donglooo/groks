@@ -1138,21 +1138,36 @@
    "desc": "high cat walkway shelf (Nook plan B dust zone, x0-92,y61)",
    "frame_topleft": [
     4,
-    30
+    31
    ],
+   "feet_y": 61,
    "anim": [
     "breathe",
+    "blink",
+    "tail_swish",
+    "ear_twitch",
+    "lick",
+    "stretch",
     "sneeze_lie"
    ],
-   "assumption": "shelf top y=61 from nook/README.md; no NEKO_SPEC.md found"
+   "opaque_x_range": [
+    9,
+    82
+   ],
+   "note": "confirmed with nook/NEKO_SPEC.md; tail max x82 < step platform x86"
   },
   "walkway_sit": {
    "desc": "cat walkway shelf, sitting",
    "frame_topleft": [
-    30,
+    21,
     31
    ],
    "feet_y": 61,
+   "opaque_x_range": [
+    37,
+    86
+   ],
+   "note": "moved from (21,31): tail reached x95 > step platform x86 / walkway end x92",
    "anim": [
     "sit_gaze_window",
     "sneeze_sit",
@@ -1326,6 +1341,8 @@
    "anim": "rub_face",
    "optional": true
   },
-  "pose_map_note": "lie = ac_perch / any lying anim (breathe, blink, tail_swish, ear_twitch, lick, stretch); sit = sit_gaze_window, zoom_pant, zoom_nonchalant, walkway_sit"
+  "pose_map_note": "lie = ac_perch / any lying anim (breathe, blink, tail_swish, ear_twitch, lick, stretch); sit = sit_gaze_window, zoom_pant, zoom_nonchalant, walkway_sit",
+  "timing_note": "sneeze total 1150ms; achoo_frame 2 starts sneeze+550ms (t0+1150 in NEKO_SPEC example, which says +980); dust_shake total 249ms",
+  "catpos_note": "CATPOS w/h = frameSize 84x32; pose: lie for lying anims, sit otherwise"
  }
 }

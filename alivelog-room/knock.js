@@ -27,7 +27,8 @@ function draw(){g.clearRect(0,0,480,270);
 const AU={knock:new Audio('knock.wav'),vac:new Audio('vacuum.wav')};for(const a of Object.values(AU)){a.preload='auto';a.volume=.6}
 function tvAudible(){try{return typeof unlocked!=='undefined'&&unlocked&&player&&player.getPlayerState&&player.getPlayerState()===1&&!player.isMuted()}catch(e){return false}}
 window.PLANTSND=[];
-function snd(k,txt){const iosBlock=window.IOS&&tvAudible();PLANTSND.push({k,played:!iosBlock});
+// 所有平台一致：電視有聲播放中就不出聲
+function snd(k,txt){const iosBlock=tvAudible();PLANTSND.push({k,played:!iosBlock});
   if(!iosBlock){try{const a=AU[k];a.currentTime=0;const p=a.play();p&&p.catch(e=>PLANTSND.push({k,err:String(e.name)}))}catch(e){}}
   if(txt)bubble(txt,iosBlock)}
 function bubble(t,big){const V=window.VIEW||{s:1,ox:0,oy:0},d=document.createElement('div');d.textContent=t;
