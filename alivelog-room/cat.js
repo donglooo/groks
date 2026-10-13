@@ -9,10 +9,23 @@ menu.style.cssText='position:absolute;z-index:8;display:none;background:#120f1a;
 B.forEach(b=>{const d=document.createElement('div');d.textContent=b;d.dataset.b=b;d.style.cssText='padding:7px 12px;cursor:pointer;border-bottom:1px solid #3c3c44';menu.appendChild(d)});
 document.body.append(cv,hit,menu);
 const get=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}};
-function add(b){const d=new Date(),L=get();L.push({ts:d.toISOString(),behavior:b,weekday:d.getDay(),hour:d.getHours()});localStorage.setItem(KEY,JSON.stringify(L));pose();flash(b)}
+function add(b){const d=new Date(),L=get();L.push({ts:d.toISOString(),behavior:b,weekday:d.getDay(),hour:d.getHours()});localStorage.setItem(KEY,JSON.stringify(L));if(napUntil){napUntil=0;saveState()}pose();flash(b)}
 // ---- Neko 的貓 sprite 播放器＋移動（全部依 neko/cat_sheet.json：animations / spots / paths；Neko 換圖只要覆蓋 json+png）----
 let follow=false,SHEET=null,IMG=null,cur=null,fi=0,ft=0,nextAt={},pos={x:CAT.x,y:CAT.y},Q=[],act=null,spot='ac_perch',zoomLast=0;
-const sleepNow=()=>{const l=get().slice(-1)[0];return !!(l&&l.behavior==='睡')};
+let napUntil=0;   // 夜裡載入時的「睡著」狀態：只是外觀，不寫進行為紀錄；記任何行為或到早上 7 點就結束
+const sleepNow=()=>{if(napUntil&&Date.now()<napUntil)return true;const l=get().slice(-1)[0];return !!(l&&l.behavior==='睡')};
+// ---- 記住貓在哪：localStorage 'alivelog.cat.state' = {spot,pose,ts,napUntil} ----
+const SKEY='alivelog.cat.state';let lastSpot='ac_perch';
+function saveState(){try{localStorage.setItem(SKEY,JSON.stringify({spot:lastSpot,pose:(window.CATPOS&&CATPOS.pose)||null,ts:Date.now(),napUntil}))}catch(e){}}
+addEventListener('pagehide',saveState);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveState()});
+const tpeHour=()=>+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Taipei',hour:'numeric',hourCycle:'h23'}).format(new Date());
+function next7(){const h=tpeHour(),hrs=h>=23?(24-h+7):(7-h);const d=new Date(Date.now()+hrs*3600e3);d.setMinutes(0,0,0);return d.getTime()}
+function startSpot(spots){let sv=null;try{sv=JSON.parse(localStorage.getItem(SKEY))}catch(e){}
+  if(sv&&spots[sv.spot]&&Date.now()-sv.ts<30*60e3){napUntil=sv.napUntil&&sv.napUntil>Date.now()?sv.napUntil:0;return{spot:sv.spot,how:'resume'}}
+  const W={ac_perch:3,floor_mid:2,window_gaze:2,walkway_lie:2,walkway_sit:1},h=tpeHour(),night=h>=23||h<7;
+  let napping=night&&Math.random()<.6;const pool=Object.keys(W).filter(k=>spots[k]&&(!napping||!['window_gaze','walkway_sit'].includes(k)));   // 睡覺只選能趴的地方
+  let r=Math.random()*pool.reduce((a,k)=>a+W[k],0),pick=pool[0];for(const k of pool){r-=W[k];if(r<=0){pick=k;break}}
+  napUntil=napping?next7():0;return{spot:pick,how:napping?'random_nap':'random'}}
 const has=a=>SHEET&&SHEET.animations&&SHEET.animations[a];
 const rnd=(a,b)=>a+Math.random()*(b-a);
 // 找動畫：沒有 *_right 就用 *_left 鏡像（反之亦然）；都沒有就退回 breathe
@@ -37,7 +50,7 @@ function setPos(p){pos={x:p[0],y:p[1]};place();upd()}
 // window.CATPOS：給 dust.js 等物件用（frame 左上角、room 座標、pose=lie|sit|walk）
 const LIEA=['breathe','blink','tail_swish','ear_twitch','lick','stretch','sneeze_lie'],SITA=['sit_gaze_window','zoom_pant','zoom_nonchalant','sneeze_sit','dust_shake','duster_paw','rub_face'];
 function poseNow(){const a=cur&&cur.anim;if(act&&act.to)return'walk';if(spot==='walkway_sit')return'sit';if(spot==='walkway_lie'||spot==='ac_perch')return'lie';if(LIEA.includes(a))return'lie';if(SITA.includes(a))return'sit';return/walk|run|skid|turn|bump/.test(a)?'walk':'sit'}
-function upd(){window.CATPOS={x:Math.round(pos.x),y:Math.round(pos.y),w:CAT.w,h:CAT.h,pose:poseNow(),spot}}
+function upd(){if(spot!=='moving'&&spot!==lastSpot){lastSpot=spot;saveState()}window.CATPOS={x:Math.round(pos.x),y:Math.round(pos.y),w:CAT.w,h:CAT.h,pose:poseNow(),spot}}
 function draw1(){const A=SHEET.animations[cur.anim];let name=A.frames[Math.min(fi,A.frames.length-1)];
   if(sleepNow()&&cur.anim==='breathe'&&has('blink')){const bf=SHEET.animations.blink.frames;name=bf[Math.min(1,bf.length-1)]}
   frameDraw(name,cur.mir);upd();if(act&&act.onFrame)act.onFrame(fi)}
@@ -104,7 +117,10 @@ window.onCatEvent=function(type,detail){dispatchEvent(new CustomEvent('alivelog:
   if(type==='knock'){const r=hit.getBoundingClientRect(),d=document.createElement('div');d.textContent='!';d.style.cssText='position:absolute;z-index:6;pointer-events:none;font:bold 18px monospace;color:#f0b25a;text-shadow:2px 2px 0 #05070a;left:'+(r.left+r.width*.2)+'px;top:'+(r.top-20)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),700)}};
 function boot(){fetch('neko/cat_sheet.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SHEET=j;
   const ac=(j.spots&&j.spots.ac_perch&&j.spots.ac_perch.frame_topleft)||j.anchor_in_room_fg;if(ac){CAT.x=ac[0];CAT.y=ac[1]}if(j.frameSize){CAT.w=j.frameSize[0];CAT.h=j.frameSize[1]}
-  pos={x:CAT.x,y:CAT.y};spot='ac_perch';cv.width=CAT.w;cv.height=CAT.h;place();IMG=new Image();IMG.onload=()=>{schedule(performance.now());idle()};IMG.src='neko/cat_sheet.png?v='+Date.now()}).catch(e=>window.CATERR=String(e))}
+  const ss=startSpot(j.spots||{}),tl=(j.spots&&j.spots[ss.spot]&&j.spots[ss.spot].frame_topleft)||[CAT.x,CAT.y];window.CATSTART=Object.assign({napUntil},ss);
+  pos={x:tl[0],y:tl[1]};spot=ss.spot;lastSpot=spot;cv.width=CAT.w;cv.height=CAT.h;place();IMG=new Image();
+  // 第一次走動提早到 5–20 秒
+  IMG.onload=()=>{const now=performance.now();schedule(now);if(!sleepNow())nextAt.move=now+rnd(5e3,20e3);idle();saveState()};IMG.src='neko/cat_sheet.png?v='+Date.now()}).catch(e=>window.CATERR=String(e))}
 requestAnimationFrame(tick);
 function pose(){if(SHEET&&cur){schedule(performance.now());if(sleepNow()&&(Q.length||act&&!act.idle)){Q=[];if(spot==='moving')spot='floor_mid';cv.style.opacity=1;idle()}draw1()}}   // 記「睡」→ 原地停下睡
 window.CATSPRITE={get anim(){return cur&&cur.anim},get frame(){return cv.dataset.frame},get mirror(){return cv.dataset.mirror==='1'},get pos(){return Object.assign({},pos)},get spot(){return spot},get queue(){return Q.length},

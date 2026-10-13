@@ -69,8 +69,7 @@ document.addEventListener('pointerdown',e=>{if(mb.style.display==='block'&&e.tar
 setInterval(()=>{if(mb.style.display==='block')moonBig()},10000);
 function amb(now){a.clearRect(0,0,480,270);const sl=sleeping(),T=(now-t0)/1000;
   // 貓的動畫改由 cat.js 的 Neko sprite 播放
-  // 盆栽搖擺
-  const sw=Math.sin(T*1.3)>0.6?1:0;if(sw){R(196,109,1,2,P.green);R(201,111,1,2,P.leaf)}
+  // （電視櫃小盆栽已移除，搖擺動畫一併拿掉）
   // 檯燈極輕微閃爍
   if(Math.random()<.03)R(212,180,28,1,'rgba(18,15,26,.35)');
   // 馬克杯＋蒸氣
