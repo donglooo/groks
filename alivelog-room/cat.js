@@ -33,10 +33,14 @@ function next(){act=Q.shift();if(!act){return idle()}
   if(act.at)setPos(act.at);if(act.from)setPos(act.from);
   const r=res(act.anim);cur={anim:r.n,mir:r.m,n:0,times:act.times||1};fi=0;ft=0;act.t0=performance.now();draw1()}
 function idle(){const sp=SP()[spot]||{};const a=sleepNow()?'breathe':((sp.anim&&sp.anim[0])||'breathe');act={idle:true,anim:a};const r=res(a);cur={anim:r.n,mir:r.m,n:0,times:1};fi=0;ft=0;draw1()}
-function setPos(p){pos={x:p[0],y:p[1]};place()}
+function setPos(p){pos={x:p[0],y:p[1]};place();upd()}
+// window.CATPOS：給 dust.js 等物件用（frame 左上角、room 座標、pose=lie|sit|walk）
+const LIEA=['breathe','blink','tail_swish','ear_twitch','lick','stretch','sneeze_lie'],SITA=['sit_gaze_window','zoom_pant','zoom_nonchalant','sneeze_sit','dust_shake','duster_paw','rub_face'];
+function poseNow(){const a=cur&&cur.anim;if(act&&act.to)return'walk';if(spot==='walkway_sit')return'sit';if(spot==='walkway_lie'||spot==='ac_perch')return'lie';if(LIEA.includes(a))return'lie';if(SITA.includes(a))return'sit';return/walk|run|skid|turn|bump/.test(a)?'walk':'sit'}
+function upd(){window.CATPOS={x:Math.round(pos.x),y:Math.round(pos.y),w:CAT.w,h:CAT.h,pose:poseNow(),spot}}
 function draw1(){const A=SHEET.animations[cur.anim];let name=A.frames[Math.min(fi,A.frames.length-1)];
   if(sleepNow()&&cur.anim==='breathe'&&has('blink')){const bf=SHEET.animations.blink.frames;name=bf[Math.min(1,bf.length-1)]}
-  frameDraw(name,cur.mir);if(act&&act.onFrame)act.onFrame(fi)}
+  frameDraw(name,cur.mir);upd();if(act&&act.onFrame)act.onFrame(fi)}
 function tick(){requestAnimationFrame(tick);if(!SHEET||!IMG||!cur)return;const now=performance.now(),dt=Math.min(100,now-(tick.l||now));tick.l=now;
   if(act&&act.fade){if(now>=act.until)next();return}
   // 移動
@@ -58,7 +62,9 @@ function tick(){requestAnimationFrame(tick);if(!SHEET||!IMG||!cur)return;const n
 // 走到某個 spot（室內走 floor_walk；陽台冷氣用淡出淡入）
 function walkTo(target){const s0=spot,sp=SP(),pw=P().floor_walk||{},bt=P().balcony_transition||{},L=[];
   const tp=sp[target]&&sp[target].frame_topleft;if(!tp)return L;const inSide=(bt.indoor_side&&bt.indoor_side.at)||[230,206],ms=(bt.exit&&bt.exit.ms)||400;
-  let x=pos.x;
+  let x=pos.x;const hi=k=>/^walkway/.test(k);
+  if(hi(target)||hi(s0)){const fl=(pw.points&&pw.points[0][1])||206;   // 走道沒有爬上去的影格 → 淡出淡入（同陽台）
+    L.push({fade:'out',ms});const tp2=hi(target)?tp:(target==='ac_perch'?((bt.enter&&bt.enter.at)||tp):[tp[0],fl]);L.push({fade:'in',ms,at:tp2});L.push({fn:()=>{spot=target}});return L}
   if(s0==='ac_perch'&&target!=='ac_perch'){L.push({fade:'out',ms},{fade:'in',ms:(bt.indoor_side&&bt.indoor_side.ms)||400,at:inSide});x=inSide[0]}
   if(target==='ac_perch'){if(s0!=='ac_perch'){if(Math.abs(x-inSide[0])>1)L.push(mv(x,inSide[0],pw));L.push({fade:'out',ms:(bt.indoor_side&&bt.indoor_side.ms)||400},{fade:'in',ms:(bt.enter&&bt.enter.ms)||400,at:(bt.enter&&bt.enter.at)||tp})}}
   else if(Math.abs(x-tp[0])>1)L.push(mv(x,tp[0],pw));
@@ -66,7 +72,7 @@ function walkTo(target){const s0=spot,sp=SP(),pw=P().floor_walk||{},bt=P().balco
 function mv(x0,x1,pw){const y=(pw.points&&pw.points[0][1])||206;return{anim:x1<x0?(pw.anim_left||'walk_left'):(pw.anim_right||'walk_right'),from:[x0,y],to:[x1,y],speed:pw.speed_px_s||24}}
 function wander(){if(sleepNow())return idle();
   if(spot!=='ac_perch'&&Date.now()-zoomLast>30*60e3&&Math.random()<.25)return zoomies(false);
-  const opts=Object.keys(SP()).filter(k=>k!==spot);const t=opts[Math.random()*opts.length|0];spot='moving';const L=walkTo2(t);
+  const opts=Object.keys(SP()).filter(k=>k!==spot);const t=opts[Math.random()*opts.length|0];const L=walkTo2(t);spot='moving';
   if(t==='window_gaze')L.push({anim:'sit_gaze_window',times:1,loopUntil:performance.now()+rnd(20e3,60e3)});run(L)}
 function walkTo2(t){const was=act&&act.spotWas;return walkTo.call(null,t)}
 // 暴衝：依 paths.zoomies.sequence；撞盆栽那步對齊 knock.js 的盆栽（PLANT.contactX），不撞就跳過撞擊格
@@ -77,7 +83,7 @@ function zoomies(force){if(!SHEET||sleepNow())return false;const Z=P().zoomies;i
   if(bump&&window.PLANT&&PLANT.contactX!=null){orig=(bump.impact_cat_topleft||bump.at).join();const off=(bump.impact_contact_px?bump.impact_contact_px[0]:6)-(bump.impact_cat_topleft||bump.at)[0];
     rep=[PLANT.contactX-off,(bump.impact_cat_topleft||bump.at)[1]]}
   const fix=p=>p&&rep&&p.join()===orig?rep:p;const L=[];let sx=pos.x;
-  if(spot==='ac_perch'){const bt=P().balcony_transition||{},ins=(bt.indoor_side&&bt.indoor_side.at)||[230,206];L.push({fade:'out',ms:(bt.exit&&bt.exit.ms)||400},{fade:'in',ms:(bt.indoor_side&&bt.indoor_side.ms)||400,at:ins});sx=ins[0]}
+  if(spot==='ac_perch'||/^walkway/.test(spot)){const bt=P().balcony_transition||{},ins=(bt.indoor_side&&bt.indoor_side.at)||[230,206];L.push({fade:'out',ms:(bt.exit&&bt.exit.ms)||400},{fade:'in',ms:(bt.indoor_side&&bt.indoor_side.ms)||400,at:ins});sx=ins[0]}
   const first=Z.sequence[0];if(first.from&&Math.abs(sx-first.from[0])>1)L.push(Object.assign(mv(sx,first.from[0],P().floor_walk||{}),{speed:(Z.speed_px_s||140)*.6,anim:first.from[0]<sx?'zoom_run_left':'zoom_run_right'}));
   spot='moving';
   for(const s of Z.sequence){const st=Object.assign({},s,{at:fix(s.at),from:fix(s.from),to:fix(s.to)});
@@ -86,6 +92,11 @@ function zoomies(force){if(!SHEET||sleepNow())return false;const Z=P().zoomies;i
     if(s.alt&&has(s.alt)&&Math.random()<.5)st.anim=s.alt;if(s.repeat)st.times=s.repeat;L.push(st)}
   L.push({fn:()=>{spot='floor_mid'}});run(L);return true}
 window.onCatEvent=function(type,detail){dispatchEvent(new CustomEvent('alivelog:cat',{detail:Object.assign({type},detail||{})}));
+  // 撢子事件（Nook dust.js）：依 cat_sheet.json events 找動畫；走路/暴衝中不插播
+  const EV=(SHEET&&SHEET.events)||{};
+  if(['duster_paw','sneeze','dust_shake','rub_face'].includes(type)){if(!SHEET||(act&&(act.to||act.fade||String(act.anim).startsWith('zoom'))))return;
+    let a=type;const e=EV[type]||{};if(type==='sneeze'){const ps=poseNow()!=='walk'?poseNow():((detail&&detail.pose)||'sit');a=(e.by_pose&&e.by_pose[ps])||(detail&&detail.anim)||e.default||'sneeze_sit'}else if(e.anim)a=e.anim;
+    if(type==='duster_paw'&&sleepNow())return;if(!has(a))return;run([{anim:a,times:1}]);return}
   if(type==='knock'&&act&&String(act.anim).startsWith('zoom'))return;   // 暴衝中由撞擊格處理
   if(type==='knock'&&has('zoom_bump_plant'))return;
   if(type==='knock'){const r=hit.getBoundingClientRect(),d=document.createElement('div');d.textContent='!';d.style.cssText='position:absolute;z-index:6;pointer-events:none;font:bold 18px monospace;color:#f0b25a;text-shadow:2px 2px 0 #05070a;left:'+(r.left+r.width*.2)+'px;top:'+(r.top-20)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),700)}};
