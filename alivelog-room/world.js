@@ -25,12 +25,12 @@ function apply(){W.phase=window.FORCE_PHASE||phase();const k=window.FORCE_KIND||
   $('sky').style.filter=sky||'none';$('fg').style.filter=L.fg;$('tint').style.background=L.tint;W.shown=W.phase+'/'+k}
 // 雲與雨（畫在天空層，在建築與房間後面）
 const wx=$('wx').getContext('2d');let drops=[],clouds=[];
-for(let i=0;i<5;i++)clouds.push({x:Math.random()*480,y:6+Math.random()*50|0,w:30+Math.random()*40|0,v:1+Math.random()*2});
-for(let i=0;i<90;i++)drops.push({x:Math.random()*480,y:Math.random()*200,v:120+Math.random()*80});
-function wxDraw(dt){wx.clearRect(0,0,480,270);const k=window.FORCE_KIND||W.kind;if(k==='clear')return;
+for(let i=0;i<5;i++)clouds.push({x:Math.random()*600,y:6+Math.random()*194|0,w:30+Math.random()*40|0,v:1+Math.random()*2});
+for(let i=0;i<90;i++)drops.push({x:Math.random()*600,y:Math.random()*350,v:120+Math.random()*80});
+function wxDraw(dt){wx.clearRect(0,0,600,420);const k=window.FORCE_KIND||W.kind;if(k==='clear')return;
   const night=W.phase==='night';wx.fillStyle=night?'#2a2a3c':k==='rain'?'#5c5660':'#8a8494';
-  clouds.forEach(c=>{c.x+=c.v*dt;if(c.x>500)c.x=-c.w;const x=c.x|0;wx.fillRect(x,c.y+3,c.w,5);wx.fillRect(x+6,c.y,c.w-14,4);wx.fillRect(x+c.w/3|0,c.y-2,c.w/3|0,3)});
-  if(k==='rain'){wx.fillStyle='#9aa4b8';drops.forEach(d=>{d.y+=d.v*dt;d.x-=d.v*dt*.15;if(d.y>200){d.y=-4;d.x=Math.random()*500}wx.fillRect(d.x|0,d.y|0,1,3)})}}
+  clouds.forEach(c=>{c.x+=c.v*dt;if(c.x>620)c.x=-c.w;const x=c.x|0;wx.fillRect(x,c.y+3,c.w,5);wx.fillRect(x+6,c.y,c.w-14,4);wx.fillRect(x+c.w/3|0,c.y-2,c.w/3|0,3)});
+  if(k==='rain'){wx.fillStyle='#9aa4b8';drops.forEach(d=>{d.y+=d.v*dt;d.x-=d.v*dt*.15;if(d.y>350){d.y=-4;d.x=Math.random()*620}wx.fillRect(d.x|0,d.y|0,1,3)})}}
 // 2) 小動畫（低 FPS，像素對齊）
 const a=$('amb').getContext('2d'),R=(x,y,w,h,c)=>{a.fillStyle=c;a.fillRect(x,y,w,h)};
 const P={cat:'#4e566a',hi:'#5c6478',ink:'#120f1a',amber:'#f0b25a',yel:'#f8d070',leaf:'#5a8a4a',green:'#3e6a42',white:'#e0cbb8',steam:'rgba(224,203,184,.55)',metal:'#3c3c44',cream:'#4a4650'};
@@ -51,7 +51,7 @@ function moonDraw(g,cx,cy,r,age){const k=Math.cos(2*Math.PI*age/SYN),wax=age<SYN
     const lit=(wax?nx:-nx)>k*edge;g.fillStyle=lit?(d>.75?'#c8c8c8':'#f0f0f0'):(d>.8?'#000000':'#1a1a1a');g.fillRect(cx+x,cy+y,1,1)}}
 function hands(g,cx,cy,r){const t=tpe(),line=(ang,len,c,w)=>{for(let i=1;i<=len;i++){const x=cx+Math.round(Math.sin(ang)*i),y=cy-Math.round(Math.cos(ang)*i);g.fillStyle=c;g.fillRect(x,y,w,w)}};
   const hc='#c03a2c';line((t.h%12+t.m/60)/12*2*Math.PI,Math.round(r*.5),hc,r>8?2:1);line(t.m/60*2*Math.PI,Math.round(r*.8),'#f0b25a',r>8?2:1);g.fillStyle=hc;g.fillRect(cx,cy,1,1)}
-function clock(){const cx=50,cy=42;R(cx-7,cy-7,15,15,P.ink);R(cx-6,cy-6,13,13,'#000');R(cx-6,cy-6,13,1,'#3c3c44');moonDraw(a,cx,cy,5,dayAge());hands(a,cx,cy,5)}
+function clock(){const cx=35,cy=169;R(cx-7,cy-7,15,15,P.ink);R(cx-6,cy-6,13,13,'#000');R(cx-6,cy-6,13,1,'#3c3c44');moonDraw(a,cx,cy,5,dayAge());hands(a,cx,cy,5)}
 // 月相放大（點它放大、點旁邊縮回）
 const mh=document.createElement('div');mh.id='moonhit';mh.style.cssText='position:absolute;z-index:4;cursor:pointer;touch-action:none';
 const mb=document.createElement('canvas');mb.id='moonbig';mb.width=80;mb.height=80;mb.style.cssText='position:absolute;z-index:7;display:none;image-rendering:pixelated;box-shadow:0 0 0 100vmax rgba(10,8,16,.8)';
@@ -61,21 +61,20 @@ function cjk(g,t,x,y,c,px){MOFF.width=t.length*px+4;MOFF.height=px+4;mog.font=px
   const d=mog.getImageData(0,0,MOFF.width,MOFF.height).data;g.fillStyle=c;for(let yy=0;yy<MOFF.height;yy++)for(let xx=0;xx<MOFF.width;xx++)if(d[(yy*MOFF.width+xx)*4+3]>110)g.fillRect(x+xx,y+yy,1,1)}
 function moonBig(){const g=mb.getContext('2d');g.fillStyle='#120f1a';g.fillRect(0,0,80,80);g.fillStyle='#000';g.fillRect(8,8,64,64);g.fillStyle='#3c3c44';g.fillRect(8,8,64,1);g.fillRect(8,71,64,1);
   moonDraw(g,40,40,28,dayAge());for(let i=0;i<12;i++){const an=i/12*2*Math.PI;g.fillStyle='#8a8494';g.fillRect(40+Math.round(Math.sin(an)*30),40-Math.round(Math.cos(an)*30),1,1)}hands(g,40,40,26)}
-function moonPlace(){const V=window.VIEW||{s:1,ox:0,oy:0},s=V.s;Object.assign(mh.style,{left:Math.round(V.ox+43*s)+'px',top:Math.round(V.oy+35*s)+'px',width:Math.round(15*s)+'px',height:Math.round(15*s)+'px'});
+function moonPlace(){const V=window.VIEW||{s:1,ox:0,oy:0},s=V.s;Object.assign(mh.style,{left:Math.round(V.ox+28*s)+'px',top:Math.round(V.oy+162*s)+'px',width:Math.round(15*s)+'px',height:Math.round(15*s)+'px'});
   const k=Math.max(1,Math.floor(Math.min(innerWidth*.9/80,innerHeight*.9/80)));Object.assign(mb.style,{width:80*k+'px',height:80*k+'px',left:((innerWidth-80*k)/2|0)+'px',top:((innerHeight-80*k)/2|0)+'px'})}
 addEventListener('alivelog:layout',moonPlace);moonPlace();
 mh.addEventListener('pointerup',()=>{moonBig();mb.style.display='block';window.MOONOPEN=true});
 document.addEventListener('pointerdown',e=>{if(mb.style.display==='block'&&e.target!==mb){mb.style.display='none';window.MOONOPEN=false;e.stopPropagation()}},true);
 setInterval(()=>{if(mb.style.display==='block')moonBig()},10000);
-function amb(now){a.clearRect(0,0,480,270);const sl=sleeping(),T=(now-t0)/1000;
+function amb(now){a.clearRect(0,0,600,420);const sl=sleeping(),T=(now-t0)/1000;
   // 貓的動畫改由 cat.js 的 Neko sprite 播放
   // （電視櫃小盆栽已移除，搖擺動畫一併拿掉）
   // 檯燈極輕微閃爍
-  if(Math.random()<.03)R(212,180,28,1,'rgba(18,15,26,.35)');
   // 馬克杯＋蒸氣
-  R(275,175,5,5,'#c8c0b4');R(275,175,5,1,P.white);R(280,176,1,2,'#c8c0b4');R(276,176,3,1,'#5a3a2a');
-  for(let i=0;i<3;i++){const ph=(T*0.9+i/3)%1,y=173-ph*12|0,x=277+Math.round(Math.sin(ph*6+i)*1.2);a.fillStyle=`rgba(224,203,184,${(.5*(1-ph)).toFixed(2)})`;a.fillRect(x,y,1,2)}
-  clock();feeder(now)}
+  R(321,313,5,5,'#c8c0b4');R(321,313,5,1,P.white);R(326,314,1,2,'#c8c0b4');R(322,314,3,1,'#5a3a2a');   // W_v3：書桌右移 40
+  for(let i=0;i<3;i++){const ph=(T*0.9+i/3)%1,y=311-ph*12|0,x=323+Math.round(Math.sin(ph*6+i)*1.2);a.fillStyle=`rgba(224,203,184,${(.5*(1-ph)).toFixed(2)})`;a.fillRect(x,y,1,2)}
+  clock();a.save();a.translate(120,150);feeder(now);a.restore()}   // live23：餵食器在陽台側 → x+120、y+150
 // 窗簾微微擺動（1px，步進）
 setInterval(()=>{const k=Math.random()<.5?0:1;['dl','dr','sheer'].forEach(id=>$(id).style.transform=k?'translateX(1px)':'none')},2200);
 // 餵食時間（可在 localStorage 'alivelog.feeder.times' 改，例如 ["08:00","19:00"]）

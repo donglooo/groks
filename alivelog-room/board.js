@@ -2,11 +2,12 @@
 // 點板上空白處＝新增（下方一行輸入框＋5 色）；點便利貼＝放大編輯；拖曳（移動 >4px 才開始）；長按 0.7 秒＝進度圈滿了撕掉（放開就取消）
 // 板子本體由本檔畫（room_fg 背景裡不畫，免得重複）；便利貼上的字只畫成橫條，不在房間畫面上顯示內容
 (function(){
-const KEY='alivelog.board',BX=250,BY=88,BW=43,BH=41,IX0=BX+3,IY0=BY+3,IX1=BX+BW-3,IY1=BY+BH-3,NW=12,NH=11,MAX=6,LONG=700,DRAG=4;
+const KEY='alivelog.board',BX=273,BY=228,BW=43,BH=41,IX0=BX+3,IY0=BY+3,IX1=BX+BW-3,IY1=BY+BH-3,NW=12,NH=11,MAX=6,LONG=700,DRAG=4;
 const COLS=['#f0c85a','#dc8c96','#6eb4aa','#a0c86e','#c8c8be'];
 const st=(()=>{try{const j=JSON.parse(localStorage.getItem(KEY));if(j&&Array.isArray(j.notes))return j}catch(e){}return{notes:[]}})();
+if(st.notes.some(n=>n.x<IX0||n.y<IY0||n.x>IX1-NW||n.y>IY1-NH)){st.notes.forEach(n=>{if(n.y<150)n.y+=150;n.x+=BX-250;n.y+=BY-238;n.x=Math.max(IX0,Math.min(IX1-NW,n.x));n.y=Math.max(IY0,Math.min(IY1-NH,n.y))});localStorage.setItem(KEY,JSON.stringify(st))}   // 舊版（480x270 或 loft_final）位置的便利貼：搬到新板子並夾在板內   // live23：舊 480x270 座標的便利貼搬到新座標（y+150）
 const save=()=>localStorage.setItem(KEY,JSON.stringify(st));
-const cv=document.createElement('canvas');cv.width=480;cv.height=270;cv.className='px';cv.id='boardcv';cv.style.pointerEvents='none';
+const cv=document.createElement('canvas');cv.width=600;cv.height=420;cv.className='px';cv.id='boardcv';cv.style.pointerEvents='none';
 document.getElementById('fg').after(cv);   // 在房間圖之後、lights.js 調暗層之前 → 關燈時一起變暗
 const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
 const R=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
@@ -16,7 +17,7 @@ let drag=null,press=null;   // drag:{id,x,y}；press:{id,t0,k}
 function noteAt(n,x,y,lift){if(lift)R(x+1,y+1,NW,NH,'rgba(10,10,14,.55)');R(x,y,NW,NH,COLS[n.c]||COLS[0]);
   const L=(n.t||'').length,lines=L?Math.min(3,Math.ceil(L/8)):0;for(let i=0;i<lines;i++)R(x+2,y+3+i*3,Math.max(2,Math.min(8,L-i*8)),1,'#5a463c');   // 字只畫成長短橫條
   R(x+5,y,2,2,'#c8463a');R(x+5,y,1,1,'#ffb4aa')}                                                            // 紅圖釘
-function draw(){g.clearRect(0,0,480,270);
+function draw(){g.clearRect(0,0,600,420);
   R(BX,BY,BW,BH,'#7a4e2c');R(BX+2,BY+2,BW-4,BH-4,'#b08050');R(BX,BY,BW,1,'#96683e');for(const[x,y,c]of SPK)R(x,y,1,1,c);
   for(const n of st.notes){if(drag&&drag.id===n.id)continue;noteAt(n,n.x,n.y)}
   if(drag){const n=find(drag.id);if(n)noteAt(n,drag.x,drag.y,true)}
@@ -29,7 +30,7 @@ const hits=new Map();
 function syncHits(){for(const[id,h]of hits)if(!find(id)){h.remove();hits.delete(id)}
   for(const n of st.notes)if(!hits.has(n.id)){const h=document.createElement('div');h.className='notehit';h.dataset.id=n.id;h.style.cssText='position:absolute;z-index:4;cursor:grab;touch-action:none';bind(h,n.id);document.body.appendChild(h);hits.set(n.id,h)}
   place()}
-function place(){const V=window.VIEW;if(!V)return;const S=V.s;Object.assign(cv.style,{left:V.ox+'px',top:V.oy+'px',width:Math.round(480*S)+'px',height:Math.round(270*S)+'px'});
+function place(){const V=window.VIEW;if(!V)return;const S=V.s;Object.assign(cv.style,{left:V.ox+'px',top:V.oy+'px',width:Math.round(600*S)+'px',height:Math.round(420*S)+'px'});
   for(const[id,h]of hits){const n=find(id);if(!n)continue;const x=drag&&drag.id===id?drag.x:n.x,y=drag&&drag.id===id?drag.y:n.y;
     Object.assign(h.style,{left:V.ox+(x-1)*S+'px',top:V.oy+(y-1)*S+'px',width:(NW+2)*S+'px',height:(NH+2)*S+'px'})}}
 const toRoom=e=>{const V=window.VIEW||{s:1,ox:0,oy:0};return{x:(e.clientX-V.ox)/V.s,y:(e.clientY-V.oy)/V.s}};

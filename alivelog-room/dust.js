@@ -2,14 +2,14 @@
 // 狀態存 localStorage 'alivelog.dust'；測試：?debug=1 → 出現 1天/3天/7天 按鈕；或 console DUST.setDays(n)
 // 貓勾子：onCatEvent('duster_pass'|'dust_land'|'sneeze', detail)；灰塵特效全部由本檔畫，Neko 只畫貓
 (function(){
-const KEY='alivelog.dust',DAY=86400e3,CUP={x:52,y:264},SNEEZE_R=130;
-const HIGH=[[0,92,61],[70,88,85],[68,86,107],[80,98,129],[68,86,151],[80,98,173],[100,210,43]];  // [x0,x1,頂面y]
-const DESK=[[168,282,179]];
+const KEY='alivelog.dust',DAY=86400e3,CUP={x:52,y:414},SNEEZE_R=130;
+const HIGH=[[0,92,211],[70,88,235],[68,86,257],[80,98,279],[68,86,301],[80,98,323],[100,210,193]];   // live23：+閣樓牆架1、牆架2、床頭小書架  // [x0,x1,頂面y]
+const DESK=[[237,351,317]];
 const st=Object.assign({high:Date.now(),desk:Date.now()},(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})());
 const save=()=>localStorage.setItem(KEY,JSON.stringify(st));
 const stage=t=>{const d=(Date.now()-t)/DAY;return d>=7?3:d>=3?2:d>=1?1:0};
 const hiS=()=>stage(st.high),dkS=()=>stage(st.desk)>=3?3:0;   // 書桌只有到第 3 階才出現
-const cv=document.createElement('canvas');cv.width=480;cv.height=270;cv.className='px';cv.id='dustcv';cv.style.pointerEvents='none';
+const cv=document.createElement('canvas');cv.width=600;cv.height=420;cv.className='px';cv.id='dustcv';cv.style.pointerEvents='none';
 (document.getElementById('plantcv')||document.getElementById('fg')).after(cv);
 const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
 // 固定亂數，灰的圖樣每次一樣
@@ -21,7 +21,7 @@ const FEA=['#d65c3c','#e8aa50','#b43c34','#f0d28c'];
 function duster(x,y,tilt){x=Math.round(x);y=Math.round(y);g.fillStyle='#784e2c';for(let i=0;i<10;i++)g.fillRect(x+Math.trunc(tilt*i/3),y+i,1,1);
   FEA.forEach((c,j)=>{g.fillStyle=c;g.fillRect(x-3+j*2+tilt,y-8+(j&1),2,8)});g.fillStyle=FEA[3];g.fillRect(x-1,y-10,3,2)}
 let sweep=null,parts=[];   // sweep:{segs,which,x,y,tilt,cleanX}
-function draw(){g.clearRect(0,0,480,270);const hs=hiS(),ds=dkS();
+function draw(){g.clearRect(0,0,600,420);const hs=hiS(),ds=dkS();
   layer(HIGH,hs,sweep&&sweep.which==='high'?sweep.cut:null);if(ds)layer(DESK,ds,sweep&&sweep.which==='desk'?sweep.cut:null);
   g.fillStyle='#505a6e';g.fillRect(CUP.x-3,CUP.y-10,6,10);g.fillStyle='#6e7890';g.fillRect(CUP.x-3,CUP.y-10,6,1);
   if(sweep)duster(sweep.x,sweep.y,sweep.tilt);else duster(CUP.x,CUP.y-12,0);
@@ -38,7 +38,7 @@ function bubble(t,x,y){const V=window.VIEW||{s:1,ox:0,oy:0},d=document.createEle
   d.style.cssText=`position:absolute;z-index:6;pointer-events:none;font:bold ${Math.max(12,Math.round(V.s*7))}px monospace;color:#e0cbb8;text-shadow:2px 2px 0 #05070a;left:${V.ox+x*V.s}px;top:${V.oy+y*V.s}px`;
   document.body.appendChild(d);setTimeout(()=>d.remove(),900)}
 // 貓位置：window.CATPOS={x,y,w,h}（frame 左上角，room_fg 座標）優先；否則用 cat_sheet.json 的 anchor
-let SHEET=null;const catBox=()=>{const c=window.CATPOS;if(c){const sp=SHEET&&SHEET.spots&&SHEET.spots[c.spot];return Object.assign({opaque:c.opaque||(sp&&sp.opaque_x_range)},c)}return(SHEET?{x:SHEET.anchor_in_room_fg[0],y:SHEET.anchor_in_room_fg[1],w:SHEET.frameSize[0],h:SHEET.frameSize[1]}:{x:356,y:150,w:84,h:32})};
+let SHEET=null;const catBox=()=>{const c=window.CATPOS;if(c){const sp=SHEET&&SHEET.spots&&SHEET.spots[c.spot];return Object.assign({opaque:c.opaque||(sp&&sp.opaque_x_range)},c)}return(SHEET?{x:SHEET.anchor_in_room_fg[0],y:SHEET.anchor_in_room_fg[1],w:SHEET.frameSize[0],h:SHEET.frameSize[1]}:{x:476,y:300,w:84,h:32})};
 const LIE=['breathe','blink','tail_swish','ear_twitch','lick','stretch'];
 const catPose=()=>{const c=window.CATPOS,sp=c&&SHEET&&SHEET.spots&&SHEET.spots[c.spot];if(sp&&sp.anim){if(sp.anim.includes('sneeze_lie'))return'lie';if(sp.anim.includes('sneeze_sit'))return'sit'}if(c&&(c.pose==='lie'||c.pose==='sit'))return c.pose;const a=window.CATSPRITE&&CATSPRITE.anim;return LIE.includes(a)?'lie':'sit'};
 const dur=(a,upto)=>{try{const A=SHEET.animations[a],d=A.durations_ms||A.frames.map(()=>150);return d.slice(0,upto==null?d.length:upto).reduce((x,y)=>x+y,0)}catch(e){return upto==null?1150:380}};
@@ -74,9 +74,9 @@ function end(which){if(which==='desk')st.desk=Date.now();else st.high=Date.now()
   save();sweep=null;cev('duster_pass',{phase:'end',target:which});draw();place()}
 function click(){window.PANKEEP&&PANKEEP(CUP.x-10,CUP.x+10,CUP.y-26,CUP.y+2);if(sweep)return;if(hiS()>0)return run('high');if(dkS()>0)return run('desk');bubble('很乾淨',CUP.x-10,CUP.y-30)}
 // 粒子
-(function tick(){if(parts.length){for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.02;p.life-=16}parts=parts.filter(p=>p.life>0&&p.y<270);if(!sweep)draw()}requestAnimationFrame(tick)})();
+(function tick(){if(parts.length){for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.02;p.life-=16}parts=parts.filter(p=>p.life>0&&p.y<420);if(!sweep)draw()}requestAnimationFrame(tick)})();
 const hit=document.createElement('div');hit.id='dusthit';hit.style.cssText='position:absolute;z-index:4;cursor:pointer;touch-action:none';document.body.appendChild(hit);
-function place(){const V=window.VIEW;if(!V)return;const S=V.s;Object.assign(cv.style,{left:V.ox+'px',top:V.oy+'px',width:Math.round(480*S)+'px',height:Math.round(270*S)+'px'});
+function place(){const V=window.VIEW;if(!V)return;const S=V.s;Object.assign(cv.style,{left:V.ox+'px',top:V.oy+'px',width:Math.round(600*S)+'px',height:Math.round(420*S)+'px'});
   Object.assign(hit.style,{left:V.ox+(CUP.x-7)*S+'px',top:V.oy+(CUP.y-24)*S+'px',width:14*S+'px',height:24*S+'px'})}
 hit.addEventListener('pointerup',e=>{e.stopPropagation();click()});hit.addEventListener('click',e=>e.stopPropagation());
 function setDays(n){st.high=Date.now()-n*DAY-1000;st.desk=st.high;save();draw()}

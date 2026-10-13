@@ -2,10 +2,10 @@
 // 測試：網址加 ?debug=1 → 左上角出現「knock」按鈕；或 console 呼叫 PLANT.knock()
 // 自然發生：貓 onCatEvent('zoomies') 時有機率撞倒；另有低頻背景機率；兩次至少間隔 3 小時
 (function(){
-const KEY='alivelog.plant',COOL=3*3600e3,PX=96,PY=238,VX=246,VY=238;   // 盆栽底部中心、掃地機座位置（底圖 480x270 座標）
+const KEY='alivelog.plant',COOL=3*3600e3,PX=96,PY=388,VX=294,VY=388;   // 盆栽底部中心、掃地機座位置（底圖 600x420 座標）
 const st=Object.assign({s:'up',dirt:0,last:0},(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})());
 const save=()=>localStorage.setItem(KEY,JSON.stringify(st));
-const cv=document.createElement('canvas');cv.width=480;cv.height=270;cv.className='px';cv.id='plantcv';cv.style.pointerEvents='none';
+const cv=document.createElement('canvas');cv.width=600;cv.height=420;cv.className='px';cv.id='plantcv';cv.style.pointerEvents='none';
 document.getElementById('fg').after(cv);
 const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
 // 盆栽 12x17 像素圖（原創）：. 透明 L 亮葉 D 暗葉 S 莖 P 盆 p 盆陰影 r 盆口 d 土
@@ -19,7 +19,7 @@ let ang=0,vac={x:VX,on:false},dirtA=1;
 function drawVac(){const x=Math.round(vac.x),y=VY;g.fillStyle='#24222c';g.fillRect(x-6,y-3,13,3);g.fillRect(x-5,y-4,11,1);g.fillStyle='#5c5a64';g.fillRect(x-4,y-5,9,1);
   g.fillStyle=vac.on?'#7ad070':'#c03a2c';g.fillRect(x-1,y-5,2,1);g.fillStyle='#12101a';g.fillRect(x-6,y,13,1);
   if(vac.on){g.fillStyle='#e0cbb8';g.globalAlpha=.5;g.fillRect(x+7+(Date.now()/80&1),y-1,1,1);g.globalAlpha=1}}
-function draw(){g.clearRect(0,0,480,270);
+function draw(){g.clearRect(0,0,600,420);
   if(st.dirt){g.globalAlpha=dirtA;g.fillStyle='#40342a';for(const[dx,dy,w]of DIRT)g.fillRect(PX-dx-w,PY+dy,w,1);g.fillStyle='#2a1e20';for(const[dx,dy]of CRUMB)g.fillRect(PX-dx,PY+dy,1,1);g.globalAlpha=1}
   g.save();g.translate(PX-6,PY);g.rotate(-ang);g.drawImage(spr,0,-17);g.restore();   // 貓從右邊撞過來 → 以盆底左下角為支點往左倒
   drawVac();cv.dataset.state=st.s;cv.dataset.dirt=st.dirt?'1':'0'}
@@ -37,7 +37,7 @@ function bubble(t,big){const V=window.VIEW||{s:1,ox:0,oy:0},d=document.createEle
 // 點擊區
 const mk=id=>{const h=document.createElement('div');h.id=id;h.style.cssText='position:absolute;z-index:4;cursor:pointer;touch-action:none';document.body.appendChild(h);return h};
 const ph=mk('planthit'),vh=mk('vachit');
-function place(){const V=window.VIEW;if(!V)return;const S=V.s;Object.assign(cv.style,{left:V.ox+'px',top:V.oy+'px',width:Math.round(480*S)+'px',height:Math.round(270*S)+'px'});
+function place(){const V=window.VIEW;if(!V)return;const S=V.s;Object.assign(cv.style,{left:V.ox+'px',top:V.oy+'px',width:Math.round(600*S)+'px',height:Math.round(420*S)+'px'});
   const fallen=st.s!=='up';Object.assign(ph.style,fallen?{left:V.ox+(PX-24)*S+'px',top:V.oy+(PY-14)*S+'px',width:30*S+'px',height:16*S+'px'}:{left:V.ox+(PX-7)*S+'px',top:V.oy+(PY-19)*S+'px',width:14*S+'px',height:20*S+'px'});
   Object.assign(vh.style,{left:V.ox+(vac.x-9)*S+'px',top:V.oy+(VY-9)*S+'px',width:18*S+'px',height:12*S+'px'})}
 let busy=false;

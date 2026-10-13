@@ -1,6 +1,6 @@
 // ---- 貓咪行為紀錄：點貓開選單，一點就記；長按貓匯出 JSON ----
 (function(){
-const KEY='alivelog.cat.log',B=['睡','吃','玩','討摸','窗邊','躲起來'],CAT={x:356,y:150,w:84,h:32};   // 會被 cat_sheet.json 的 anchor/frameSize 覆蓋
+const KEY='alivelog.cat.log',B=['睡','吃','玩','討摸','窗邊','躲起來'],CAT={x:476,y:300,w:84,h:32};   // 會被 cat_sheet.json 的 anchor/frameSize 覆蓋
 const $=id=>document.getElementById(id);
 const hit=document.createElement('div');hit.id='cathit';hit.style.cssText='position:absolute;z-index:4;cursor:pointer;touch-action:none';
 const cv=document.createElement('canvas');cv.width=CAT.w;cv.height=CAT.h;cv.style.cssText='position:absolute;z-index:3;pointer-events:none;image-rendering:pixelated';
@@ -22,8 +22,8 @@ const tpeHour=()=>+new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Taipei',hour:
 function next7(){const h=tpeHour(),hrs=h>=23?(24-h+7):(7-h);const d=new Date(Date.now()+hrs*3600e3);d.setMinutes(0,0,0);return d.getTime()}
 function startSpot(spots){let sv=null;try{sv=JSON.parse(localStorage.getItem(SKEY))}catch(e){}
   if(sv&&spots[sv.spot]&&Date.now()-sv.ts<30*60e3){napUntil=sv.napUntil&&sv.napUntil>Date.now()?sv.napUntil:0;return{spot:sv.spot,how:'resume'}}
-  const W={ac_perch:3,floor_mid:2,window_gaze:2,walkway_lie:2,walkway_sit:1},h=tpeHour(),night=h>=23||h<7;
-  let napping=night&&Math.random()<.6;const pool=Object.keys(W).filter(k=>spots[k]&&(!napping||!['window_gaze','walkway_sit'].includes(k)));   // 睡覺只選能趴的地方
+  const W={ac_perch:3,floor_mid:2,window_gaze:2,walkway_lie:2,walkway_sit:1,loft_bed:3,loft_shelf:1},h=tpeHour(),night=h>=23||h<7;
+  let napping=night&&Math.random()<.6;const pool=Object.keys(W).filter(k=>spots[k]&&(!napping||!['window_gaze','walkway_sit','loft_shelf'].includes(k)));   // 睡覺只選能趴的地方
   let r=Math.random()*pool.reduce((a,k)=>a+W[k],0),pick=pool[0];for(const k of pool){r-=W[k];if(r<=0){pick=k;break}}
   napUntil=napping?next7():0;return{spot:pick,how:napping?'random_nap':'random'}}
 const has=a=>SHEET&&SHEET.animations&&SHEET.animations[a];
@@ -39,24 +39,35 @@ function schedule(now){nextAt={blink:now+rnd(3e3,7e3),ear_twitch:now+rnd(5e3,11e
   if(sleepNow()){nextAt.blink=nextAt.lick=nextAt.stretch=nextAt.move=Infinity;nextAt.tail_swish=now+rnd(20e3,40e3)}}
 const P=()=>SHEET.paths||{},SP=()=>SHEET.spots||{};
 // 動作佇列：{anim,from,to,speed} 走/跑；{anim,at,times} 原地播；{fade:'in'|'out',ms,at}；{fn}
-function run(list){Q=list.slice();next()}
+function run(list){if(act&&(act.jump||act.tunnel)){Q=list.slice();return}window.CATJUMP=false;Q=list.slice();next()}   // 跳到一半：落地後才換動作
 function next(){act=Q.shift();if(!act){return idle()}
   if(act.fn){act.fn();return next()}
-  if(act.fade){if(act.at)setPos(act.at);cv.style.transition=`opacity ${act.ms||400}ms`;cv.style.opacity=act.fade==='in'?1:0;act.until=performance.now()+(act.ms||400);return}
-  if(act.at)setPos(act.at);if(act.from)setPos(act.from);
+  if(act.fade){return next()}   // live21：不再淡出淡入（那等於瞬移）
+  const tgt=act.from||act.at;if(tgt&&Math.hypot(tgt[0]-pos.x,tgt[1]-pos.y)>2){Q.unshift(act);Q=route(tgt).concat(Q);return next()}   // 起點不在腳下 → 先走/跳過去
+  if(tgt)setPos(tgt);
+  if(act.tunnel){act.el=0;window.CATTUNNEL=true;cv.style.transition='opacity 250ms steps(4)';cv.style.opacity=0;hit.style.pointerEvents='none';return}   // 走進門洞：消失，牆裡走一段時間後從另一個門洞出來（不是瞬移）
+  if(act.jump){act.from=[pos.x,pos.y];const d=Math.hypot(act.to[0]-pos.x,act.to[1]-pos.y);act.dur=Math.min(1100,450+d*6);act.CR=200;act.LD=240;act.el=0;act.H=8+Math.max(0,act.from[1]-act.to[1])*.35;
+    act.anim=act.to[0]<pos.x-1?'zoom_run_left':act.to[0]>pos.x+1?'zoom_run_right':(cur&&cur.mir?'zoom_run_left':'zoom_run_right')}
   const r=res(act.anim);cur={anim:r.n,mir:r.m,n:0,times:act.times||1};fi=0;ft=0;act.t0=performance.now();draw1()}
 function idle(){follow=false;const sp=SP()[spot]||{};const a=sleepNow()?'breathe':((sp.anim&&sp.anim[0])||'breathe');act={idle:true,anim:a};const r=res(a);cur={anim:r.n,mir:r.m,n:0,times:1};fi=0;ft=0;draw1()}
 function setPos(p){pos={x:p[0],y:p[1]};place();upd()}
 // window.CATPOS：給 dust.js 等物件用（frame 左上角、room 座標、pose=lie|sit|walk）
 const LIEA=['breathe','blink','tail_swish','ear_twitch','lick','stretch','sneeze_lie'],SITA=['sit_gaze_window','zoom_pant','zoom_nonchalant','sneeze_sit','dust_shake','duster_paw','rub_face'];
-function poseNow(){const a=cur&&cur.anim;if(act&&act.to)return'walk';if(spot==='walkway_sit')return'sit';if(spot==='walkway_lie'||spot==='ac_perch')return'lie';if(LIEA.includes(a))return'lie';if(SITA.includes(a))return'sit';return/walk|run|skid|turn|bump/.test(a)?'walk':'sit'}
+function poseNow(){const a=cur&&cur.anim;if(act&&(act.to||act.jump||act.tunnel))return'walk';if(spot==='walkway_sit')return'sit';if(spot==='walkway_lie'||spot==='ac_perch')return'lie';if(LIEA.includes(a))return'lie';if(SITA.includes(a))return'sit';return/walk|run|skid|turn|bump/.test(a)?'walk':'sit'}
 function upd(){if(spot!=='moving'&&spot!==lastSpot){lastSpot=spot;saveState()}window.CATPOS={x:Math.round(pos.x),y:Math.round(pos.y),w:CAT.w,h:CAT.h,pose:poseNow(),spot}}
 function draw1(){const A=SHEET.animations[cur.anim];let name=A.frames[Math.min(fi,A.frames.length-1)];
   if(sleepNow()&&cur.anim==='breathe'&&has('blink')){const bf=SHEET.animations.blink.frames;name=bf[Math.min(1,bf.length-1)]}
   frameDraw(name,cur.mir);upd();if(act&&act.onFrame)act.onFrame(fi)}
 function tick(){requestAnimationFrame(tick);if(!SHEET||!IMG||!cur)return;const now=performance.now(),dt=Math.min(100,now-(tick.l||now));tick.l=now;
   if(follow&&window.PANKEEP&&!(act&&act.fade&&act.fade==='out')){const la=act&&act.to?Math.sign(act.to[0]-pos.x)*Math.min(50,Math.abs(act.to[0]-pos.x)):0;PANKEEP(pos.x+18+Math.min(0,la),pos.x+66+Math.max(0,la),pos.y,pos.y+CAT.h)}   // 跑的方向多看一點
-  if(act&&act.fade){if(now>=act.until)next();return}
+  if(act&&act.tunnel){act.el+=dt;if(act.el>=250&&!act.moved){act.moved=true;setPos(act.to)}if(act.el>=act.ms-250&&!act.shown){act.shown=true;cv.style.opacity=1}if(act.el>=act.ms){window.CATTUNNEL=false;hit.style.pointerEvents='';cv.style.transition='';return next()}return}
+  if(act&&act.jump){act.el+=dt;const f=act.from,g=act.to,cr=res('zoom_pant'),mir=act.anim==='zoom_run_right'?!cr.m:cr.m;
+    if(act.el<act.CR){window.CATJUMP=true;cur={anim:cr.n,mir,n:0,times:1};fi=0;draw1();return}   // 起跳前蹲一下
+    const t=Math.min(1,(act.el-act.CR)/act.dur);
+    if(t<1){pos.x=f[0]+(g[0]-f[0])*t;pos.y=f[1]+(g[1]-f[1])*t-act.H*4*t*(1-t);place();upd();window.CATJUMP=true;const r=res(act.anim);cur={anim:r.n,mir:r.m,n:0,times:1};const A=SHEET.animations[cur.anim];fi=Math.min(A.frames.length-1,Math.floor(t*A.frames.length));draw1();return}
+    if(pos.x!==g[0]||pos.y!==g[1])setPos(g);
+    if(act.el<act.CR+act.dur+act.LD){window.CATJUMP=true;cur={anim:cr.n,mir,n:0,times:1};fi=0;draw1();return}   // 落地停一下
+    window.CATJUMP=false;return next()}
   // 移動
   if(act&&act.to){const sp=act.speed||24,dx=act.to[0]-pos.x,dy=act.to[1]-pos.y,d=Math.hypot(dx,dy),st=sp*dt/1000;
     if(d<=st){setPos(act.to);return next()}pos.x+=dx/d*st;pos.y+=dy/d*st;place()}
@@ -73,32 +84,43 @@ function tick(){requestAnimationFrame(tick);if(!SHEET||!IMG||!cur)return;const n
         if(!allowed.includes(a)&&spot!=='floor_mid')continue;if(spot==='floor_mid'&&!['blink','ear_twitch'].includes(a))continue;
         if(sleepNow()&&a!=='ear_twitch'&&a!=='tail_swish')continue;const r=res(a);cur={anim:r.n,mir:r.m,n:0,times:a==='tail_swish'?2:1};act={anim:a,times:cur.times};break}}}
   draw1()}
-// 走到某個 spot（室內走 floor_walk；陽台冷氣用淡出淡入）
-function walkTo(target){const s0=spot,sp=SP(),pw=P().floor_walk||{},bt=P().balcony_transition||{},L=[];
-  const tp=sp[target]&&sp[target].frame_topleft;if(!tp)return L;const inSide=(bt.indoor_side&&bt.indoor_side.at)||[230,206],ms=(bt.exit&&bt.exit.ms)||400;
-  let x=pos.x;const hi=k=>/^walkway/.test(k);
-  if(hi(target)||hi(s0)){const fl=(pw.points&&pw.points[0][1])||206;   // 走道沒有爬上去的影格 → 淡出淡入（同陽台）
-    L.push({fade:'out',ms});const tp2=hi(target)?tp:(target==='ac_perch'?((bt.enter&&bt.enter.at)||tp):[tp[0],fl]);L.push({fade:'in',ms,at:tp2});L.push({fn:()=>{spot=target}});return L}
-  if(s0==='ac_perch'&&target!=='ac_perch'){L.push({fade:'out',ms},{fade:'in',ms:(bt.indoor_side&&bt.indoor_side.ms)||400,at:inSide});x=inSide[0]}
-  if(target==='ac_perch'){if(s0!=='ac_perch'){if(Math.abs(x-inSide[0])>1)L.push(mv(x,inSide[0],pw));L.push({fade:'out',ms:(bt.indoor_side&&bt.indoor_side.ms)||400},{fade:'in',ms:(bt.enter&&bt.enter.ms)||400,at:(bt.enter&&bt.enter.at)||tp})}}
-  else if(Math.abs(x-tp[0])>1)L.push(mv(x,tp[0],pw));
-  L.push({fn:()=>{spot=target}});return L}
-function mv(x0,x1,pw){const y=(pw.points&&pw.points[0][1])||206;return{anim:x1<x0?(pw.anim_left||'walk_left'):(pw.anim_right||'walk_right'),from:[x0,y],to:[x1,y],speed:pw.speed_px_s||24}}
+// live21：走到某個 spot ＝ 沿路線圖走/跳（地板走路；貓走道靠牆上踏板一階階跳；陽台從落地門邊跳上欄台再跳上冷氣）
+// 路線圖可放在 cat_sheet.json paths.routes 覆蓋：{floor_y, nodes:{名:[x,y]}, edges:[[a,b],...]}，同 y 用走的、不同 y 用跳的
+const DEF_ROUTES={floor_y:356,nodes:{F_climb:[60,356],SOFA:[60,307],S130:[34,247],W_end:[21,181],W_lie:[4,181],F_bal:[370,356],LEDGE:[450,319],AC:[476,300]},edges:[['F_climb','SOFA'],['SOFA','S130'],['S130','W_end'],['W_end','W_lie'],['F_bal','LEDGE'],['LEDGE','AC']]};   // 樓中樓完整路線在 cat_sheet.json paths.routes（Nook cat_routes.json）
+function route(goal){const RT=P().routes||DEF_ROUTES,fy=RT.floor_y||356,N=Object.assign({},RT.nodes),E=[];const near=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1])<=2;
+  N.__s=[pos.x,pos.y];N.__g=goal;const ks=Object.keys(N);
+  // 地板上的點彼此可走；其他用 edges；起點/終點不在圖上就接最近的節點
+  ks.forEach(a=>ks.forEach(b=>{if(a<b&&N[a][1]===fy&&N[b][1]===fy&&Math.abs(N[a][1]-fy)<1)E.push([a,b])}));
+  const TUN={};(RT.edges||[]).forEach(e=>{const a=Array.isArray(e)?e[0]:e.a,b=Array.isArray(e)?e[1]:e.b,o=Array.isArray(e)?(e[2]||{}):e;E.push([a,b]);if(o.type==='tunnel'){const dr=o.duration_ms;TUN[a+'|'+b]=TUN[b+'|'+a]=Array.isArray(dr)?dr:(o.ms||0)}});
+  (RT.tunnels||[]).forEach(t=>{if(!N[t.a]||!N[t.b])return;E.push([t.a,t.b]);TUN[t.a+'|'+t.b]=TUN[t.b+'|'+t.a]=Array.isArray(t.duration_ms)?t.duration_ms:(t.ms||0)});   // paths.routes.tunnels（Nook 格式）
+  for(const t of['__s','__g']){const p=N[t];if(Math.abs(p[1]-fy)<1)continue;let best=null,bd=1e9;for(const k of ks){if(k[0]==='_')continue;const d=Math.hypot(N[k][0]-p[0],N[k][1]-p[1]);if(d<bd){bd=d;best=k}}if(best)E.push([t,best])}
+  if(near(N.__s,goal))return[];
+  const adj={};ks.forEach(k=>adj[k]=[]);E.forEach(([a,b])=>{if(adj[a]&&adj[b]){const tk=TUN[a+'|'+b];const c=tk!=null?(Array.isArray(tk)?(tk[0]+tk[1])/2:(tk||2500))/40:Math.hypot(N[a][0]-N[b][0],N[a][1]-N[b][1])+(Math.abs(N[a][1]-N[b][1])>12?20:0);adj[a].push([b,c]);adj[b].push([a,c])}});
+  const D={},pv={},U=new Set(ks);ks.forEach(k=>D[k]=1e9);D.__s=0;
+  while(U.size){let u=null;U.forEach(k=>{if(u===null||D[k]<D[u])u=k});U.delete(u);if(u==='__g'||D[u]>=1e9)break;for(const[v,c]of adj[u])if(D[u]+c<D[v]){D[v]=D[u]+c;pv[v]=u}}
+  if(D.__g>=1e9)return[{jump:true,to:goal.slice()}];   // 圖斷了也至少用跳的過去，不瞬移
+  const seq=[];for(let k='__g';k;k=pv[k])seq.unshift(k);const L=[];const pw=P().floor_walk||{};
+  for(let i=1;i<seq.length;i++){const a=N[seq[i-1]],b=N[seq[i]];const tk=TUN[seq[i-1]+'|'+seq[i]];if(tk!=null){L.push({tunnel:true,to:b.slice(),ms:Array.isArray(tk)?rnd(tk[0],tk[1]):(tk||Math.max(1500,Math.hypot(a[0]-b[0],a[1]-b[1])*40))});continue}if(near(a,b))continue;
+    const dy=Math.abs(a[1]-b[1]);if(dy<1||(dy<=12&&Math.abs(a[0]-b[0])<=20))L.push(Object.assign(mv(a[0],b[0],pw),{from:null,to:[b[0],b[1]],speed:dy<1?(pw.speed_px_s||24):20}));else L.push({jump:true,to:b.slice()})}   // 樓梯一階 ≤12px：用走的上下
+  return L}
+function walkTo(target){const tp=SP()[target]&&SP()[target].frame_topleft;if(!tp)return[];return route(tp).concat([{fn:()=>{spot=target}}])}
+function mv(x0,x1,pw){const y=pos.y;return{anim:x1<x0?(pw.anim_left||'walk_left'):(pw.anim_right||'walk_right'),from:[x0,y],to:[x1,y],speed:pw.speed_px_s||24}}
 function wander(){if(sleepNow())return idle();
   if(spot!=='ac_perch'&&Date.now()-zoomLast>30*60e3&&Math.random()<.25)return zoomies(false);
   const opts=Object.keys(SP()).filter(k=>k!==spot);const t=opts[Math.random()*opts.length|0];const L=walkTo2(t);spot='moving';
   if(t==='window_gaze'||/^walkway/.test(t))follow=true;if(t==='window_gaze')L.push({anim:'sit_gaze_window',times:1,loopUntil:performance.now()+rnd(20e3,60e3)});run(L)}
 function walkTo2(t){const was=act&&act.spotWas;return walkTo.call(null,t)}
 // 暴衝：依 paths.zoomies.sequence；撞盆栽那步對齊 knock.js 的盆栽（PLANT.contactX），不撞就跳過撞擊格
-function zoomies(force){if(!SHEET||sleepNow())return false;const Z=P().zoomies;if(!Z)return false;zoomLast=Date.now();
+function zoomies(force){if(!SHEET||sleepNow()||(act&&(act.jump||act.tunnel)))return false;const Z=P().zoomies;if(!Z)return false;zoomLast=Date.now();
   window.onCatEvent('zoomies',{force:!!force});
   const willKnock=!!(window.PLANT&&PLANT.decide&&PLANT.decide(!!force));
   const bump=Z.sequence.find(s=>s.anim==='zoom_bump_plant');let rep=null,orig=null;
   if(bump&&window.PLANT&&PLANT.contactX!=null){orig=(bump.impact_cat_topleft||bump.at).join();const off=(bump.impact_contact_px?bump.impact_contact_px[0]:6)-(bump.impact_cat_topleft||bump.at)[0];
     rep=[PLANT.contactX-off,(bump.impact_cat_topleft||bump.at)[1]]}
   const fix=p=>p&&rep&&p.join()===orig?rep:p;const L=[];let sx=pos.x;
-  if(spot==='ac_perch'||/^walkway/.test(spot)){const bt=P().balcony_transition||{},ins=(bt.indoor_side&&bt.indoor_side.at)||[230,206];L.push({fade:'out',ms:(bt.exit&&bt.exit.ms)||400},{fade:'in',ms:(bt.indoor_side&&bt.indoor_side.ms)||400,at:ins});sx=ins[0]}
-  const first=Z.sequence[0];if(first.from&&Math.abs(sx-first.from[0])>1)L.push(Object.assign(mv(sx,first.from[0],P().floor_walk||{}),{speed:(Z.speed_px_s||140)*.6,anim:first.from[0]<sx?'zoom_run_left':'zoom_run_right'}));
+  const first=Z.sequence[0];if(first.from){const fy=(P().routes||DEF_ROUTES).floor_y||356;
+    if(Math.abs(pos.y-fy)>1){L.push(...route([first.from[0],fy]))}   // 高處先一路跳下來
+    else if(Math.abs(sx-first.from[0])>1)L.push(Object.assign(mv(sx,first.from[0],P().floor_walk||{}),{from:null,speed:(Z.speed_px_s||140)*.6,anim:first.from[0]<sx?'zoom_run_left':'zoom_run_right'}))}
   spot='moving';
   for(const s of Z.sequence){const st=Object.assign({},s,{at:fix(s.at),from:fix(s.from),to:fix(s.to)});
     if(st.to)st.speed=Z.speed_px_s||140;
@@ -108,8 +130,8 @@ function zoomies(force){if(!SHEET||sleepNow())return false;const Z=P().zoomies;i
 window.onCatEvent=function(type,detail){dispatchEvent(new CustomEvent('alivelog:cat',{detail:Object.assign({type},detail||{})}));
   // 撢子事件（Nook dust.js）：依 cat_sheet.json events 找動畫；走路/暴衝中不插播
   const EV=(SHEET&&SHEET.events)||{};
-  if((type==='duster_pass'||type==='dust_land')&&window.PANKEEP){const x=detail&&detail.x!=null?detail.x:38,y=detail&&detail.y!=null?detail.y:224;if(!(detail&&detail.phase==='end'))PANKEEP(x-24,x+24,y-10,y+10)}
-  if(['duster_paw','sneeze','dust_shake','rub_face'].includes(type)){if(!SHEET||(act&&(act.to||act.fade||String(act.anim).startsWith('zoom'))))return;
+  if((type==='duster_pass'||type==='dust_land')&&window.PANKEEP){const x=detail&&detail.x!=null?detail.x:38,y=detail&&detail.y!=null?detail.y:374;if(!(detail&&detail.phase==='end'))PANKEEP(x-24,x+24,y-10,y+10)}
+  if(['duster_paw','sneeze','dust_shake','rub_face'].includes(type)){if(!SHEET||(act&&(act.to||act.jump||act.tunnel||act.fade||String(act.anim).startsWith('zoom'))))return;
     let a=type;const e=EV[type]||{};if(type==='sneeze'){const ps=poseNow()!=='walk'?poseNow():((detail&&detail.pose)||'sit');a=(e.by_pose&&e.by_pose[ps])||(detail&&detail.anim)||e.default||'sneeze_sit'}else if(e.anim)a=e.anim;
     if(type==='duster_paw'&&sleepNow())return;if(!has(a))return;run([{anim:a,times:1}]);return}
   if(type==='knock'&&act&&String(act.anim).startsWith('zoom'))return;   // 暴衝中由撞擊格處理
@@ -122,9 +144,12 @@ function boot(){fetch('neko/cat_sheet.json',{cache:'no-store'}).then(r=>r.json()
   // 第一次走動提早到 5–20 秒
   IMG.onload=()=>{const now=performance.now();schedule(now);if(!sleepNow())nextAt.move=now+rnd(5e3,20e3);idle();saveState()};IMG.src='neko/cat_sheet.png?v='+Date.now()}).catch(e=>window.CATERR=String(e))}
 requestAnimationFrame(tick);
-function pose(){if(SHEET&&cur){schedule(performance.now());if(sleepNow()&&(Q.length||act&&!act.idle)){Q=[];if(spot==='moving')spot='floor_mid';cv.style.opacity=1;idle()}draw1()}}   // 記「睡」→ 原地停下睡
+function spotAt(){for(const[k,v]of Object.entries(SP()))if(v.frame_topleft&&Math.hypot(v.frame_topleft[0]-pos.x,v.frame_topleft[1]-pos.y)<=2)return k;return'floor_mid'}
+function pose(){if(SHEET&&cur){schedule(performance.now());if(sleepNow()&&(Q.length||act&&!act.idle)){cv.style.opacity=1;
+    if(act&&(act.jump||act.tunnel)){Q=[{fn:()=>{spot=spotAt()}}];return}   // 跳到一半不能停在空中：落地再睡
+    Q=[];if(spot==='moving')spot=spotAt();idle()}draw1()}}   // 記「睡」→ 原地停下睡
 window.CATSPRITE={get anim(){return cur&&cur.anim},get frame(){return cv.dataset.frame},get mirror(){return cv.dataset.mirror==='1'},get pos(){return Object.assign({},pos)},get spot(){return spot},get queue(){return Q.length},
-  play:(a,t)=>run([{anim:a,times:t||1}]),go:t=>{spot=spot==='moving'?'floor_mid':spot;const L=walkTo(t);spot='moving';follow=t==='window_gaze'||/^walkway/.test(t);run(L.concat(t==='window_gaze'?[{anim:'sit_gaze_window',times:1,loopUntil:performance.now()+30e3}]:[]))},zoomies:f=>zoomies(f!==false),reload:boot};
+  play:(a,t)=>run([{anim:a,times:t||1}]),go:t=>{if(act&&(act.jump||act.tunnel))return false;const L=walkTo(t);spot='moving';follow=t==='window_gaze'||/^walkway/.test(t);run(L.concat(t==='window_gaze'?[{anim:'sit_gaze_window',times:1,loopUntil:performance.now()+30e3}]:[]))},zoomies:f=>zoomies(f!==false),reload:boot};
 if(/[?&]debug=1/.test(location.search)){const b=document.createElement('button');b.id='dbgzoom';b.textContent='zoom';
   b.style.cssText='position:fixed;left:64px;top:6px;z-index:50;font:12px monospace;background:#120f1a;color:#f0b25a;border:2px solid #f0b25a;padding:4px 8px';
   b.addEventListener('pointerup',e=>{e.stopPropagation();zoomies(true)});b.addEventListener('click',e=>e.stopPropagation());document.body.appendChild(b)}
