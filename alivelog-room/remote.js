@@ -4,8 +4,8 @@
 const q=new URLSearchParams(location.search).get('remote');
 let style=(q||localStorage.getItem('alivelog.remote')||'A').toUpperCase();if(q)localStorage.setItem('alivelog.remote',style);
 const rc=document.getElementById('rc');
-rc.style.cssText='position:absolute;z-index:9;display:none;background:none;border:0;box-shadow:none;padding:0;transform:none;image-rendering:pixelated';
-const cv=document.createElement('canvas');cv.style.cssText='display:block;image-rendering:pixelated;touch-action:none;filter:drop-shadow(0 6px 0 rgba(5,7,10,.55))';rc.appendChild(cv);
+rc.style.cssText='position:absolute;z-index:9;display:none;pointer-events:none;background:none;border:0;box-shadow:none;padding:0;transform:none;image-rendering:pixelated';
+const cv=document.createElement('canvas');cv.style.cssText='display:block;pointer-events:auto;image-rendering:pixelated;touch-action:none;filter:drop-shadow(0 6px 0 rgba(5,7,10,.55))';rc.appendChild(cv);
 const g=cv.getContext('2d');
 // 5x5 像素圖示
 const IC={pw:'01010,10101,10101,10001,01110',up:'00100,01110,11111,00000,00000',dn:'00000,00000,11111,01110,00100',
@@ -57,8 +57,13 @@ function place(){SC=Math.max(2,Math.floor(Math.min(innerWidth*.3/W,innerHeight*.
 // 鍵位對應
 function act(k){const j=joe();const m={chu2:'chu',chd2:'chd',lf:j?'prv':'vd',rt:j?'nxt':'vu'};k=m[k]||k;if(k==='lfx'||k==='rtx')return;window.rcKey&&rcKey(k)}
 let lp=null,lpFired=false;
+function close(){rc.style.display='none'}
+// 任何不在遙控器機身上的點擊都關閉（含右側邊距、安全區；用 touchstart 再保險一次給 iOS）
+function outside(e){if(rc.style.display!=='grid')return;const t=e.target;if(t===cv||t===document.getElementById('remote'))return;close()}
+document.addEventListener('pointerdown',outside,true);document.addEventListener('touchstart',outside,{capture:true,passive:true});
 cv.addEventListener('pointerdown',e=>{e.stopPropagation();const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/SC,y=(e.clientY-r.top)/SC;
-  const b=btns.find(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h);if(!b)return;pressed=b.k;draw();setTimeout(()=>{pressed=null;draw()},130);
+  const b=btns.find(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h);
+  if(!b){const d=g.getImageData(Math.floor(x),Math.floor(y),1,1).data;if(d[3]===0)close();return}   // 點到遙控器外的透明處＝關閉pressed=b.k;draw();setTimeout(()=>{pressed=null;draw()},130);
   if(b.k==='pw'){lpFired=false;lp=setTimeout(()=>{lpFired=true;window.rcKey&&rcKey('login')},800);return}act(b.k)});
 cv.addEventListener('pointerup',e=>{if(lp){clearTimeout(lp);lp=null;if(!lpFired)act('pw')}});
 cv.addEventListener('pointerleave',()=>{if(lp){clearTimeout(lp);lp=null}});
