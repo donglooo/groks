@@ -193,8 +193,20 @@ $('mon').addEventListener('pointerup',e=>{if(zoomed!=='mon')zoom('mon')});
 let pan=null;
 addEventListener('pointerdown',e=>{if(e.target===document.body||e.target.id==='fg'||e.target.id==='amb'||e.target.id==='sky')pan={x:e.clientX,y:e.clientY,px:panX,py:panY,moved:false}});
 addEventListener('pointermove',e=>{if(!pan)return;const sw=480*s-innerWidth,sh=270*s-innerHeight,dx=e.clientX-pan.x,dy=e.clientY-pan.y;
-  if(Math.abs(dx)+Math.abs(dy)>6)pan.moved=true;if(sw>0)panX=Math.max(0,Math.min(1,pan.px-dx/sw));if(sh>0)panY=Math.max(0,Math.min(1,pan.py-dy/sh));layout()});
+  if(Math.abs(dx)+Math.abs(dy)>6){pan.moved=true;userPanAt=Date.now()}if(sw>0)panX=Math.max(0,Math.min(1,pan.px-dx/sw));if(sh>0)panY=Math.max(0,Math.min(1,pan.py-dy/sh));layout()});
 addEventListener('pointerup',()=>{if(pan&&pan.moved)window.PANNED=(window.PANNED||0)+1;pan=null});
+// ---- 自動平移：讓貓／撢子保持在畫面內（room 座標範圍）；使用者 8 秒內滑過就不搶；只改 panX/panY → layout()，不碰電視聲音（iOS 的 spatial() 本來就不動音量）----
+let userPanAt=0,apT=null;window.AUTOPAN={n:0,last:null};
+window.PANKEEP=function(x0,x1,y0,y1){if(big||zoomed||pan||Date.now()-userPanAt<8000)return false;
+  const W=innerWidth,H=innerHeight,sw=480*s-W,sh=270*s-H,m=12;let tx=panX,ty=panY;
+  const fit=(a,b,o,view,span,cur)=>{if(span<=0||a==null)return cur;const v0=-o/s,vw=view/s;   // 目前可見 room 範圍 [v0,v0+vw]
+    let L=v0;if(b-a+2*m>vw)L=(a+b)/2-vw/2;else if(a-m<v0)L=a-m;else if(b+m>v0+vw)L=b+m-vw;else return cur;
+    return Math.max(0,Math.min(1,L*s/span))};
+  tx=fit(x0,x1,ox,W,sw,panX);ty=fit(y0,y1,oy,H,sh,panY);
+  if(Math.abs(tx-panX)<.002&&Math.abs(ty-panY)<.002)return false;
+  AUTOPAN.n++;AUTOPAN.last={tx,ty,at:Date.now()};cancelAnimationFrame(apT);
+  (function step(){if(pan||Date.now()-userPanAt<8000)return;panX+=(tx-panX)*.2;panY+=(ty-panY)*.2;
+    if(Math.abs(tx-panX)<.002&&Math.abs(ty-panY)<.002){panX=tx;panY=ty;layout();return}layout();apT=requestAnimationFrame(step)})();return true};
 // ---- 禁止整頁縮放（iOS 會忽略 user-scalable，所以再用事件擋：雙指縮放、連點兩下）----
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});

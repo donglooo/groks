@@ -11,7 +11,7 @@ document.body.append(cv,hit,menu);
 const get=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}};
 function add(b){const d=new Date(),L=get();L.push({ts:d.toISOString(),behavior:b,weekday:d.getDay(),hour:d.getHours()});localStorage.setItem(KEY,JSON.stringify(L));pose();flash(b)}
 // ---- Neko 的貓 sprite 播放器＋移動（全部依 neko/cat_sheet.json：animations / spots / paths；Neko 換圖只要覆蓋 json+png）----
-let SHEET=null,IMG=null,cur=null,fi=0,ft=0,nextAt={},pos={x:CAT.x,y:CAT.y},Q=[],act=null,spot='ac_perch',zoomLast=0;
+let follow=false,SHEET=null,IMG=null,cur=null,fi=0,ft=0,nextAt={},pos={x:CAT.x,y:CAT.y},Q=[],act=null,spot='ac_perch',zoomLast=0;
 const sleepNow=()=>{const l=get().slice(-1)[0];return !!(l&&l.behavior==='睡')};
 const has=a=>SHEET&&SHEET.animations&&SHEET.animations[a];
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -32,7 +32,7 @@ function next(){act=Q.shift();if(!act){return idle()}
   if(act.fade){if(act.at)setPos(act.at);cv.style.transition=`opacity ${act.ms||400}ms`;cv.style.opacity=act.fade==='in'?1:0;act.until=performance.now()+(act.ms||400);return}
   if(act.at)setPos(act.at);if(act.from)setPos(act.from);
   const r=res(act.anim);cur={anim:r.n,mir:r.m,n:0,times:act.times||1};fi=0;ft=0;act.t0=performance.now();draw1()}
-function idle(){const sp=SP()[spot]||{};const a=sleepNow()?'breathe':((sp.anim&&sp.anim[0])||'breathe');act={idle:true,anim:a};const r=res(a);cur={anim:r.n,mir:r.m,n:0,times:1};fi=0;ft=0;draw1()}
+function idle(){follow=false;const sp=SP()[spot]||{};const a=sleepNow()?'breathe':((sp.anim&&sp.anim[0])||'breathe');act={idle:true,anim:a};const r=res(a);cur={anim:r.n,mir:r.m,n:0,times:1};fi=0;ft=0;draw1()}
 function setPos(p){pos={x:p[0],y:p[1]};place();upd()}
 // window.CATPOS：給 dust.js 等物件用（frame 左上角、room 座標、pose=lie|sit|walk）
 const LIEA=['breathe','blink','tail_swish','ear_twitch','lick','stretch','sneeze_lie'],SITA=['sit_gaze_window','zoom_pant','zoom_nonchalant','sneeze_sit','dust_shake','duster_paw','rub_face'];
@@ -42,6 +42,7 @@ function draw1(){const A=SHEET.animations[cur.anim];let name=A.frames[Math.min(f
   if(sleepNow()&&cur.anim==='breathe'&&has('blink')){const bf=SHEET.animations.blink.frames;name=bf[Math.min(1,bf.length-1)]}
   frameDraw(name,cur.mir);upd();if(act&&act.onFrame)act.onFrame(fi)}
 function tick(){requestAnimationFrame(tick);if(!SHEET||!IMG||!cur)return;const now=performance.now(),dt=Math.min(100,now-(tick.l||now));tick.l=now;
+  if(follow&&window.PANKEEP&&!(act&&act.fade&&act.fade==='out')){const la=act&&act.to?Math.sign(act.to[0]-pos.x)*Math.min(50,Math.abs(act.to[0]-pos.x)):0;PANKEEP(pos.x+18+Math.min(0,la),pos.x+66+Math.max(0,la),pos.y,pos.y+CAT.h)}   // 跑的方向多看一點
   if(act&&act.fade){if(now>=act.until)next();return}
   // 移動
   if(act&&act.to){const sp=act.speed||24,dx=act.to[0]-pos.x,dy=act.to[1]-pos.y,d=Math.hypot(dx,dy),st=sp*dt/1000;
@@ -73,7 +74,7 @@ function mv(x0,x1,pw){const y=(pw.points&&pw.points[0][1])||206;return{anim:x1<x
 function wander(){if(sleepNow())return idle();
   if(spot!=='ac_perch'&&Date.now()-zoomLast>30*60e3&&Math.random()<.25)return zoomies(false);
   const opts=Object.keys(SP()).filter(k=>k!==spot);const t=opts[Math.random()*opts.length|0];const L=walkTo2(t);spot='moving';
-  if(t==='window_gaze')L.push({anim:'sit_gaze_window',times:1,loopUntil:performance.now()+rnd(20e3,60e3)});run(L)}
+  if(t==='window_gaze'||/^walkway/.test(t))follow=true;if(t==='window_gaze')L.push({anim:'sit_gaze_window',times:1,loopUntil:performance.now()+rnd(20e3,60e3)});run(L)}
 function walkTo2(t){const was=act&&act.spotWas;return walkTo.call(null,t)}
 // 暴衝：依 paths.zoomies.sequence；撞盆栽那步對齊 knock.js 的盆栽（PLANT.contactX），不撞就跳過撞擊格
 function zoomies(force){if(!SHEET||sleepNow())return false;const Z=P().zoomies;if(!Z)return false;zoomLast=Date.now();
@@ -90,10 +91,11 @@ function zoomies(force){if(!SHEET||sleepNow())return false;const Z=P().zoomies;i
     if(st.to)st.speed=Z.speed_px_s||140;
     if(s.anim==='zoom_bump_plant'){if(!willKnock)continue;const k=s.impact_frame||0;let done=false;st.onFrame=f=>{if(!done&&f>=k){done=true;PLANT.knock()}}}
     if(s.alt&&has(s.alt)&&Math.random()<.5)st.anim=s.alt;if(s.repeat)st.times=s.repeat;L.push(st)}
-  L.push({fn:()=>{spot='floor_mid'}});run(L);return true}
+  L.push({fn:()=>{spot='floor_mid'}});follow=true;run(L);return true}
 window.onCatEvent=function(type,detail){dispatchEvent(new CustomEvent('alivelog:cat',{detail:Object.assign({type},detail||{})}));
   // 撢子事件（Nook dust.js）：依 cat_sheet.json events 找動畫；走路/暴衝中不插播
   const EV=(SHEET&&SHEET.events)||{};
+  if((type==='duster_pass'||type==='dust_land')&&window.PANKEEP){const x=detail&&detail.x!=null?detail.x:38,y=detail&&detail.y!=null?detail.y:224;if(!(detail&&detail.phase==='end'))PANKEEP(x-24,x+24,y-10,y+10)}
   if(['duster_paw','sneeze','dust_shake','rub_face'].includes(type)){if(!SHEET||(act&&(act.to||act.fade||String(act.anim).startsWith('zoom'))))return;
     let a=type;const e=EV[type]||{};if(type==='sneeze'){const ps=poseNow()!=='walk'?poseNow():((detail&&detail.pose)||'sit');a=(e.by_pose&&e.by_pose[ps])||(detail&&detail.anim)||e.default||'sneeze_sit'}else if(e.anim)a=e.anim;
     if(type==='duster_paw'&&sleepNow())return;if(!has(a))return;run([{anim:a,times:1}]);return}
@@ -106,7 +108,7 @@ function boot(){fetch('neko/cat_sheet.json',{cache:'no-store'}).then(r=>r.json()
 requestAnimationFrame(tick);
 function pose(){if(SHEET&&cur){schedule(performance.now());if(sleepNow()&&(Q.length||act&&!act.idle)){Q=[];if(spot==='moving')spot='floor_mid';cv.style.opacity=1;idle()}draw1()}}   // 記「睡」→ 原地停下睡
 window.CATSPRITE={get anim(){return cur&&cur.anim},get frame(){return cv.dataset.frame},get mirror(){return cv.dataset.mirror==='1'},get pos(){return Object.assign({},pos)},get spot(){return spot},get queue(){return Q.length},
-  play:(a,t)=>run([{anim:a,times:t||1}]),go:t=>{spot=spot==='moving'?'floor_mid':spot;const L=walkTo(t);spot='moving';run(L.concat(t==='window_gaze'?[{anim:'sit_gaze_window',times:1,loopUntil:performance.now()+30e3}]:[]))},zoomies:f=>zoomies(f!==false),reload:boot};
+  play:(a,t)=>run([{anim:a,times:t||1}]),go:t=>{spot=spot==='moving'?'floor_mid':spot;const L=walkTo(t);spot='moving';follow=t==='window_gaze'||/^walkway/.test(t);run(L.concat(t==='window_gaze'?[{anim:'sit_gaze_window',times:1,loopUntil:performance.now()+30e3}]:[]))},zoomies:f=>zoomies(f!==false),reload:boot};
 if(/[?&]debug=1/.test(location.search)){const b=document.createElement('button');b.id='dbgzoom';b.textContent='zoom';
   b.style.cssText='position:fixed;left:64px;top:6px;z-index:50;font:12px monospace;background:#120f1a;color:#f0b25a;border:2px solid #f0b25a;padding:4px 8px';
   b.addEventListener('pointerup',e=>{e.stopPropagation();zoomies(true)});b.addEventListener('click',e=>e.stopPropagation());document.body.appendChild(b)}
