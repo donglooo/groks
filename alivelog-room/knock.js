@@ -2,7 +2,7 @@
 // 測試：網址加 ?debug=1 → 左上角出現「knock」按鈕；或 console 呼叫 PLANT.knock()
 // 自然發生：貓 onCatEvent('zoomies') 時有機率撞倒；另有低頻背景機率；兩次至少間隔 3 小時
 (function(){
-const KEY='alivelog.plant',COOL=3*3600e3,PX=96,PY=262,VX=246,VY=262;   // 盆栽底部中心、掃地機座位置（底圖 480x270 座標）
+const KEY='alivelog.plant',COOL=3*3600e3,PX=96,PY=238,VX=246,VY=238;   // 盆栽底部中心、掃地機座位置（底圖 480x270 座標）
 const st=Object.assign({s:'up',dirt:0,last:0},(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})());
 const save=()=>localStorage.setItem(KEY,JSON.stringify(st));
 const cv=document.createElement('canvas');cv.width=480;cv.height=270;cv.className='px';cv.id='plantcv';cv.style.pointerEvents='none';
@@ -20,8 +20,8 @@ function drawVac(){const x=Math.round(vac.x),y=VY;g.fillStyle='#24222c';g.fillRe
   g.fillStyle=vac.on?'#7ad070':'#c03a2c';g.fillRect(x-1,y-5,2,1);g.fillStyle='#12101a';g.fillRect(x-6,y,13,1);
   if(vac.on){g.fillStyle='#e0cbb8';g.globalAlpha=.5;g.fillRect(x+7+(Date.now()/80&1),y-1,1,1);g.globalAlpha=1}}
 function draw(){g.clearRect(0,0,480,270);
-  if(st.dirt){g.globalAlpha=dirtA;g.fillStyle='#40342a';for(const[dx,dy,w]of DIRT)g.fillRect(PX+dx,PY+dy,w,1);g.fillStyle='#2a1e20';for(const[dx,dy]of CRUMB)g.fillRect(PX+dx,PY+dy,1,1);g.globalAlpha=1}
-  g.save();g.translate(PX+6,PY);g.rotate(ang);g.drawImage(spr,-12,-17);g.restore();   // 以盆底右下角為支點往右倒
+  if(st.dirt){g.globalAlpha=dirtA;g.fillStyle='#40342a';for(const[dx,dy,w]of DIRT)g.fillRect(PX-dx-w,PY+dy,w,1);g.fillStyle='#2a1e20';for(const[dx,dy]of CRUMB)g.fillRect(PX-dx,PY+dy,1,1);g.globalAlpha=1}
+  g.save();g.translate(PX-6,PY);g.rotate(-ang);g.drawImage(spr,0,-17);g.restore();   // 貓從右邊撞過來 → 以盆底左下角為支點往左倒
   drawVac();cv.dataset.state=st.s;cv.dataset.dirt=st.dirt?'1':'0'}
 // 音效：HTMLAudio（不用 Web Audio）；iOS 上電視有聲播放中就不出聲，以免搶走電視音訊，改用字卡「咚！」
 const AU={knock:new Audio('knock.wav'),vac:new Audio('vacuum.wav')};for(const a of Object.values(AU)){a.preload='auto';a.volume=.6}
@@ -37,7 +37,7 @@ function bubble(t,big){const V=window.VIEW||{s:1,ox:0,oy:0},d=document.createEle
 const mk=id=>{const h=document.createElement('div');h.id=id;h.style.cssText='position:absolute;z-index:4;cursor:pointer;touch-action:none';document.body.appendChild(h);return h};
 const ph=mk('planthit'),vh=mk('vachit');
 function place(){const V=window.VIEW;if(!V)return;const S=V.s;Object.assign(cv.style,{left:V.ox+'px',top:V.oy+'px',width:Math.round(480*S)+'px',height:Math.round(270*S)+'px'});
-  const fallen=st.s!=='up';Object.assign(ph.style,fallen?{left:V.ox+(PX-6)*S+'px',top:V.oy+(PY-14)*S+'px',width:22*S+'px',height:16*S+'px'}:{left:V.ox+(PX-7)*S+'px',top:V.oy+(PY-19)*S+'px',width:14*S+'px',height:20*S+'px'});
+  const fallen=st.s!=='up';Object.assign(ph.style,fallen?{left:V.ox+(PX-24)*S+'px',top:V.oy+(PY-14)*S+'px',width:30*S+'px',height:16*S+'px'}:{left:V.ox+(PX-7)*S+'px',top:V.oy+(PY-19)*S+'px',width:14*S+'px',height:20*S+'px'});
   Object.assign(vh.style,{left:V.ox+(vac.x-9)*S+'px',top:V.oy+(VY-9)*S+'px',width:18*S+'px',height:12*S+'px'})}
 let busy=false;
 function anim(from,to,ms,fn,done){const t0=performance.now();(function f(){const k=Math.min(1,(performance.now()-t0)/ms);fn(from+(to-from)*k,k);draw();k<1?requestAnimationFrame(f):done&&done()})()}
@@ -47,16 +47,16 @@ function knock(force){if(busy||st.s!=='up')return false;if(!force&&Date.now()-st
 function upright(){if(busy||st.s!=='fallen')return;busy=true;anim(Math.PI/2,0,220,a=>ang=a,()=>{ang=0;st.s='up';save();place();busy=false})}
 function vacuum(){if(vac.on||busy)return;if(!st.dirt){bubble('嗶',false);return}vac.on=true;snd('vac','嗡～');
   const go=(to,ms,d)=>anim(vac.x,to,ms,x=>{vac.x=x;place()},d);
-  go(PX+24,500,()=>go(PX-8,350,()=>{anim(1,0,300,a=>dirtA=a,()=>{st.dirt=0;dirtA=1;save();go(VX,500,()=>{vac.on=false;draw();place()})})}))}
+  go(PX-26,500,()=>go(PX+6,350,()=>{anim(1,0,300,a=>dirtA=a,()=>{st.dirt=0;dirtA=1;save();go(VX,500,()=>{vac.on=false;draw();place()})})}))}
 ph.addEventListener('pointerup',e=>{e.stopPropagation();upright()});vh.addEventListener('pointerup',e=>{e.stopPropagation();vacuum()});
 for(const h of[ph,vh])h.addEventListener('click',e=>e.stopPropagation());
 // 自然發生：貓暴衝時 30% 機率；另外每 10 分鐘有 1/30 機率（受 3 小時冷卻限制）
-addEventListener('alivelog:cat',e=>{if(e.detail&&e.detail.type==='zoomies'&&Math.random()<.3)knock(false)});
-setInterval(()=>{if(Math.random()<1/30)knock(false)},600e3);
+// 暴衝時撞不撞由 cat.js 問 PLANT.decide()（30%＋冷卻），撞擊格呼叫 PLANT.knock()
+// （不再有背景隨機撞倒：只在貓暴衝時發生）
 if(st.s==='falling')st.s='fallen';ang=st.s==='fallen'?Math.PI/2:0;
 if(/[?&]debug=1/.test(location.search)){const b=document.createElement('button');b.id='dbgknock';b.textContent='knock';
   b.style.cssText='position:fixed;left:6px;top:6px;z-index:50;font:12px monospace;background:#120f1a;color:#f0b25a;border:2px solid #f0b25a;padding:4px 8px';
   b.addEventListener('pointerup',e=>{e.stopPropagation();knock(true)});b.addEventListener('click',e=>e.stopPropagation());document.body.appendChild(b)}
 addEventListener('alivelog:layout',place);place();draw();
-window.PLANT={get state(){return Object.assign({},st)},knock:()=>knock(true),upright,vacuum,get vac(){return Object.assign({},vac)}};
+window.PLANT={contactX:PX+6,decide:force=>st.s==='up'&&!busy&&(force||(Date.now()-st.last>=COOL&&Math.random()<.3)),get state(){return Object.assign({},st)},knock:()=>knock(true),upright,vacuum,get vac(){return Object.assign({},vac)}};
 })();
