@@ -2,7 +2,7 @@
 // 點板上空白處＝新增（下方一行輸入框＋5 色）；點便利貼＝放大編輯；拖曳（移動 >4px 才開始）；長按 0.7 秒＝進度圈滿了撕掉（放開就取消）
 // 板子本體由本檔畫（room_fg 背景裡不畫，免得重複）；便利貼上的字只畫成橫條，不在房間畫面上顯示內容
 (function(){
-const KEY='alivelog.board',BX=273,BY=228,BW=43,BH=41,IX0=BX+3,IY0=BY+3,IX1=BX+BW-3,IY1=BY+BH-3,NW=12,NH=11,MAX=6,LONG=700,DRAG=4;
+const KEY='alivelog.board',BX=273,BY=232,BW=43,BH=41,IX0=BX+3,IY0=BY+3,IX1=BX+BW-3,IY1=BY+BH-3,NW=12,NH=11,MAX=6,LONG=700,DRAG=4;
 const COLS=['#f0c85a','#dc8c96','#6eb4aa','#a0c86e','#c8c8be'];
 const st=(()=>{try{const j=JSON.parse(localStorage.getItem(KEY));if(j&&Array.isArray(j.notes))return j}catch(e){}return{notes:[]}})();
 if(st.notes.some(n=>n.x<IX0||n.y<IY0||n.x>IX1-NW||n.y>IY1-NH)){st.notes.forEach(n=>{if(n.y<150)n.y+=150;n.x+=BX-250;n.y+=BY-238;n.x=Math.max(IX0,Math.min(IX1-NW,n.x));n.y=Math.max(IY0,Math.min(IY1-NH,n.y))});localStorage.setItem(KEY,JSON.stringify(st))}   // 舊版（480x270 或 loft_final）位置的便利貼：搬到新板子並夾在板內   // live23：舊 480x270 座標的便利貼搬到新座標（y+150）

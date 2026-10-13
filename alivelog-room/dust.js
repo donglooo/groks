@@ -4,7 +4,7 @@
 (function(){
 const KEY='alivelog.dust',DAY=86400e3,CUP={x:52,y:414},SNEEZE_R=130;
 const HIGH=[[0,92,211],[70,88,235],[68,86,257],[80,98,279],[68,86,301],[80,98,323],[100,210,193]];   // live23：+閣樓牆架1、牆架2、床頭小書架  // [x0,x1,頂面y]
-const DESK=[[237,351,317]];
+const DESK=[[237,351,321]];
 const st=Object.assign({high:Date.now(),desk:Date.now()},(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})());
 const save=()=>localStorage.setItem(KEY,JSON.stringify(st));
 const stage=t=>{const d=(Date.now()-t)/DAY;return d>=7?3:d>=3?2:d>=1?1:0};

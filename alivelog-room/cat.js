@@ -28,11 +28,16 @@ function startSpot(spots){let sv=null;try{sv=JSON.parse(localStorage.getItem(SKE
   napUntil=napping?next7():0;return{spot:pick,how:napping?'random_nap':'random'}}
 const has=a=>SHEET&&SHEET.animations&&SHEET.animations[a];
 const rnd=(a,b)=>a+Math.random()*(b-a);
+// 閣樓玻璃欄杆：疊在貓的像素上（source-atop），貓在玻璃後面；只影響欄杆矩形 x158–431,y96–141
+const GLASS=new Image();GLASS.src='glass_rail.png';let lastF=null,glassAt='';
+function glassOver(g){if(!GLASS.complete||!GLASS.naturalWidth)return;const x=Math.round(pos.x),y=Math.round(pos.y);
+  if(x+CAT.w<=158||x>=432||y+CAT.h<=96||y>=142){glassAt='';return}
+  g.save();g.globalCompositeOperation='source-atop';g.drawImage(GLASS,x,y,CAT.w,CAT.h,0,0,CAT.w,CAT.h);g.restore();glassAt=x+','+y}
 // 找動畫：沒有 *_right 就用 *_left 鏡像（反之亦然）；都沒有就退回 breathe
 function res(n){if(has(n))return{n,m:false};const o=n.replace(/_right$/,'_LEFT').replace(/_left$/,'_right').replace('_LEFT','_left');if(o!==n&&has(o))return{n:o,m:true};
   const t=n.replace(/_to_(left|right)$/,'');if(has(t))return{n:t,m:/_to_right$/.test(n)};return{n:'breathe',m:false}}
 function frameDraw(name,mir){const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);const f=SHEET&&SHEET.frames[name];if(!f||!IMG)return;
-  g.save();if(mir){g.translate(cv.width,0);g.scale(-1,1)}g.drawImage(IMG,f.x,f.y,f.w,f.h,0,0,f.w,f.h);g.restore();cv.dataset.frame=name;cv.dataset.mirror=mir?'1':'0';
+  g.save();if(mir){g.translate(cv.width,0);g.scale(-1,1)}g.drawImage(IMG,f.x,f.y,f.w,f.h,0,0,f.w,f.h);g.restore();cv.dataset.frame=name;cv.dataset.mirror=mir?'1':'0';lastF=[name,mir];glassOver(g);cv.dataset.glass=glassAt;
   cv.style.filter=document.getElementById('fg').style.filter||'none';
   if(sleepNow()){g.fillStyle='#e0cbb8';const z=(x,y)=>{g.fillRect(x,y,3,1);g.fillRect(x+1,y+1,1,1);g.fillRect(x,y+2,3,1)};z(34,3);z(39,0)}}
 function schedule(now){nextAt={blink:now+rnd(3e3,7e3),ear_twitch:now+rnd(5e3,11e3),tail_swish:now+rnd(7e3,15e3),lick:now+rnd(45e3,90e3),stretch:now+rnd(120e3,240e3),move:now+rnd(40e3,120e3)};
@@ -108,7 +113,8 @@ function mv(x0,x1,pw){const y=pos.y;return{anim:x1<x0?(pw.anim_left||'walk_left'
 function wander(){if(sleepNow())return idle();
   if(spot!=='ac_perch'&&Date.now()-zoomLast>30*60e3&&Math.random()<.25)return zoomies(false);
   const opts=Object.keys(SP()).filter(k=>k!==spot);const t=opts[Math.random()*opts.length|0];const L=walkTo2(t);spot='moving';
-  if(t==='window_gaze'||/^walkway/.test(t))follow=true;if(t==='window_gaze')L.push({anim:'sit_gaze_window',times:1,loopUntil:performance.now()+rnd(20e3,60e3)});run(L)}
+  follow=true;   // live25：直拿可平移，走動時鏡頭跟著貓（使用者剛滑過 8 秒內不搶）
+  if(t==='window_gaze')L.push({anim:'sit_gaze_window',times:1,loopUntil:performance.now()+rnd(20e3,60e3)});run(L)}
 function walkTo2(t){const was=act&&act.spotWas;return walkTo.call(null,t)}
 // 暴衝：依 paths.zoomies.sequence；撞盆栽那步對齊 knock.js 的盆栽（PLANT.contactX），不撞就跳過撞擊格
 function zoomies(force){if(!SHEET||sleepNow()||(act&&(act.jump||act.tunnel)))return false;const Z=P().zoomies;if(!Z)return false;zoomLast=Date.now();
@@ -149,7 +155,7 @@ function pose(){if(SHEET&&cur){schedule(performance.now());if(sleepNow()&&(Q.len
     if(act&&(act.jump||act.tunnel)){Q=[{fn:()=>{spot=spotAt()}}];return}   // 跳到一半不能停在空中：落地再睡
     Q=[];if(spot==='moving')spot=spotAt();idle()}draw1()}}   // 記「睡」→ 原地停下睡
 window.CATSPRITE={get anim(){return cur&&cur.anim},get frame(){return cv.dataset.frame},get mirror(){return cv.dataset.mirror==='1'},get pos(){return Object.assign({},pos)},get spot(){return spot},get queue(){return Q.length},
-  play:(a,t)=>run([{anim:a,times:t||1}]),go:t=>{if(act&&(act.jump||act.tunnel))return false;const L=walkTo(t);spot='moving';follow=t==='window_gaze'||/^walkway/.test(t);run(L.concat(t==='window_gaze'?[{anim:'sit_gaze_window',times:1,loopUntil:performance.now()+30e3}]:[]))},zoomies:f=>zoomies(f!==false),reload:boot};
+  play:(a,t)=>run([{anim:a,times:t||1}]),go:t=>{if(act&&(act.jump||act.tunnel))return false;const L=walkTo(t);spot='moving';follow=true;run(L.concat(t==='window_gaze'?[{anim:'sit_gaze_window',times:1,loopUntil:performance.now()+30e3}]:[]))},zoomies:f=>zoomies(f!==false),reload:boot};
 if(/[?&]debug=1/.test(location.search)){const b=document.createElement('button');b.id='dbgzoom';b.textContent='zoom';
   b.style.cssText='position:fixed;left:64px;top:6px;z-index:50;font:12px monospace;background:#120f1a;color:#f0b25a;border:2px solid #f0b25a;padding:4px 8px';
   b.addEventListener('pointerup',e=>{e.stopPropagation();zoomies(true)});b.addEventListener('click',e=>e.stopPropagation());document.body.appendChild(b)}
@@ -157,7 +163,8 @@ boot();
 function flash(b){const f=document.createElement('div');f.textContent='已記：'+b;f.style.cssText=menu.style.cssText+';display:block;padding:8px;pointer-events:none';
   const r=hit.getBoundingClientRect();f.style.left=r.left+'px';f.style.top=Math.max(0,r.top-40)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1200)}
 function place(){const {s,ox,oy}=window.VIEW||{s:1,ox:0,oy:0};
-  Object.assign(hit.style,{left:ox+Math.round(pos.x)*s+'px',top:oy+Math.round(pos.y)*s+'px',width:CAT.w*s+'px',height:CAT.h*s+'px'});Object.assign(cv.style,{left:hit.style.left,top:hit.style.top,width:hit.style.width,height:hit.style.height})}
+  Object.assign(hit.style,{left:ox+Math.round(pos.x)*s+'px',top:oy+Math.round(pos.y)*s+'px',width:CAT.w*s+'px',height:CAT.h*s+'px'});Object.assign(cv.style,{left:hit.style.left,top:hit.style.top,width:hit.style.width,height:hit.style.height});
+  if(lastF){const x=Math.round(pos.x),y=Math.round(pos.y),inG=!(x+CAT.w<=158||x>=432||y+CAT.h<=96||y>=142);if(inG?glassAt!==x+','+y:glassAt)frameDraw(lastF[0],lastF[1])}}
 function open(){const r=hit.getBoundingClientRect();menu.style.display='block';const mh=menu.offsetHeight,mw=menu.offsetWidth;
   menu.style.left=Math.max(4,Math.min(innerWidth-mw-4,r.left+r.width/2-mw/2))+'px';menu.style.top=Math.max(4,Math.min(innerHeight-mh-4,r.top-mh-6))+'px'}
 const close=()=>menu.style.display='none';
