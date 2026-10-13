@@ -68,11 +68,7 @@ mh.addEventListener('pointerup',()=>{moonBig();mb.style.display='block';window.M
 document.addEventListener('pointerdown',e=>{if(mb.style.display==='block'&&e.target!==mb){mb.style.display='none';window.MOONOPEN=false;e.stopPropagation()}},true);
 setInterval(()=>{if(mb.style.display==='block')moonBig()},10000);
 function amb(now){a.clearRect(0,0,480,270);const sl=sleeping(),T=(now-t0)/1000;
-  // 貓：呼吸（背部輪廓 2.4 秒一次起伏）
-  if(Math.sin(T*2.6)>0.2)R(392,165,26,1,P.cat),R(392,165,26,1,P.hi);
-  if(!sl){if(now>blinkAt){R(374,166,4,4,P.cat);R(383,166,4,4,P.cat);R(374,168,4,1,P.ink);R(383,168,4,1,P.ink);if(now>blinkAt+140)blinkAt=now+3000+Math.random()*4000}
-    if(now>earAt&&now<earAt+220){R(379-12,168-12,3,3,'rgba(0,0,0,0)');a.clearRect(367,156,3,3);R(366,157,3,3,P.cat)}else if(now>earAt+220&&Math.random()<.004)earAt=now}
-  if(now<tailAt+400){a.clearRect(428,174,3,6);R(430,172,3,4,P.cat);R(431,171,1,2,P.hi)}else if(Math.random()<.006)tailAt=now;
+  // 貓的動畫改由 cat.js 的 Neko sprite 播放
   // 盆栽搖擺
   const sw=Math.sin(T*1.3)>0.6?1:0;if(sw){R(196,109,1,2,P.green);R(201,111,1,2,P.leaf)}
   // 檯燈極輕微閃爍
