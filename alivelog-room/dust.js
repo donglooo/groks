@@ -38,30 +38,37 @@ function bubble(t,x,y){const V=window.VIEW||{s:1,ox:0,oy:0},d=document.createEle
   d.style.cssText=`position:absolute;z-index:6;pointer-events:none;font:bold ${Math.max(12,Math.round(V.s*7))}px monospace;color:#e0cbb8;text-shadow:2px 2px 0 #05070a;left:${V.ox+x*V.s}px;top:${V.oy+y*V.s}px`;
   document.body.appendChild(d);setTimeout(()=>d.remove(),900)}
 // 貓位置：window.CATPOS={x,y,w,h}（frame 左上角，room_fg 座標）優先；否則用 cat_sheet.json 的 anchor
-let SHEET=null;const catBox=()=>window.CATPOS||(SHEET?{x:SHEET.anchor_in_room_fg[0],y:SHEET.anchor_in_room_fg[1],w:SHEET.frameSize[0],h:SHEET.frameSize[1]}:{x:356,y:150,w:84,h:32});
+let SHEET=null;const catBox=()=>{const c=window.CATPOS;if(c){const sp=SHEET&&SHEET.spots&&SHEET.spots[c.spot];return Object.assign({opaque:c.opaque||(sp&&sp.opaque_x_range)},c)}return(SHEET?{x:SHEET.anchor_in_room_fg[0],y:SHEET.anchor_in_room_fg[1],w:SHEET.frameSize[0],h:SHEET.frameSize[1]}:{x:356,y:150,w:84,h:32})};
 const LIE=['breathe','blink','tail_swish','ear_twitch','lick','stretch'];
-const catPose=()=>{if(window.CATPOS&&window.CATPOS.pose)return window.CATPOS.pose;const a=window.CATSPRITE&&CATSPRITE.anim;return LIE.includes(a)?'lie':'sit'};
+const catPose=()=>{const c=window.CATPOS,sp=c&&SHEET&&SHEET.spots&&SHEET.spots[c.spot];if(sp&&sp.anim){if(sp.anim.includes('sneeze_lie'))return'lie';if(sp.anim.includes('sneeze_sit'))return'sit'}if(c&&(c.pose==='lie'||c.pose==='sit'))return c.pose;const a=window.CATSPRITE&&CATSPRITE.anim;return LIE.includes(a)?'lie':'sit'};
 const dur=(a,upto)=>{try{const A=SHEET.animations[a],d=A.durations_ms||A.frames.map(()=>150);return d.slice(0,upto==null?d.length:upto).reduce((x,y)=>x+y,0)}catch(e){return upto==null?1150:380}};
 fetch('neko/cat_sheet.json').then(r=>r.json()).then(j=>SHEET=j).catch(()=>{});
+// 哈啾對齊實際影格：監看貓 canvas 的 data-frame（cat.js 每格都會寫），看到 <anim>_<achoo_frame> 就觸發；
+// 沒有貓 sprite／沒看到該格時，用 sheet 的 durations 算的時間 +250ms 當保底
+function catCanvas(){return document.querySelector('canvas[data-frame]')}
+function onAchoo(an,fn){const af=(SHEET&&SHEET.animations[an]&&SHEET.animations[an].achoo_frame)||2,want=an+'_'+af,cv=catCanvas();let done=false,mo=null,t=null;
+  const fire=src=>{if(done)return;done=true;mo&&mo.disconnect();clearTimeout(t);window.DUSTACHOO={src,at:Math.round(performance.now()),frame:want};fn()};
+  if(cv){if(cv.dataset.frame===want)return fire('frame');mo=new MutationObserver(()=>{if(cv.dataset.frame===want)fire('frame')});mo.observe(cv,{attributes:true,attributeFilter:['data-frame']})}
+  t=setTimeout(()=>fire('timer'),dur(an,af)+250)}
 const cev=(t,d)=>{try{window.onCatEvent&&window.onCatEvent(t,d)}catch(e){}};
 window.DUSTEV=[];const emit=(t,d)=>{DUSTEV.push({t,d,at:Math.round(performance.now())});cev(t,d)};
 // 掃一趟：每段頂面由左到右，撢子 3 影格擺動（-1/0/1，每 80ms 換一格），走 0.09px/ms；灰往下飄
 let fl={};
-function run(which){if(sweep)return false;const segs=which==='desk'?DESK:HIGH,heavy=(which==='desk'?dkS():hiS())>=3;let i=0;fl={};
+function run(which){if(sweep)return false;window.DUSTT0=Math.round(performance.now());const segs=which==='desk'?DESK:HIGH,heavy=(which==='desk'?dkS():hiS())>=3;let i=0;fl={pose:catPose()};
   emit('duster_pass',{phase:'start',target:which});snd('dust','唰唰',CUP.x,CUP.y-30);
   const next=()=>{if(i>=segs.length){end(which);return}const[x0,x1,y]=segs[i++];const t0=performance.now(),ms=(x1-x0)/0.09;
     (function f(){const k=Math.min(1,(performance.now()-t0)/ms),x=x0+(x1-x0)*k;
       sweep={which,x,y:y-3,tilt:[-1,0,1,0][Math.floor(performance.now()/80)%4],cut:x};
       if(Math.random()<.6)parts.push({x:x+(Math.random()*6-3),y:y-1,vx:(Math.random()-.5)*.3,vy:-.3-Math.random()*.3,c:Math.random()<.5?'#c4bcaa':'#f0ece2',life:900});
-      const c=catBox(),dx=x<c.x?c.x-x:x>c.x+c.w?x-(c.x+c.w):0,dy=y<c.y?c.y-y:y>c.y+c.h?y-(c.y+c.h):0,d=Math.hypot(dx,dy);
+      const c=catBox(),L=c.opaque?c.opaque[0]:c.x,Rr=c.opaque?c.opaque[1]:c.x+c.w,dx0=x<L?L-x:x>Rr?x-Rr:0,dx=x<c.x?c.x-x:x>c.x+c.w?x-(c.x+c.w):0,dy=y<c.y?c.y-y:y>c.y+c.h?y-(c.y+c.h):0,d=Math.hypot(dx,dy);
       emit('duster_pass',{phase:'move',target:which,x:Math.round(x),y,dist:Math.round(d)});
       if(!fl.paw&&d<=40){fl.paw=1;emit('duster_paw',{x:Math.round(x),y})}
       // 灰落到貓身上：撢子在貓 frame 的 x 範圍內，且在貓上方 40px 以內或貓身上
-      if(!fl.land&&dx===0&&y<=c.y+c.h&&y>=c.y-40){fl.land=1;const pose=catPose(),an=pose==='lie'?'sneeze_lie':'sneeze_sit';
+      if(!fl.land&&dx0===0&&y<=c.y+c.h&&y>=c.y-40){fl.land=1;const pose=fl.pose,an=pose==='lie'?'sneeze_lie':'sneeze_sit';
         emit('dust_land',{x:Math.round(x),y,pose});
         setTimeout(()=>{emit('sneeze',{pose,anim:an});window.DUSTSNEEZE=(window.DUSTSNEEZE||0)+1;
-          setTimeout(()=>snd('sneeze','哈啾！',c.x+c.w/2-10,c.y-12),dur(an,2));             // achoo_frame=2
-          setTimeout(()=>{emit('dust_shake',{});if(heavy)setTimeout(()=>emit('rub_face',{}),dur('dust_shake'))},dur(an))},600)}
+          onAchoo(an,()=>{snd('sneeze','哈啾！',c.x+c.w/2-10,c.y-12);const af=(SHEET&&SHEET.animations[an].achoo_frame)||2;   // 噴嚏剩下的格數播完才抖毛
+            setTimeout(()=>{emit('dust_shake',{});if(heavy)setTimeout(()=>emit('rub_face',{}),dur('dust_shake'))},dur(an)-dur(an,af))})},600)}
       draw();k<1?requestAnimationFrame(f):next()})()};next()}
 function end(which){if(which==='desk')st.desk=Date.now();else st.high=Date.now();
   save();sweep=null;cev('duster_pass',{phase:'end',target:which});draw();place()}
