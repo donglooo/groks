@@ -72,7 +72,7 @@ function run(which){if(sweep)return false;window.DUSTT0=Math.round(performance.n
       draw();k<1?requestAnimationFrame(f):next()})()};next()}
 function end(which){if(which==='desk')st.desk=Date.now();else st.high=Date.now();
   save();sweep=null;cev('duster_pass',{phase:'end',target:which});draw();place()}
-function click(){if(sweep)return;if(hiS()>0)return run('high');if(dkS()>0)return run('desk');bubble('很乾淨',CUP.x-10,CUP.y-30)}
+function click(){window.PANKEEP&&PANKEEP(CUP.x-10,CUP.x+10,CUP.y-26,CUP.y+2);if(sweep)return;if(hiS()>0)return run('high');if(dkS()>0)return run('desk');bubble('很乾淨',CUP.x-10,CUP.y-30)}
 // 粒子
 (function tick(){if(parts.length){for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.02;p.life-=16}parts=parts.filter(p=>p.life>0&&p.y<270);if(!sweep)draw()}requestAnimationFrame(tick)})();
 const hit=document.createElement('div');hit.id='dusthit';hit.style.cssText='position:absolute;z-index:4;cursor:pointer;touch-action:none';document.body.appendChild(hit);
