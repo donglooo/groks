@@ -11,11 +11,15 @@ const css=document.createElement('style');css.textContent=`
 #mc-ov{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(10,8,16,.82);touch-action:auto}
 #mc-ov.on{display:flex}
 #mc-img{max-width:88vw;max-height:calc(100vh - 56px);border:3px solid #efe6d6;background:#efe6d6;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;pointer-events:auto;touch-action:auto}
-#mc-cap{margin-top:10px;color:#cfc6b8;font:13px/1.4 system-ui,sans-serif;letter-spacing:.08em;pointer-events:none}`;
+#mc-cap{margin-top:10px;color:#cfc6b8;font:13px/1.4 system-ui,sans-serif;letter-spacing:.08em;pointer-events:none}
+#mc-share{margin-top:12px;padding:12px 28px;font:600 17px system-ui,sans-serif;color:#2a2418;background:#efe6d6;border:0;border-radius:24px;cursor:pointer}`;
 document.head.appendChild(css);
-const ov=document.createElement('div');ov.id='mc-ov';ov.innerHTML='<img id="mc-img" alt="早安圖"><div id="mc-cap"></div>';document.body.appendChild(ov);
+const ov=document.createElement('div');ov.id='mc-ov';ov.innerHTML='<img id="mc-img" alt="早安圖"><div id="mc-cap"></div><button id="mc-share">分享圖片</button>';document.body.appendChild(ov);
 const img=$('mc-img');
-ov.addEventListener('click',e=>{if(e.target!==img)ov.classList.remove('on')});
+$('mc-share').addEventListener('click',async e=>{e.stopPropagation();const b=e.currentTarget;try{const r=await fetch(url);const bl=await r.blob();const f=new File([bl],'早安.jpg',{type:bl.type||'image/jpeg'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]})}
+ else{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='早安.jpg';a.click();b.textContent='已下載'}}catch(err){if(err&&err.name!=='AbortError')b.textContent='請長按圖片儲存'}});
+ov.addEventListener('click',e=>{if(e.target!==img&&e.target.id!=='mc-share')ov.classList.remove('on')});
 ov.addEventListener('pointerdown',e=>e.stopPropagation());
 const spr=document.createElement('div');spr.className='mc-spr';document.body.appendChild(spr);
 const gl=document.createElement('div');gl.className='mc-glint';document.body.appendChild(gl);
@@ -29,6 +33,6 @@ function probe(ext,next){const t=new Image();t.onload=()=>{url=t.src;render()};t
 function check(){today=tpeDate();url=null;probe('jpg',()=>probe('png',()=>{url=null;render()}))}
 spr.addEventListener('click',e=>{e.stopPropagation();if(!url)return;img.src=url;$('mc-cap').textContent='早安';ov.classList.add('on');localStorage.setItem('morning.opened',today);render()});
 spr.addEventListener('pointerdown',e=>e.stopPropagation());
-addEventListener('resize',()=>setTimeout(render,50));setInterval(render,1000);setInterval(check,10*60e3);
+addEventListener('resize',()=>setTimeout(render,50));setInterval(render,1000);let lv='';(function loop(){const V=window.VIEW;const k=V?V.s+','+V.ox+','+V.oy:'';if(k!==lv){lv=k;render()}requestAnimationFrame(loop)})();setInterval(check,10*60e3);
 window.MORNING={check,render,open:()=>spr.click()};check();
 })();
