@@ -25,6 +25,7 @@ body{position:fixed;inset:0}
 .ready #sheer{transition:width .9s steps(12)} .ready #dl,.ready #dr{transition:width .7s steps(10)}
 #tv{position:absolute;background:#000}
 #tv.big{z-index:5;box-shadow:0 0 0 100vmax rgba(10,8,16,.75)}
+#tv{overflow:hidden}
 #tv iframe,#tv #yt{position:absolute;left:0;top:0;width:480px;height:270px;border:0;pointer-events:none;transform-origin:0 0;transform:scale(var(--tvsx,1),var(--tvsy,1))}   /* live28：YouTube 播放器小於約 200px 寬會改用小尺寸版面（iPhone 橫拿電視只有 ~98px → 左半黑）；固定用 480×270 播放再縮放到像素電視框 */
 #osd{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none;z-index:2}
 #hit{position:absolute;inset:0;z-index:3;cursor:pointer;touch-action:none}
@@ -176,9 +177,9 @@ $('chsel').addEventListener('pointerdown',e=>{e.stopPropagation();confirmCh()});
 document.addEventListener('pointerdown',e=>{if(pre!==null&&!$('rc').contains(e.target)&&!$('tv').contains(e.target)&&e.target!==$('remote'))cancelCh()},true);
 // ---- 開關機畫面：黑 → 背光暗灰 → 中央亮線展開 → 等到真的在播才淡出（蓋住 YouTube 縮圖/紅色播放鍵/標題）----
 let scrWait=true;
-function screenOn(){const o=$('poweroff');o.dataset.off='0';o.className='bl';void o.offsetWidth;o.classList.add('on');scrWait=true;
+function screenOn(){$('slot').style.visibility='';const o=$('poweroff');o.dataset.off='0';o.className='bl';void o.offsetWidth;o.classList.add('on');scrWait=true;
   setTimeout(()=>{if(scrWait&&ready&&player.getPlayerState()===1){scrWait=false;setTimeout(()=>{if(o.dataset.off!=='1')o.classList.add('hide')},1400)}},650)}
-function screenOff(){const o=$('poweroff');o.dataset.off='1';scrWait=false;o.className='';void o.offsetWidth;o.classList.add('off')}
+function screenOff(){const o=$('poweroff');o.dataset.off='1';scrWait=false;o.className='';void o.offsetWidth;o.classList.add('off');setTimeout(()=>{if(o.dataset.off==='1')$('slot').style.visibility='hidden'},350)}
 let powered=false,userMuted=false;   // 一進門電視是「靜音待機播放」；第一次按電源＝開聲音播放，之後才是開/關
 $('remote').addEventListener('pointerup',e=>{e.stopPropagation();$('rc').style.display=$('rc').style.display==='grid'?'none':'grid'});
 document.addEventListener('pointerdown',e=>{if($('rc').style.display==='grid'&&!$('rc').contains(e.target)&&e.target!==$('remote'))$('rc').style.display='none'},true);

@@ -50,7 +50,7 @@ function drawC(){W=46;H=70;cv.width=W;cv.height=H;btns=[];
   big(j?'prv':'lfx',5,44,j?'#7a5a2a':'#6a6470',j?'prv':'lf',j?P.amb:'#8a8494');big('chd',17,44,'#5a5664','dn',P.cream);big(j?'nxt':'rtx',29,44,j?'#7a5a2a':'#6a6470',j?'nxt':'rt',j?P.amb:'#8a8494');
   R(14,60,18,2,P.beige2)}
 function draw(){({A:drawA,B:drawB,C:drawC}[style]||drawA)();place()}
-function place(){SC=Math.max(2,Math.floor(Math.min(innerWidth*.3/W,innerHeight*.55/H)));if(style==='A')SC=Math.min(SC,4);if(style==='B')SC=Math.min(SC,4);if(style==='C')SC=Math.min(SC,4);
+function place(){const fine=matchMedia('(pointer:fine)').matches;SC=Math.max(fine?3:2,Math.floor(Math.min(innerWidth*(fine?.4:.3)/W,innerHeight*(fine?.7:.55)/H)));SC=Math.min(SC,fine?6:4);
   cv.style.width=W*SC+'px';cv.style.height=H*SC+'px';const sb='env(safe-area-inset-bottom)';
   if(style==='A'){rc.style.transform='none';rc.style.left='auto';rc.style.right='calc(14px + env(safe-area-inset-right))';rc.style.bottom=`calc(14px + ${sb})`;rc.style.top='auto'}
   else{rc.style.left=Math.round((innerWidth-W*SC)/2)+'px';rc.style.right='auto';rc.style.bottom=`calc(18px + ${sb})`;rc.style.top='auto'}}
