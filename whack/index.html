@@ -1,0 +1,25 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>打地鼠</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+body{margin:0;min-height:100vh;background:#7cc45a;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;color:#2b2b2b}
+h1{margin:16px 0 4px}#bar{display:flex;gap:18px;font-size:20px;font-weight:700;margin:6px 0 12px}
+#grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:min(92vw,420px)}
+.hole{position:relative;aspect-ratio:1;background:radial-gradient(ellipse at 50% 78%,#3b2a1a 0 38%,#5a3e22 39% 46%,transparent 47%);overflow:hidden;border-radius:16px;cursor:pointer}
+.mole{position:absolute;left:50%;bottom:-75%;width:62%;height:70%;transform:translateX(-50%);transition:bottom .12s;font-size:min(16vw,70px);text-align:center;line-height:1}
+.hole.up .mole{bottom:12%}.hole.hit .mole{filter:grayscale(1) brightness(1.4)}
+button{margin:18px;padding:12px 34px;font-size:20px;font-weight:700;border:0;border-radius:30px;background:#ffd34d;box-shadow:0 4px 0 #c89a10;cursor:pointer}
+#msg{font-size:18px;min-height:24px}</style></head><body>
+<h1>🔨 打地鼠</h1><div id="bar"><span>分數 <b id="sc">0</b></span><span>時間 <b id="tm">30</b></span><span>最高 <b id="hi">0</b></span></div>
+<div id="grid"></div><div id="msg">按開始，30 秒內打越多越好！</div><button id="go">開始</button>
+<script>
+const g=document.getElementById('grid'),H=[];let score=0,t=30,run=false,timer,pop;
+const hi=document.getElementById('hi');hi.textContent=localStorage.wam||0;
+for(let i=0;i<9;i++){const h=document.createElement('div');h.className='hole';h.innerHTML='<div class="mole">🐹</div>';
+ h.addEventListener('pointerdown',()=>{if(run&&h.classList.contains('up')&&!h.classList.contains('hit')){h.classList.add('hit');score++;sc.textContent=score;navigator.vibrate&&navigator.vibrate(30);setTimeout(()=>h.classList.remove('up','hit'),180)}});g.appendChild(h);H.push(h)}
+function up(){if(!run)return;const free=H.filter(h=>!h.classList.contains('up'));if(free.length){const h=free[Math.random()*free.length|0];h.classList.add('up');
+ const stay=Math.max(450,1100-score*20);setTimeout(()=>{if(!h.classList.contains('hit'))h.classList.remove('up')},stay)}
+ pop=setTimeout(up,Math.max(350,800-score*12)+Math.random()*300)}
+go.onclick=()=>{if(run)return;score=0;t=30;sc.textContent=0;tm.textContent=30;msg.textContent='';run=true;go.disabled=true;up();
+ timer=setInterval(()=>{tm.textContent=--t;if(t<=0){clearInterval(timer);clearTimeout(pop);run=false;go.disabled=false;go.textContent='再玩一次';H.forEach(h=>h.classList.remove('up'));
+ let m='時間到！你打了 '+score+' 隻';if(score>(+localStorage.wam||0)){localStorage.wam=score;hi.textContent=score;m+='，新紀錄 🎉'}msg.textContent=m}},1000)};
+</script></body></html>
