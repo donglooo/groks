@@ -106,7 +106,7 @@ if(m.taunt>0&&st=='up'&&m.taunt<1.4&&!bad){X.globalAlpha=clamp(m.taunt*4,0,1);ui
 function bubble(x,y,s){X.font=`900 22px ${FONT}`;const w=X.measureText(s).width+28;X.fillStyle='#fff';X.strokeStyle='#3a2208';X.lineWidth=3;rr(x-w/2,y-20,w,40,20);X.fill();X.stroke();
 X.beginPath();X.moveTo(x-w/2+14,y+17);X.lineTo(x-w/2+2,y+32);X.lineTo(x-w/2+30,y+19);X.fill();X.stroke();X.fillRect(x-w/2+12,y+14,22,5);txt(s,x,y+1,22,'#3a2208','#fff',0)}
 const SKINS=['street','army','chef'];
-const LINES={street:['吱！白天也敢逛大街','人行道我家開的','打1999也沒用啦'],army:['全家都來了！','機車上有吃的！','老鼠大軍集合～'],chef:['主廚試菜中，請稍等','塑膠袋最對味','今日主廚推薦'],giant:['阿嬤養大的啦','30公分了不起？','我很耐打喔'],fight:['我要求發言！','程序問題！','麥克風給我！'],vote:['選前點頭，選後搖頭','我投…另一邊','黨意？民意？'],spit:['我還沒講完！','嘴砲不用錢','噗噗噗～'],
+const LINES={street:['吱！白天也敢逛大街','人行道我家開的','打1999也沒用啦'],army:['地下街集合～','搭電扶梯走囉','市場收攤開飯！'],chef:['後廚我先試吃','連通門好方便','今日港點推薦'],giant:['阿嬤養大的啦','30公分了不起？','我很耐打喔'],fight:['我要求發言！','程序問題！','麥克風給我！'],vote:['選前點頭，選後搖頭','我投…另一邊','民意？鼠意？'],spit:['我還沒講完！','嘴砲不用錢','噗噗噗～'],
  board:['懇請支持！','拜託拜託！','凍蒜～'],paper:['再研議','請洽他科','下個月再說'],mosq:['剪綵完就閒置','預算花完了','只有蚊子來']};
 function acc(m,r,bw,bh,t){const k=m.skin,hit=m.state=='hit';X.lineCap='round';X.lineJoin='round';
  if(k=='chef'||k=='boss'&&false){X.fillStyle='#fff';X.strokeStyle='#999';X.lineWidth=3;[-.35,0,.35].forEach(a=>{X.beginPath();X.arc(a*bw,-bh*1.12,r*.26,0,7);X.fill();X.stroke()});rr(-bw*.55,-bh*1.05,bw*1.1,r*.3,4);X.fill();X.stroke();
@@ -135,11 +135,11 @@ function acc(m,r,bw,bh,t){const k=m.skin,hit=m.state=='hit';X.lineCap='round';X.
  if(k=='mosq'){X.fillStyle='#fff';X.strokeStyle='#888';X.lineWidth=2;rr(-r*.5,-bh*.98,r*1,r*.22,4);X.fill();X.stroke();txt('XX文化館',0,-bh*.98+r*.11,r*.13,'#666',0,0)}}
 function mosquitoes(x,y,r,t){for(let i=0;i<3;i++){const a=t*(3+i)+i*2,mx=x+Math.cos(a)*r*(.8+i*.15),my=y+Math.sin(a*1.3)*r*.35;X.fillStyle='#333';X.beginPath();X.ellipse(mx,my,5,2.5,a,0,7);X.fill();
  X.fillStyle='rgba(220,230,255,.8)';X.beginPath();X.ellipse(mx-2,my-4,4,2,-.6+Math.sin(t*60)*.5,0,7);X.fill();X.beginPath();X.ellipse(mx+2,my-4,4,2,.6-Math.sin(t*60)*.5,0,7);X.fill()}}
-const STAGES=[{n:'台北・安鼠之亂',c:'#ff6a3d'},{n:'台中・老鼠大軍',c:'#a35cff'},{n:'台南・料理鼠王',c:'#2fb88a'}];
+const STAGES=[{n:'台北・安鼠之亂',c:'#ff6a3d'},{n:'台北・鼠進城',c:'#a35cff'},{n:'台北・全城圍捕',c:'#2fb88a'}];
 function stageOf(t){return t<15?0:t<30?1:2}
-const DANMAKU=[['這尺寸根本是阿嬤養大的吧','白天主要幹道就有這種巨物，太扯了','快打1999！','中山站人行道驚見30cm巨鼠','安鼠之亂 +1','捷運站旁也有…'],
- ['全家都來了','料理鼠王家族出動','機車上的食物被搶光','十多隻排隊搶食','太平超市外老鼠大軍','先把機車置物箱關好'],
- ['主廚試菜中，請顧客稍等','水槽下在啃塑膠袋','小籠包店驚見鼠','今天的小籠包…先不要','衛生局請出動','料理鼠王真人版']];
+const DANMAKU=[['x'],
+ ['x'],
+ ['x']];
 function skyline(w,hz,stage){X.fillStyle=['rgba(120,140,170,.55)','rgba(140,130,170,.5)','rgba(150,130,110,.5)'][stage];const base=hz-40;let x=0,i=0;
  while(x<w){const bw=40+(i*37%50),bh=60+(i*53%110);X.fillRect(x,base-bh,bw,bh+40);x+=bw+6;i++}
  if(stage==0){const tx=w*.3;X.beginPath();X.moveTo(tx-14,base);for(let k=0;k<8;k++){const y=base-60-k*26,ww=22-k;X.lineTo(tx-ww,y);X.lineTo(tx-ww+4,y-22)}X.lineTo(tx-3,base-290);X.lineTo(tx,base-330);X.lineTo(tx+3,base-290);
@@ -221,22 +221,22 @@ const LV_LIST=[
   sec:[{bars:8,bpm:92,meter:16,pat:[0,8,12],den:.85},{bars:8,bpm:92,meter:16,pat:[0,4,8,12],den:.75}],tip:'阿嬤巨鼠：按住蓄力再放開＝重槌一擊！'},
  {id:'1-3',city:0,name:'安鼠之亂',layout:'g4x3',goal:{t:'boss'},stars:[900,1500,2200],hold:2.3,mix:{gold:.05,bomb:.06,giant:.1},boss:{bar:9,hp:18,name:'阿嬤養的巨鼠'},
   sec:[{bars:8,bpm:100,meter:16,pat:[0,4,8,12],den:.75},{bars:4,bpm:100,meter:16,pat:[],den:0},{bars:8,bpm:100,meter:16,pat:[0,4,8,12,14],den:.7}],tip:'Boss 撐破洞口！狂點擊退它'},
- {id:'2-1',city:1,name:'超市外的騷動',layout:'g4x3',goal:{t:'kill',k:'army',n:12},stars:[800,1600,2500],hold:2,mix:{army:.28,bomb:.06,gold:.04},
+ {id:'2-1',city:1,name:'士林・捷運站出口',layout:'g4x3',goal:{t:'kill',k:'army',n:12},stars:[800,1600,2500],hold:2,mix:{army:.28,bomb:.06,gold:.04},
   sec:[{bars:8,bpm:104,meter:16,pat:[0,3,6,10,12],den:.8},{bars:8,bpm:104,meter:16,pat:[0,3,6,8,11,14],den:.75}],tip:'老鼠大軍：一次劃過整排！（鍵盤：快速連按相鄰鍵）'},
- {id:'2-2',city:1,name:'機車置物箱',layout:'g4x4',goal:{t:'score',n:1000},stars:[1000,1600,2200],hold:1.9,mix:{army:.2,bomb:.08,giant:.08,gold:.05},
+ {id:'2-2',city:1,name:'台北地下街',layout:'g4x4',goal:{t:'score',n:1000},stars:[1000,1600,2200],hold:1.9,mix:{army:.2,bomb:.08,giant:.08,gold:.05},
   sec:[{bars:6,bpm:110,meter:16,pat:[0,3,6,10,12],den:.8},{bars:6,bpm:110,meter:12,pat:[0,4,8],den:.9},{bars:6,bpm:110,meter:16,pat:[0,3,6,8,10,14],den:.8}],tip:'中段變成三拍子！跟著節奏換拍'},
  {id:'2-3',city:1,name:'大軍集結',layout:'diamond',goal:{t:'boss'},stars:[1200,1300,1900],hold:1.8,mix:{army:.24,bomb:.08,giant:.08,gold:.05},boss:{bar:9,hp:26,name:'大軍頭目鼠'},
   sec:[{bars:8,bpm:120,meter:16,pat:[0,3,6,10,12],den:.8},{bars:4,bpm:120,meter:16,pat:[],den:0},{bars:8,bpm:120,meter:14,pat:[0,4,8,10],den:.85}],tip:'Boss 戰後轉 7/8 拍！'},
- {id:'3-1',city:2,name:'小籠包店後廚',layout:'hex',goal:{t:'seal',n:2},stars:[1000,900,1300],hold:1.9,nests:2,mix:{bomb:.07,giant:.07,gold:.05},
+ {id:'3-1',city:2,name:'全市鼠洞',layout:'hex',goal:{t:'seal',n:2},stars:[1000,900,1300],hold:1.9,nests:2,mix:{bomb:.07,giant:.07,gold:.05},
   sec:[{bars:8,bpm:112,meter:16,pat:[0,4,8,12,14],den:.8},{bars:8,bpm:112,meter:16,pat:[0,2,4,8,10,12],den:.75}],tip:'紅色鼠窩：沒鼠時連點兩下＝封洞（鍵盤：連按兩次）'},
- {id:'3-2',city:2,name:'主廚試菜中',layout:'g4x4',goal:{t:'score',n:1000},stars:[1000,1500,2100],hold:1.8,nests:1,mix:{army:.12,bomb:.08,giant:.08,gold:.05},
+ {id:'3-2',city:2,name:'大安森林公園',layout:'g4x4',goal:{t:'score',n:1000},stars:[1000,1500,2100],hold:1.8,nests:1,mix:{army:.12,bomb:.08,giant:.08,gold:.05},
   sec:[{bars:8,bpm:120,meter:16,pat:[0,4,8,12],den:.85},{bars:6,bpm:150,meter:16,pat:[0,4,8,12],den:.85},{bars:4,bpm:120,meter:16,pat:[0,3,6,10,12],den:.85}],tip:'小心！中段突然加速到 150 BPM'},
  {id:'3-3',city:2,name:'料理鼠王',layout:'hex',goal:{t:'boss'},stars:[1500,2400,3400],hold:1.7,nests:2,mix:{army:.14,bomb:.09,giant:.1,gold:.05},boss:{bar:10,hp:30,name:'料理鼠王本尊'},
   sec:[{bars:9,bpm:126,meter:16,pat:[0,3,6,8,12,14],den:.8},{bars:4,bpm:126,meter:16,pat:[],den:0},{bars:8,bpm:138,meter:16,pat:[0,4,6,8,12],den:.85}],tip:'終局：封洞、劃大軍、擊退料理鼠王！'},
  {id:'C-1',city:3,name:'暖化鼠潮（特別關）',layout:'ring',goal:{t:'score',n:1600},stars:[1600,2600,3400],hold:1.8,nests:2,climate:1,mix:{army:.18,bomb:.08,giant:.08,gold:.05},boss:{bar:14,hp:28,name:'熱浪巨鼠'},
   sec:[{bars:6,bpm:116,meter:16,pat:[0,4,8,12],den:.7},{bars:6,bpm:128,meter:16,pat:[0,3,6,8,12],den:.8},{bars:4,bpm:140,meter:16,pat:[],den:0},{bars:6,bpm:150,meter:16,pat:[0,2,4,8,10,12],den:.8}],tip:'城市越熱，鼠越多：溫度計升高時出鼠量增加'}];
 const LV=Object.fromEntries(LV_LIST.map(l=>[l.id,l]));
-const CITY=[{n:'台北',c:'#e43b44'},{n:'台中',c:'#b55088'},{n:'台南',c:'#3e8948'},{n:'氣候特別關',c:'#f77622'}];
+const CITY=[{n:'台北',c:'#e43b44'},{n:'第二章',c:'#b55088'},{n:'第三章',c:'#3e8948'},{n:'氣候特別關',c:'#f77622'}];
 function stageOf(){return CUR?Math.min(CUR.city,2):0}
 let PROG;try{PROG=JSON.parse(localStorage.wam_prog_v3||'null')}catch(e){}if(!PROG)PROG={stars:{},best:{}};
 const saveProg=()=>localStorage.wam_prog_v3=JSON.stringify(PROG);
@@ -247,9 +247,7 @@ const titleOf=st=>{let t=TITLES[0][1];for(const[a,n]of TITLES)if(st>=a)t=n;retur
 const nextTitle=st=>TITLES.find(([a])=>a>st);
 const STORIES=[
  {city:'台北',c:'#e43b44',date:'2026/10/15',title:'中山站附近人行道驚見近 30 公分鼠屍',kinds:['street','giant'],
-  quote:['「這尺寸根本是阿嬤養大的吧」','「白天主要幹道就有這種巨物，太扯了」','留言建議打 1999 請清潔隊清運消毒'],links:[['自由時報','https://news.ltn.com.tw/news/life/breakingnews/5607469'],['三立新聞','https://www.setn.com/news/1923350']]},
- {city:'台中',c:'#b55088',date:'2026/10/04 報導',title:'太平區超市外「老鼠大軍」搶機車上的食物',kinds:['army'],quote:['「全家都來了」','「料理鼠王家族出動」'],links:[['三立新聞','https://www.setn.com/news/1917113']]},
- {city:'台南',c:'#3e8948',date:'2026/10/13',title:'北區小籠包店水槽下老鼠啃塑膠袋',kinds:['chef'],quote:['「主廚試菜中，請顧客稍等」'],links:[['東森新聞','https://news.ebc.net.tw/news/living/575459']]},
+  quote:['發文者：「嚇歪了」','留言建議打 1999 請清潔隊清運消毒'],links:[['自由時報','https://news.ltn.com.tw/news/life/breakingnews/5607469']]},
  {city:'氣候',c:'#f77622',date:'2025/01 研究',title:'研究：城市升溫越快，鼠量增加越多',kinds:['boss'],
   quote:['分析 16 座城市長年民眾通報與稽查資料，11 座城市鼠量顯著上升','升溫越多、人口越密、綠地越少的城市，增加越多','研究者推測：變暖延長了老鼠的活動與繁殖季'],links:[['Science Advances 論文','https://pmc.ncbi.nlm.nih.gov/articles/PMC11784805/'],['The Guardian','https://www.theguardian.com/environment/2025/jan/31/rat-numbers-cities-climate-temperatures-rodents']]}];
 const DANMAKU2=[DANMAKU[0],DANMAKU[1],DANMAKU[2],['研究：16 城有 11 城鼠量顯著上升','升溫越快的城市，鼠增加越多','綠地越少，鼠越多','冬天變短，老鼠更忙','垃圾記得蓋好！']];
@@ -613,13 +611,14 @@ let boardFrom='title',storyFrom='title';
 const TW=[[.60,0],[.72,.03],[.80,.1],[.76,.22],[.72,.36],[.66,.52],[.58,.68],[.50,.84],[.44,1],[.36,.92],[.26,.78],[.18,.62],[.16,.46],[.22,.32],[.32,.2],[.44,.1],[.52,.04]];
 const NODE={'1-1':[.40,.07],'1-2':[.60,.15],'1-3':[.80,.06],'2-1':[.14,.29],'2-2':[.36,.36],'2-3':[.20,.45],'3-1':[.10,.61],'3-2':[.32,.68],'3-3':[.16,.79],'C-1':[.86,.52]};const CLAB=[[.66,.26],[.55,.42],[.50,.76]];
 function mapUI(t){X.fillStyle='rgba(18,78,137,.55)';X.fillRect(0,0,W,H);
- const mh=PORT?H*.52:H-120,mw=mh*.62,mx0=PORT?W/2-mw/2:Math.max(40,W*.3-mw/2),my0=PORT?90:80;const P=([u,v])=>[mx0+u*mw*1.1-mw*.05,my0+v*mh];
+ const mh=PORT?H*.52:H-215,mw=mh*.62,mx0=PORT?W/2-mw/2:Math.max(40,W*.3-mw/2),my0=PORT?90:80;const P=([u,v])=>[mx0+u*mw*1.1-mw*.05,my0+v*mh];
  X.fillStyle='#0099db';for(let i=0;i<20;i++){const x=(i*137+t*20)%W,y=(i*83)%H;X.fillRect(x,y,30,4)}
  X.fillStyle='#181425';X.beginPath();TW.forEach((p,i)=>{const[x,y]=P(p);i?X.lineTo(x+6,y+8):X.moveTo(x+6,y+8)});X.fill();
  X.fillStyle='#63c74d';X.beginPath();TW.forEach((p,i)=>{const[x,y]=P(p);i?X.lineTo(x,y):X.moveTo(x,y)});X.closePath();X.fill();X.strokeStyle='#3e8948';X.lineWidth=6;X.stroke();
- X.fillStyle='#3e8948';X.beginPath();[[.6,.1],[.68,.3],[.6,.5],[.52,.72],[.46,.6],[.5,.3]].forEach((p,i)=>{const[x,y]=P(p);i?X.lineTo(x,y):X.moveTo(x,y)});X.fill();
- [0,1,2].forEach(c=>{const[x,y]=P(CLAB[c]);txt(CITY[c].n,x,y,26,'#fff',CITY[c].c,6)});
- X.strokeStyle='#fee761';X.lineWidth=4;X.setLineDash([10,8]);X.beginPath();LV_LIST.filter(l=>l.id!='C-1').forEach((l,i)=>{const[x,y]=P(NODE[l.id]);i?X.lineTo(x,y):X.moveTo(x,y)});X.stroke();X.setLineDash([]);
+ X.fillStyle='#3e8948';X.beginPath();[[.6,.02],[.72,.12],[.62,.2],[.48,.16],[.36,.1]].forEach((p,i)=>{const[x,y]=P(p);i?X.lineTo(x,y):X.moveTo(x,y)});X.fill();X.beginPath();[[.62,.96],[.78,.8],[.9,.7],[.8,.86]].forEach((p,i)=>{const[x,y]=P(p);i?X.lineTo(x,y):X.moveTo(x,y)});X.fill();
+ X.strokeStyle='#2ce8f5';X.lineWidth=7;X.beginPath();[[.12,.28],[.18,.40],[.10,.52],[.16,.64],[.28,.72],[.40,.80]].forEach((p,i)=>{const[x,y]=P(p);i?X.lineTo(x,y):X.moveTo(x,y)});X.stroke();X.beginPath();[[.18,.36],[.34,.30],[.48,.28],[.58,.32],[.72,.30],[.86,.36],[.95,.44]].forEach((p,i)=>{const[x,y]=P(p);i?X.lineTo(x,y):X.moveTo(x,y)});X.stroke();
+ [['北投',.38,.06],['士林',.30,.20],['內湖',.80,.22],['大同',.18,.50],['中山',.46,.44],['松山',.74,.48],['萬華',.18,.70],['大安',.58,.66],['信義',.80,.70],['文山',.56,.84],['南港',.92,.58]].forEach(([n,u,v])=>{const[x,y]=P([u,v]);txt(n,x,y,17,'rgba(255,255,255,.75)','#265c42',4)});{const[x,y]=P([.5,.02]);txt('臺北市',x,y-26,24,'#fff','#124e89',6)}
+ X.strokeStyle='rgba(254,231,97,.55)';X.lineWidth=3;X.setLineDash([8,8]);X.beginPath();LV_LIST.filter(l=>l.id!='C-1').forEach((l,i)=>{const[x,y]=P(NODE[l.id]);i?X.lineTo(x,y):X.moveTo(x,y)});X.stroke();X.setLineDash([]);
  {const[x,y]=P(NODE['C-1']);txt('氣候特別關',x,y-56,20,'#fff','#be4a2f',5)}
  LV_LIST.forEach(l=>{const[x,y]=P(NODE[l.id]),un=unlocked(l.id),sel=l.id==selLv,s=PROG.stars[l.id]||0;addBtn({x,y,w:58,h:58,circle:1,fn:()=>{selLv=l.id}});
   const pr=sel?1+Math.sin(t*6)*.08:1;X.save();X.translate(x,y);X.scale(pr,pr);X.fillStyle='#181425';X.fillRect(-28,-26,56,58);X.fillStyle=un?CITY[l.city].c:'#5a6988';X.fillRect(-24,-24,48,48);if(sel){X.strokeStyle='#fee761';X.lineWidth=5;X.strokeRect(-30,-28,60,62)}
@@ -835,17 +834,15 @@ function ymd(){const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*
 function dailyLevel(){const s=ymd(),r=rng(s*2654435761%4294967291),pick=a=>a[r()*a.length|0];const city=r()*3|0,bpm=96+Math.round(r()*6)*5;
  const P=[[0,4,8,12],[0,3,6,10,12],[0,4,6,8,12],[0,2,4,8,12],[0,4,8,10,12,14]];const id='D'+s;
  const L={id,daily:1,city,name:'每日挑戰 '+((s/100|0)%100)+'/'+(s%100),layout:pick(['g4x3','g4x4','diamond','hex']),goal:{t:'score',n:800},stars:[800,1400,2100],hold:2.1,nests:r()<.5?1:0,
-  mix:{gold:.05,bomb:.06,giant:.08,army:city==1?.25:.1},boss:{bar:0,hp:20,name:['巷口霸王鼠','超市鼠頭目','後廚鼠大廚'][city]},
+  mix:{gold:.05,bomb:.06,giant:.08,army:city==1?.25:.1},boss:{bar:0,hp:20,name:['巷口霸王鼠','地下街鼠頭目','後廚鼠大廚'][city]},
   sec:[{bars:6,bpm,meter:16,pat:pick(P),den:.8},{bars:6,bpm:bpm+pick([0,10,20]),meter:r()<.3?12:16,pat:[0,4,8],den:.85},{bars:6,bpm:bpm+10,meter:16,pat:pick(P),den:.85}],tip:'今日限定！依日期生成，每天不同'};
  L.sec[1].pat=L.sec[1].meter==12?[0,4,8]:pick(P);LV[id]=L;return L}
 
 // ===================== v5：故事織入流程 =====================
-const NEWS={0:{h:'台北中山站附近人行道驚見近 30 公分巨鼠',d:'2026/10/15',src:[['自由時報','https://news.ltn.com.tw/news/life/breakingnews/5607469'],['三立新聞','https://www.setn.com/news/1923350']],q:['「這尺寸根本是阿嬤養大的吧」','「白天主要幹道就有這種巨物，太扯了」','網友建議打 1999 請清潔隊清運']},
- 1:{h:'台中太平區超市外，老鼠大軍搶機車上的食物',d:'2026/10/04 報導',src:[['三立新聞','https://www.setn.com/news/1917113']],q:['「全家都來了」','「料理鼠王家族出動」']},
- 2:{h:'台南北區小籠包店水槽下，老鼠啃塑膠袋',d:'2026/10/13',src:[['東森新聞','https://news.ebc.net.tw/news/living/575459']],q:['「主廚試菜中，請顧客稍等」']},
+const NEWS={0:{h:'台北中山站附近人行道驚見近 30 公分巨鼠',d:'2026/10/15',src:[['自由時報','https://news.ltn.com.tw/news/life/breakingnews/5607469']],q:['發文者：「嚇歪了」','網友建議打 1999 請清潔隊清運']},
  3:{h:'研究：16 城中 11 城鼠量顯著上升，升溫越快增加越多',d:'2025/01 研究',src:[['Science Advances','https://pmc.ncbi.nlm.nih.gov/articles/PMC11784805/'],['The Guardian','https://www.theguardian.com/environment/2025/jan/31/rat-numbers-cities-climate-temperatures-rodents']],q:['研究推測：變暖延長老鼠活動與繁殖季']}};
-const ANCHOR={'1-1':'今天先帶您關心台北：','1-2':'記者持續追蹤，網友提醒：','1-S':'早餐時段，人行道上的早餐袋成了目標','1-3':'巨鼠現身！現場畫面','2-1':'鏡頭轉到台中太平：','2-S':'機車上的便當，正被鼠群盯上！','2-2':'鼠群持續出沒，請把置物箱關好','2-3':'大軍集結，現場一片混亂','3-1':'台南後廚傳來消息：','3-S':'水槽下的塑膠袋正在被啃！','3-2':'主廚試菜中，請顧客稍等','3-3':'料理鼠王本尊現身','C-1':'特別報導：氣候與鼠患'};
-const newsOf=L=>NEWS[L.climate?3:L.city];
+const ANCHOR={'1-1':'今天先帶您關心台北：','1-2':'記者持續追蹤，網友提醒：','1-S':'','1-3':'巨鼠現身！現場畫面','2-1':'','2-S':'','2-2':'鼠群持續出沒，請把置物箱關好','2-3':'大軍集結，現場一片混亂','3-1':'','3-S':'水槽下的塑膠袋正在被啃！','3-2':'主廚試菜中，請顧客稍等','3-3':'料理鼠王本尊現身','C-1':'特別報導：氣候與鼠患'};
+const newsOf=L=>NEWS[L.climate?3:(NEWS[L.id]?L.id:(L.endless?'E':L.city))];
 let pendingUrl=null;cu.addEventListener('click',()=>{if(pendingUrl){window.open(pendingUrl,'_blank','noopener');pendingUrl=null}});
 function linkBtn(o){o.url=o.url;return addBtn(o)}
 function newsflash(t){const N=G.news;if(!N||N.t>5.5)return;const L=CUR,nw=newsOf(L),k=N.t,a=Math.min(1,k*4,(5.5-k)*3);const R_=PORT?{x:16,y:186,w:W-32,h:130}:{x:fieldRect().x,y:4,w:fieldRect().w,h:96};
@@ -854,17 +851,17 @@ function newsflash(t){const N=G.news;if(!N||N.t>5.5)return;const L=CUR,nw=newsOf
  const ax=R_.x+56,ay=R_.y+R_.h-8;X.fillStyle='#3a4466';X.fillRect(R_.x,ay-20,112,20);kindIcon('street',ax,ay-38,64,t);X.fillStyle='#e43b44';X.fillRect(ax-4,ay-34,8,12);X.fillStyle='#181425';X.fillRect(ax+20,ay-44,4,20);X.fillRect(ax+16,ay-48,12,8);
  X.fillStyle='#e43b44';X.fillRect(R_.x+120,R_.y+8,120,26);txt('新聞快報',R_.x+180,R_.y+21,18,'#fff',0,0);txt(nw.d,R_.x+252,R_.y+21,15,'#c0cbdc',0,0,'left');
  txt(ANCHOR[L.id]||L.name,R_.x+122,R_.y+52,PORT?17:16,'#fee761',0,0,'left');
- X.save();X.beginPath();X.rect(R_.x+120,R_.y+64,R_.w-130,30);X.clip();X.font=`900 20px ${FONT}`;const tw=X.measureText(nw.h).width;const sx=R_.x+R_.w-Math.min(k*160,tw+R_.w-130)+(k*160>tw+R_.w-130?0:0);txt(nw.h,Math.max(R_.x+122,R_.x+R_.w-k*220),R_.y+80,20,'#fff',0,0,'left');X.restore();
+ X.save();X.beginPath();X.rect(R_.x+120,R_.y+64,R_.w-130,30);X.clip();X.font=`900 20px ${FONT}`;const tw=X.measureText(nw.h).width;const sx=R_.x+R_.w-Math.min(k*160,tw+R_.w-130)+(k*160>tw+R_.w-130?0:0);txt(nw.h,Math.max(Math.min(R_.x+122,R_.x+R_.w-14-tw),R_.x+R_.w-k*240),R_.y+80,20,'#fff',0,0,'left');X.restore();
  X.restore();addBtn({x:R_.x+R_.w-50,y:R_.y+22,w:80,h:30,c:'#c0cbdc',d:'#8b9bb4',label:'跳過',fs:15,fn:()=>{G.news.t=9}});button(btns[btns.length-1],t)}
-const CMT={army:'網友：「全家都來了」',helmet:'網友：「這尺寸根本是阿嬤養大的吧」',bomb:'觀眾彈幕：別打！那顆會爆',gold:'觀眾彈幕：金鼠出現，快打！',nest:'網友建議：鼠窩要封好',normal:'網友：「白天主要幹道就有這種巨物，太扯了」',boss:'網友：「料理鼠王家族出動」',bossDown:'網友：「快打 1999 請清潔隊來收！」'};
-function comment(k){if(!G||CUR.tut)return;let s=CMT[k];if(k=='normal'&&CUR.city==2)s='網友：「主廚試菜中，請顧客稍等」';if(k=='bossDown'&&CUR.city==2)s='網友：「今天的小籠包…先不要」';if(s)G.cmt={s,t:0}}
+const CMT={army:'',helmet:'',bomb:'觀眾彈幕：別打！那顆會爆',gold:'觀眾彈幕：金鼠出現，快打！',nest:'網友建議：鼠窩要封好',normal:'',boss:'',bossDown:'網友：「快打 1999 請清潔隊來收！」'};
+function comment(k){if(!G||CUR.tut)return;let s=CMT[k];{const lc=(window.LCMT||{})[CUR.id];if(lc&&lc[k])s=lc[k]}if(s)G.cmt={s,t:0}}
 function commentUI(t){const c=G.cmt;if(!c||c.t>3.4)return;const F=fieldRect(),a=Math.min(1,c.t*5,(3.4-c.t)*3);X.save();X.globalAlpha=a;X.font=`900 20px ${FONT}`;const w=X.measureText(c.s).width+40,x=PORT?W/2-w/2:F.x+F.w/2-w/2,y=PORT?196:30;
  X.fillStyle='#181425';X.fillRect(x-3,y-3,w+6,46);X.fillStyle='#fff';X.fillRect(x,y,w,40);X.beginPath();X.moveTo(x+30,y+40);X.lineTo(x+44,y+54);X.lineTo(x+52,y+40);X.fill();txt(c.s,x+20,y+21,20,'#181425',0,0,'left');X.restore()}
 function storyTick(dt){if(G.news)G.news.t+=dt;if(G.cmt)G.cmt.t+=dt;if(G.shownCmt==null)G.shownCmt={};bossPressure(dt)}
 function resNews(cx,y,cw,t){const nw=newsOf(CUR);txt('本關新聞｜'+nw.d,cx-cw/2+40,y,15,'#8b9bb4',0,0,'left');y+=22;let s=nw.h;X.font=`800 17px ${FONT}`;while(X.measureText(s).width>cw-230&&s.length>8)s=s.slice(0,-2);if(s!=nw.h)s+='…';txt(s,cx-cw/2+40,y,17,'#181425',0,0,'left');
  nw.src.slice(0,1).forEach(([n,u])=>{addBtn({x:cx+cw/2-100,y:y-10,w:150,h:34,c:'#ffffff',d:'#8b9bb4',label:'↗ '+n,fs:15,url:u,fn:()=>{}})});return y+30}
 // ===================== 圖鑑（原故事卡） =====================
-const DEX=[['street','街頭鼠','台北人行道上白天也敢逛大街'],['army','老鼠大軍','台中超市外成群出動，搶機車上的食物'],['chef','料理鼠王','台南後廚的「主廚」，試菜中'],['giant','阿嬤養的巨鼠','近 30 公分，網友直呼阿嬤養大的'],['gold','金鼠','稀有，常掉道具卡'],['bomb','炸彈鼠','別打！'],['boss','Boss 巨鼠','撐破洞口的大傢伙']];
+const DEX=[['street','街頭鼠','台北人行道上白天也敢逛大街'],['army','老鼠大軍','成群結隊出沒，一筆劃過整排'],['chef','料理鼠王','躲在餐廳後廚與連通門之間'],['giant','阿嬤養的巨鼠','中山站附近曾見近 30 公分的體型'],['gold','金鼠','稀有，常掉道具卡'],['bomb','炸彈鼠','別打！'],['boss','Boss 巨鼠','撐破洞口的大傢伙']];
 let dexTab=0,dexPage=0,dexFrom='title';
 function dexUI(t){X.fillStyle='rgba(24,20,37,.6)';X.fillRect(0,0,W,H);const cw=Math.min(W-30,900),ch=PORT?Math.min(H-120,1100):H-80,cx=W/2,cy=H/2+(PORT?0:20);card(cx,cy,cw,ch,'鼠患圖鑑','#b55088');
  const top=cy-ch/2+44;['鼠種','新聞'].forEach((n,i)=>addBtn({x:cx+(i-.5)*170,y:top,w:150,h:40,c:dexTab==i?'#b55088':'#c0cbdc',d:'#68386c',label:n,fs:20,fn:()=>{dexTab=i;dexPage=0}}));
@@ -919,7 +916,7 @@ LV.E={id:'E',endless:1,city:1,name:'無盡模式',layout:'g4x4',goal:{t:'score',
  sec:[...Array(40)].map((_,i)=>({bars:4,bpm:Math.min(176,110+i*4),meter:i%4==3?12:16,pat:i%4==3?[0,4,8]:[[0,4,8,12],[0,3,6,10,12],[0,4,6,8,12,14],[0,2,4,8,10,12]][i%4],den:Math.min(1,.7+i*.03)})),tip:'五條命、漏兩隻扣一命，combo 10 回血，能撐多久？',arcDone:1};
 const endlessOpen=()=>(PROG.stars['3-3']||0)>0;
 // ===================== 特別關：守備（非打洞） =====================
-const DEFV={moto:{t:'便當',n:'機車便當'},sink:{t:'蒸籠',n:'水槽蒸籠'},bag:{t:'早餐',n:'早餐袋'}};
+const DEFV={moto:{t:'壘包',n:'壘包'},sink:{t:'蒸籠',n:'後廚蒸籠'},bag:{t:'精品紙袋',n:'櫥窗精品紙袋'}};
 function defInit(){const L=CUR,F=fieldRect(),n=4;const ty=F.y+F.h-(PORT?110:70);G.def={n,rats:[],tg:[...Array(n)].map((_,i)=>({x:F.x+F.w*(i+.5)/n,y:ty,hp:5,shake:0})),ents:[[F.x+F.w*.12,F.y+(PORT?30:20),'drain'],[F.x+F.w*.5,F.y+(PORT?10:6),'grass'],[F.x+F.w*.88,F.y+(PORT?30:20),'arcade']],lastUlt:0,freeze:0}}
 function defLayout(){if(!G||!G.def)return;const F=fieldRect(),ty=F.y+F.h-(PORT?110:70);G.def.tg.forEach((g,i)=>{g.x=F.x+F.w*(i+.5)/G.def.n;g.y=ty})}
 const defSaved=()=>G.def.tg.filter(g=>g.hp>0).length;
@@ -942,10 +939,10 @@ function crawlRat(x,y,s,kind,t,face){X.save();X.translate(x,y);const C=kind=='go
  X.fillStyle='#181425';X.beginPath();X.ellipse(0,0,s*.62,s*.42,0,0,7);X.fill();X.fillStyle=C[0];X.beginPath();X.ellipse(0,0,s*.56,s*.36,0,0,7);X.fill();X.fillStyle=C[1];X.beginPath();X.ellipse(0,s*.12,s*.36,s*.2,0,0,7);X.fill();
  X.strokeStyle='#e89aaa';X.lineWidth=4;X.beginPath();X.moveTo(0,-s*.3);X.quadraticCurveTo(s*.5,-s*.7+w,s*.1,-s*.95);X.stroke();X.fillStyle='#e89aaa';[-1,1].forEach(d=>{X.beginPath();X.arc(d*s*.32,s*.12,s*.14,0,7);X.fill()});
  X.fillStyle='#181425';[-1,1].forEach(d=>X.fillRect(d*s*.16-3,s*.18,6,6));X.fillStyle='#f6757a';X.fillRect(-3,s*.36,6,5);[-1,1].forEach(d=>{X.fillStyle='#181425';X.fillRect(d*s*.5-3,s*.25+(d>0?w:-w),6,s*.25)});X.restore()}
-function targetArt(v,x,y,hp,t){X.save();X.translate(x,y);if(v=='moto'){X.fillStyle='#181425';X.fillRect(-56,-10,112,30);X.fillStyle='#0099db';X.fillRect(-52,-8,104,22);X.fillStyle='#181425';[-36,36].forEach(w=>{X.beginPath();X.arc(w,22,16,0,7);X.fill()});X.fillStyle='#8b9bb4';[-36,36].forEach(w=>{X.beginPath();X.arc(w,22,7,0,7);X.fill()});X.fillStyle='#c0cbdc';X.fillRect(40,-34,6,26);X.fillRect(30,-36,24,6)}
+function targetArt(v,x,y,hp,t){X.save();X.translate(x,y);if(v=='moto'){X.fillStyle='#181425';X.beginPath();X.ellipse(0,8,60,22,0,0,7);X.fill();X.fillStyle='#b86f50';X.beginPath();X.ellipse(0,6,56,19,0,0,7);X.fill()}
  else if(v=='sink'){X.fillStyle='#181425';X.fillRect(-60,-14,120,44);X.fillStyle='#c0cbdc';X.fillRect(-56,-10,112,36);X.fillStyle='#8b9bb4';X.fillRect(-46,-4,92,20);X.fillStyle='#5a6988';X.fillRect(30,-40,8,30);X.fillRect(20,-44,24,8)}
  else{X.fillStyle='#181425';X.fillRect(-58,-4,116,14);X.fillStyle='#b86f50';X.fillRect(-55,-2,110,9);X.fillStyle='#733e39';X.fillRect(-50,8,8,24);X.fillRect(42,8,8,24)}
- const by=-28;if(hp>0){if(v=='moto'){X.fillStyle='#181425';X.fillRect(-28,by-18,56,30);X.fillStyle='#ead4aa';X.fillRect(-25,by-15,50,24);X.fillStyle='#63c74d';X.fillRect(-21,by-11,14,8);X.fillStyle='#e43b44';X.fillRect(-4,by-11,10,8);X.fillStyle='#fff';X.fillRect(10,by-11,12,16);X.fillStyle='#feae34';X.fillRect(-21,by-1,26,6)}
+ const by=-28;if(hp>0){if(v=='moto'){X.fillStyle='#181425';X.fillRect(-26,-10,52,24);X.fillStyle='#fff';X.fillRect(-23,-8,46,19);X.fillStyle='#e43b44';X.fillRect(-2,by-26,4,30);X.fillStyle='#fee761';X.fillRect(2,by-26,18,12)}
   else if(v=='sink'){for(let i=0;i<2;i++){X.fillStyle='#181425';X.fillRect(-30+i*32,by-22+i*-4,30,26);X.fillStyle='#e4a672';X.fillRect(-28+i*32,by-20+i*-4,26,22);X.fillStyle='#fff3d8';X.beginPath();X.arc(-15+i*32,by-12+i*-4,7,0,7);X.fill()}}
   else{X.fillStyle='#181425';X.fillRect(-22,by-24,44,34);X.fillStyle='#fff';X.fillRect(-19,by-21,38,28);X.fillStyle='#feae34';X.fillRect(-12,by-16,24,10);X.fillStyle='#be4a2f';X.fillRect(-6,by-30,12,8)}
   for(let i=0;i<5;i++){X.fillStyle=i<hp?'#63c74d':'#5a6988';X.fillRect(-38+i*16,by-40,13,7)}}
@@ -953,12 +950,12 @@ function targetArt(v,x,y,hp,t){X.save();X.translate(x,y);if(v=='moto'){X.fillSty
 function entArt(x,y,k){X.save();X.translate(x,y);if(k=='drain'){X.fillStyle='#181425';X.fillRect(-46,-12,92,26);X.fillStyle='#5a6988';X.fillRect(-42,-8,84,18);X.fillStyle='#181425';for(let i=-36;i<40;i+=12)X.fillRect(i,-6,6,14)}
  else if(k=='grass'){X.fillStyle='#265c42';X.beginPath();X.ellipse(0,0,56,22,0,0,7);X.fill();X.fillStyle='#3e8948';X.beginPath();X.ellipse(-14,-6,30,16,0,0,7);X.fill();X.beginPath();X.ellipse(18,-4,28,14,0,0,7);X.fill()}
  else{X.fillStyle='#8f7d70';X.fillRect(-40,-30,24,46);X.fillRect(16,-30,24,46);X.fillStyle='#5e5048';X.fillRect(-44,-36,88,10);X.fillStyle='#181425';X.fillRect(-16,-6,32,22)}X.restore()}
-function defDraw(t){const D=G.def,F=fieldRect();{const v=CUR.variant,P={bag:['#c0cbdc','#8b9bb4','#a8b5c8'],moto:['#3a4466','#262b44','#5a6988'],sink:['#ead4aa','#c28569','#e4a672']}[v],x0=F.x-30,y0=F.y-20,w0=F.w+60,h0=F.h+40;X.fillStyle=P[0];X.fillRect(x0,y0,w0,h0);X.fillStyle=P[1];const ts=v=='moto'?0:48;
- if(ts){for(let yy=y0;yy<y0+h0;yy+=ts)X.fillRect(x0,yy,w0,3);for(let yy=y0,r=0;yy<y0+h0;yy+=ts,r++)for(let xx=x0+(r%2?ts/2:0);xx<x0+w0;xx+=ts)X.fillRect(xx,yy,3,ts)}else{X.fillStyle='#fee761';for(let xx=x0+20;xx<x0+w0;xx+=90)X.fillRect(xx,y0+h0*.45,50,8)}
+function defDraw(t){const D=G.def,F=fieldRect();{const v=CUR.variant,P={bag:['#68386c','#3e2731','#b55088'],moto:['#3e8948','#265c42','#63c74d'],sink:['#ead4aa','#c28569','#e4a672']}[v],x0=F.x-30,y0=F.y-20,w0=F.w+60,h0=F.h+40;X.fillStyle=P[0];X.fillRect(x0,y0,w0,h0);X.fillStyle=P[1];const ts=v=='moto'?0:48;
+ if(ts){for(let yy=y0;yy<y0+h0;yy+=ts)X.fillRect(x0,yy,w0,3);for(let yy=y0,r=0;yy<y0+h0;yy+=ts,r++)for(let xx=x0+(r%2?ts/2:0);xx<x0+w0;xx+=ts)X.fillRect(xx,yy,3,ts)}else{X.fillStyle='#265c42';for(let yy=y0;yy<y0+h0;yy+=60)X.fillRect(x0,yy,w0,30);X.fillStyle='#fff';X.fillRect(x0+w0*.5-3,y0,6,h0*.8)}
  X.fillStyle='#181425';X.fillRect(x0,y0-6,w0,6)}X.fillStyle='#5a6988';X.fillRect(F.x-10,D.tg[0].y-6,F.w+20,60);X.fillStyle='#8b9bb4';X.fillRect(F.x-10,D.tg[0].y-12,F.w+20,8);
  D.ents.forEach(e=>entArt(e[0],e[1],e[2]));D.tg.forEach((g,i)=>{targetArt(CUR.variant,g.x+(g.shake>0?Math.sin(t*80)*4:0),g.y,g.hp,t);const key='asdf'[i];if(!PORT||lastKeyMode)ui(()=>{X.fillStyle='rgba(24,20,37,.6)';X.fillRect(g.x-14,g.y+40,28,24);txt(key.toUpperCase(),g.x,g.y+52,18,'#fff',0,0)})});
  for(const r of D.rats){const[x,y,k]=ratPos(r);if(k<=0)continue;const near=G.songT>r.t0+r.trav-60/bpmAt(G.songT);if(near){X.strokeStyle='#e43b44';X.lineWidth=4;X.beginPath();X.arc(x,y,40,0,7);X.stroke()}crawlRat(x,y,r.kind=='giant'?60:r.kind=='army'?34:44,r.kind,t)}}
-const DEF_LV=[{id:'1-S',city:0,variant:'bag',name:'人行道早餐保衛戰',after:'1-2',bpm:96},{id:'2-S',city:1,variant:'moto',name:'保衛便當',after:'2-2',bpm:104},{id:'3-S',city:2,variant:'sink',name:'守住水槽',after:'3-2',bpm:112}];
+const DEF_LV=[{id:'1-S',city:0,variant:'bag',name:'松山車站商場後廚',after:'1-2',bpm:96},{id:'2-S',city:1,variant:'moto',name:'信義區精品店',after:'2-2',bpm:104},{id:'3-S',city:2,variant:'sink',name:'台北大巨蛋',after:'3-2',bpm:112}];
 DEF_LV.forEach(d=>{const L={id:d.id,city:d.city,mode:'defend',variant:d.variant,name:d.name,layout:'g3',goal:{t:'defend',n:2},stars:[0,0,0],hold:2,mix:{army:d.city==1?.22:.12,giant:.08,gold:.06},
  sec:[{bars:6,bpm:d.bpm,meter:16,pat:[0,8],den:.8},{bars:8,bpm:d.bpm,meter:16,pat:[0,4,8,12],den:d.city?.55:.42},{bars:6,bpm:d.bpm+8,meter:16,pat:[0,4,8,12],den:d.city?.6:.45}],tip:'老鼠沿路爬向'+DEFV[d.variant].n+'！點牠、劃過鼠群；鍵盤 ASDF 守對應位置'};
  LV[d.id]=L;LV_LIST.splice(LV_LIST.findIndex(l=>l.id==d.after)+1,0,L)});
@@ -1000,6 +997,66 @@ function fxOverlay(t){if(G.fx.freeze>0){const a=Math.min(1,G.fx.freeze)*.9;X.fil
 function useBanner(t){const U=G.useBan;if(!U)return;const k=U.t,s=back(Math.min(1,k/.2)),a=Math.min(1,(1.2-k)*3);X.save();X.globalAlpha=a;X.translate(W/2,H*.42);X.scale(s,s);X.fillStyle='#181425';X.fillRect(-260,-50,520,100);X.fillStyle=RAR[U.c.rar].c;X.fillRect(-254,-44,508,88);txt('發動！'+U.c.name,0,-8,40,'#fff','#181425',8);txt(U.c.desc,0,30,18,'#fff','#181425',4);X.restore()}
 
 TEACH['2-2']=['card','slot'];PNEED.slot=1;
+// ===================== 台北化：時事只鎖定台北市（來源皆經 WebFetch 核對） =====================
+(function(){
+const S_=(n,u)=>[n,u];
+const SRC={
+ et_tl:S_('ETtoday','https://www.ettoday.net/news/20260506/3161130.htm'),
+ cts:S_('華視新聞','https://news.cts.com.tw/cts/life/202602/202602052559031.html'),
+ udn_w:S_('udn 女子漾','https://woman.udn.com/woman/story/123164/9736646'),
+ ltn_city:S_('自由時報','https://news.ltn.com.tw/news/life/breakingnews/5579754'),
+ ltn_zs:S_('自由時報','https://news.ltn.com.tw/news/life/breakingnews/5607469'),
+ mirror:S_('鏡報','https://www.mirrordaily.news/story/58655'),
+ ltn_esc:S_('自由時報','https://news.ltn.com.tw/news/life/breakingnews/5581267'),
+ ftv:S_('民視新聞','https://www.ftvnews.com.tw/news/detail/2026929F02M1'),
+ pts:S_('公視新聞','https://news.pts.org.tw/article/808070'),
+ gov:S_('臺北市政府','https://www.gov.taipei/News_Content.aspx?n=F0DDAF49B89E9413&s=E08C376104E132FD'),
+ et_dome:S_('ETtoday','https://www.ettoday.net/news/20260910/3234887.htm')};
+const N={
+ '1-1':{place:'大安區巷弄',h:'「安鼠之亂」起源：大安區出現漢他病毒致死案，網友戲稱這波鼠患風波',d:'2026/05/06 整理',src:[SRC.et_tl],q:['1 月大安區個案住家周邊捕獲 4 隻鼠，其中 2 隻驗出漢他病毒陽性'],kinds:['street']},
+ '1-2':{place:'雙連市場・寧夏夜市',h:'雙連市場、寧夏夜市一帶，白天也有人拍到老鼠覓食、和鴿子共享食物',d:'2026/09/05',src:[SRC.udn_w],q:['文中提醒：封住孔洞、密封食物、每日清廚餘'],kinds:['street','army']},
+ '1-S':{place:'松山車站商場後廚',h:'松山車站商場餐廳直擊老鼠，疑穿過連通門跑進隔壁後廚',d:'2026/09/20',src:[SRC.ltn_city],q:['商場表示 1 到 3 樓環境清消、連通門防堵','衛生局表示將派員稽查'],kinds:['chef']},
+ '1-3':{place:'捷運中山站人行道',h:'捷運中山站附近人行道，大白天驚見近 30 公分鼠屍',d:'2026/10/15',src:[SRC.ltn_zs],q:['發文者：「嚇歪了」','留言建議通報 1999，請清潔隊清運消毒'],kinds:['giant']},
+ '2-1':{place:'士林・捷運站出口',h:'雙連市場、士林延平北路六段、捷運市政府站與忠孝復興站周邊陸續傳出鼠蹤',d:'2026/05/02',src:[SRC.mirror],q:['環保局：4 月鼠類通報數量較 2 月下降'],kinds:['army']},
+ '2-2':{place:'台北地下街',h:'台北地下街老鼠「熟練搭電扶梯」，影片在網路瘋傳',d:'2026/09/21',src:[SRC.ltn_esc],q:['網友：「聰明鼠了」','網友：「台北老鼠已經進化到會搭手扶梯」'],kinds:['street','army']},
+ '2-S':{place:'信義區精品店',h:'信義區精品店地毯上老鼠亂竄，店家就在捷運市政府站 3 號出口附近',d:'2026/09/29',src:[SRC.ftv],q:['網友笑說：「老鼠很識貨」','環保局：會加強監督業者防治'],kinds:['street']},
+ '2-3':{place:'市府・鼠類偵防師',h:'北市「鼠類偵防師」上路：到場調查鼠糞、咬痕與入侵孔洞，給防治建議',d:'2026/05/13',src:[SRC.pts],q:['北市社區常見：溝鼠、屋頂鼠、小家鼠'],kinds:['army','giant']},
+ '3-1':{place:'全市鼠洞',h:'環保局：協同 54 局處清除 1,325 噸廢棄物、填補近 4000 個鼠洞',d:'2026/05/06',src:[SRC.gov],q:['原則：「不讓鼠來、不讓鼠住、不讓鼠吃」'],kinds:['chef']},
+ '3-2':{place:'大安森林公園',h:'木柵動物園、雙連站出口花圃、大安森林公園接連傳出鼠蹤影片',d:'2026/05/06 整理',src:[SRC.et_tl],q:['4 月底起大量目擊照片、影片開始流傳'],kinds:['chef','street']},
+ '3-S':{place:'台北大巨蛋',h:'大巨蛋比賽中老鼠闖入場內「跑壘」，球僮用紙箱蓋住捕獲',d:'2026/09/10',src:[SRC.et_dome],q:['網友：「ㄟ⋯⋯其實蠻可愛的」','網友：「鼠鼠：我只是想在海景第一排看球啊」'],kinds:['street']},
+ '3-3':{place:'全市 12 區大清掃',h:'北市 12 個行政區大清掃，公有市場、夜市、商圈與公園全面清消',d:'2026/02/05',src:[SRC.cts],q:['提醒：清掃時務必戴口罩、手套'],kinds:['boss','chef']}};
+for(const id in N){NEWS[id]=N[id];if(LV[id]){LV[id].name=N[id].place}}
+NEWS.C=NEWS[3];NEWS.E=N['3-3'];
+// 關卡地點（台北）
+CITY[0].n='第一章 安鼠之亂';CITY[1].n='第二章 鼠進城';CITY[2].n='第三章 全城圍捕';
+STAGES[0].n='台北・安鼠之亂';STAGES[1].n='台北・鼠進城';STAGES[2].n='台北・全城圍捕';
+// 保衛關改台北有依據的場景
+DEFV.sink={t:'蒸籠',n:'後廚蒸籠'};DEFV.bag={t:'精品紙袋',n:'櫥窗精品紙袋'};DEFV.moto={t:'壘包',n:'壘包'};
+const DV={'1-S':'sink','2-S':'bag','3-S':'moto'};
+for(const id in DV){const L=LV[id];L.variant=DV[id];L.name=N[id].place;L.tip='老鼠沿路衝向'+DEFV[L.variant].n+'！點牠、劃過鼠群；鍵盤 ASDF 守對應位置'}
+Object.assign(ANCHOR,{'1-1':'今天先帶您回顧「安鼠之亂」的起點：','1-2':'記者來到大同區市場與夜市：','1-S':'松山車站商場，老鼠穿過連通門！','1-3':'捷運中山站附近，大白天的巨鼠：','2-1':'鼠蹤延伸到捷運站出口：','2-2':'台北地下街，老鼠會搭電扶梯？','2-S':'信義區精品店，地毯上有不速之客！','2-3':'市府推出「鼠類偵防師」：','3-1':'全市填補鼠洞行動：','3-2':'公園與動物園也傳出鼠蹤：','3-S':'大巨蛋球場，老鼠闖進來跑壘！','3-3':'全市 12 區大清掃，最終戰！','C-1':'特別報導：國外研究指城市升溫與鼠量有關，台北也該留意','E':'無盡模式：全城圍捕'});
+// 網友留言（皆可在報導內文核對）
+Object.assign(CMT,{army:'網友：「簡直熟門熟路」',helmet:'發文者：「嚇歪了」',normal:'網友：「聰明鼠了」',boss:'網友：「台北老鼠已經進化到會搭手扶梯」',bossDown:'網友建議：通報 1999 請清潔隊清運消毒',bomb:'提示：別打！那顆會爆',gold:'提示：金鼠出現，快打！',nest:'提示：鼠窩要封好（填補鼠洞）'});
+window.LCMT={'2-2':{normal:'發文者：「這老鼠平常一定有搭電扶梯的習慣！」'},'2-S':{normal:'網友笑說：「老鼠很識貨」'},'3-S':{normal:'網友：「ㄟ⋯⋯其實蠻可愛的」',army:'網友：「鼠鼠：我只是想在海景第一排看球啊」'},'1-3':{normal:'發文者：「嚇歪了」'}};
+// 彈幕（網友語句皆出自上列報導；其餘為新聞事實或市府口號）
+DANMAKU[0].splice(0,9,'聰明鼠了','簡直熟門熟路','嚇歪了','中山站附近驚見近 30 公分鼠屍','可以通報 1999','雙連市場白天也有鼠');
+DANMAKU[1].splice(0,9,'台北老鼠已經進化到會搭手扶梯','這老鼠平常一定有搭電扶梯的習慣！','地下街電扶梯驚見鼠','捷運站出口也有目擊','鼠類偵防師上路','不讓鼠來、不讓鼠住、不讓鼠吃');
+DANMAKU[2].splice(0,9,'ㄟ⋯⋯其實蠻可愛的','鼠鼠：我只是想在海景第一排看球啊','老鼠很識貨','填補近 4000 個鼠洞','12 區大清掃','球僮紙箱捕鼠');
+// 老鼠台詞（虛構，不引用他市新聞）
+LINES.army.splice(0,9,'地下街集合～','搭電扶梯走囉','市場收攤開飯！');LINES.chef.splice(0,9,'後廚我先試吃','連通門好方便','今日港點推薦');
+if(LINES.vote)LINES.vote.splice(0,9,'選前點頭，選後搖頭','我投…另一邊','民意？鼠意？');
+// 圖鑑
+const dx={army:'成群結隊出沒，一筆劃過整排',chef:'躲在餐廳後廚與連通門之間',giant:'中山站附近曾見近 30 公分的體型'};DEX.forEach(d=>{if(dx[d[0]])d[2]=dx[d[0]]});
+const clim=STORIES.find(s=>s.city=='氣候');STORIES.length=0;
+['1-1','1-2','1-S','1-3','2-1','2-2','2-S','2-3','3-1','3-2','3-S','3-3'].forEach((id,i)=>{const n=N[id];STORIES.push({city:'台北・'+n.place,c:['#e43b44','#b55088','#3e8948'][i/4|0],date:n.d,title:n.h,kinds:n.kinds,quote:n.q,links:n.src})});
+if(clim){clim.city='氣候（國外研究）';STORIES.push(clim)}
+// 台北市地圖
+TW.length=0;TW.push([.30,.02],[.50,0],[.62,.08],[.70,.20],[.82,.28],[.94,.40],[.97,.54],[.90,.66],[.82,.78],[.72,.92],[.58,.99],[.48,.92],[.40,.80],[.28,.72],[.16,.64],[.10,.52],[.18,.40],[.12,.28],[.20,.14]);
+Object.assign(NODE,{'1-1':[.50,.72],'1-2':[.28,.48],'1-S':[.82,.44],'1-3':[.40,.36],'2-1':[.44,.14],'2-2':[.26,.62],'2-S':[.84,.62],'2-3':[.66,.56],'3-1':[.60,.90],'3-2':[.36,.82],'3-S':[.64,.38],'3-3':[.22,.28],'C-1':[.90,.16]});
+LV['C-1'].tip='國外研究：城市越熱，鼠越多（溫度計升高時出鼠量增加）';
+})();
+
+NEWS[0]=NEWS['1-3'];NEWS[1]=NEWS['2-2'];NEWS[2]=NEWS['3-S'];
 addEventListener('resize',fit);fit();requestAnimationFrame(frame);
 window.__wam={ratPos,useCard,startPractice,TL,get LV(){return LV},storeCard,dailyLevel,shopOpen:()=>{shopFrom='map';state='shop'},startTutorial,skipTutorial,TSTEPS,DIFF,startLevel,finishLevel,triggerUlt,dropCard,heavySmash,tapAt,sealHole,togglePause,toggleMute,loadBoard,LV_LIST,PROG,saveProg,judge,nearestBeat,
  get G(){return G},get state(){return state},set state(v){state=v},get paused(){return paused},set paused(v){paused=v},get cardShow(){return cardShow},set cardShow(v){cardShow=v},get ultShow(){return ultShow},get W(){return W},get H(){return H},get S(){return S},get selLv(){return selLv},set selLv(v){selLv=v},get btns(){return btns}};
