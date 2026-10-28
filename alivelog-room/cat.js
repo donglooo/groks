@@ -1,4 +1,4 @@
-// ---- 貓咪行為紀錄：點貓開選單，一點就記；長按貓匯出 JSON ----
+// ---- 貓咪行為紀錄：點一下貓＝摸牠（Neko 討摸）；點兩下或按住半秒＝開紀錄選單；匯出在選單最底「匯出紀錄」 ----
 (function(){
 const KEY='alivelog.cat.log',B=['睡','吃','玩','討摸','窗邊','躲起來'],CAT={x:476,y:300,w:84,h:32};   // 會被 cat_sheet.json 的 anchor/frameSize 覆蓋
 const $=id=>document.getElementById(id);
@@ -7,6 +7,7 @@ const cv=document.createElement('canvas');cv.width=CAT.w;cv.height=CAT.h;cv.styl
 const menu=document.createElement('div');menu.id='catmenu';
 menu.style.cssText='position:absolute;z-index:8;display:none;background:#120f1a;border:2px solid #f0b25a;box-shadow:4px 4px 0 #05070a;padding:4px;font:14px/1 monospace;color:#e0cbb8;image-rendering:pixelated';
 B.forEach(b=>{const d=document.createElement('div');d.textContent=b;d.dataset.b=b;d.style.cssText='padding:7px 12px;cursor:pointer;border-bottom:1px solid #3c3c44';menu.appendChild(d)});
+{const d=document.createElement('div');d.textContent='匯出紀錄';d.dataset.x='export';d.style.cssText='padding:7px 12px;cursor:pointer;border-top:1px solid #3c3c44;margin-top:2px;font-size:12px;color:#8a8494';menu.appendChild(d)}
 document.body.append(cv,hit,menu);
 const get=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}};
 function add(b){const d=new Date(),L=get();L.push({ts:d.toISOString(),behavior:b,weekday:d.getDay(),hour:d.getHours()});localStorage.setItem(KEY,JSON.stringify(L));if(napUntil){napUntil=0;saveState()}pose();flash(b)}
@@ -57,7 +58,7 @@ function next(){act=Q.shift();if(!act){return idle()}
 function idle(){follow=false;const sp=SP()[spot]||{};const a=sleepNow()?'breathe':((sp.anim&&sp.anim[0])||'breathe');act={idle:true,anim:a};const r=res(a);cur={anim:r.n,mir:r.m,n:0,times:1};fi=0;ft=0;draw1()}
 function setPos(p){pos={x:p[0],y:p[1]};place();upd()}
 // window.CATPOS：給 dust.js 等物件用（frame 左上角、room 座標、pose=lie|sit|walk）
-const LIEA=['breathe','blink','tail_swish','ear_twitch','lick','stretch','sneeze_lie'],SITA=['sit_gaze_window','zoom_pant','zoom_nonchalant','sneeze_sit','dust_shake','duster_paw','rub_face'];
+const LIEA=['breathe','blink','tail_swish','ear_twitch','lick','stretch','sneeze_lie','pet_lie','slow_blink_lie','purr_lie','sleep_stir_lie'],SITA=['sit_gaze_window','zoom_pant','zoom_nonchalant','sneeze_sit','dust_shake','duster_paw','rub_face','pet_sit','slow_blink_sit','purr_sit','impatient_sit'];
 function poseNow(){const a=cur&&cur.anim;if(act&&(act.to||act.jump||act.tunnel))return'walk';if(spot==='walkway_sit')return'sit';if(spot==='walkway_lie'||spot==='ac_perch')return'lie';if(LIEA.includes(a))return'lie';if(SITA.includes(a))return'sit';return/walk|run|skid|turn|bump/.test(a)?'walk':'sit'}
 function upd(){if(spot!=='moving'&&spot!==lastSpot){lastSpot=spot;saveState()}window.CATPOS={x:Math.round(pos.x),y:Math.round(pos.y),w:CAT.w,h:CAT.h,pose:poseNow(),spot}}
 function draw1(){const A=SHEET.animations[cur.anim];let name=A.frames[Math.min(fi,A.frames.length-1)];
@@ -169,12 +170,37 @@ function open(){const r=hit.getBoundingClientRect();menu.style.display='block';c
   menu.style.left=Math.max(4,Math.min(innerWidth-mw-4,r.left+r.width/2-mw/2))+'px';menu.style.top=Math.max(4,Math.min(innerHeight-mh-4,r.top-mh-6))+'px'}
 const close=()=>menu.style.display='none';
 function exportJSON(){const blob=new Blob([JSON.stringify(get(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='alivelog-cat-log.json';document.body.appendChild(a);a.click();a.remove();window.CATEXPORT=(window.CATEXPORT||0)+1;flash('匯出 '+get().length+' 筆')}
-let lp=null,long=false;
-hit.addEventListener('pointerdown',e=>{long=false;lp=setTimeout(()=>{long=true;exportJSON()},700)});
-hit.addEventListener('pointerup',e=>{clearTimeout(lp);if(!long){e.stopPropagation();menu.style.display==='block'?close():open()}});
+// ---- 討摸（Neko，cat_sheet.json events.pet）：單擊立刻開始摸；280ms 內第二下＝雙擊開選單（取消剛開始的摸、不算進不耐煩）----
+let taps=[],coolUntil=0,petUndo=null;
+function pet(fromMenu){const PE=SHEET&&SHEET.events&&SHEET.events.pet;petUndo=null;if(!PE||!has('pet_lie'))return false;
+  if(act&&(act.to||act.jump||act.tunnel||act.fade||/^zoom|sneeze|dust_shake|duster_paw|rub_face/.test(String(act.anim))))return false;   // 走/跳/暴衝/撢子事件中不插播
+  const pose=poseNow()==='sit'?'sit':'lie',now=Date.now(),seq=l=>(l||[]).filter(has).map(a=>({anim:a}));
+  const undo={taps:taps.slice(),cool:coolUntil,move:nextAt.move,t:performance.now(),timer:null};
+  taps=taps.filter(t=>now-t<PE.impatient.window_ms);taps.push(now);
+  let L,kind;
+  if(sleepNow()){L=seq(PE.sleeping[pose]);kind='sleep'}                       // 睡著：只動耳朵、半睜眼，不叫醒、不呼嚕
+  else if(taps.length>=PE.impatient.taps){taps=[];coolUntil=now+PE.cooldown_ms;L=seq(PE.impatient.by_pose[pose]);kind='impatient'}
+  else if(now<coolUntil){L=seq(PE.during_cooldown[pose]);kind='cool'}
+  else{coolUntil=now+PE.cooldown_ms;const P=PE.by_pose[pose],n=Math.round(rnd(...(P.purr_repeat||[6,10])));
+    L=[{anim:P.sequence[0]},{anim:P.sequence[1]},{fn:()=>window.onCatEvent('purr',{pose,ms:n*500})},{anim:P.sequence[2],times:n}].filter(x=>x.fn||has(x.anim));kind='pet';
+    nextAt.move=Math.max(nextAt.move||0,performance.now()+20e3)}             // 剛被摸完不要馬上走開
+  if(!L.length)return false;
+  if(kind==='pet'){if(fromMenu)window.onCatEvent('pet',{pose});else undo.timer=setTimeout(()=>{if(petUndo===undo)window.onCatEvent('pet',{pose})},DT)}
+  run(L);window.CATPET={kind,pose,n:(window.CATPET&&CATPET.n||0)+1};petUndo=fromMenu?null:undo;return true}
+function cancelPet(){const u=petUndo;petUndo=null;if(!u||performance.now()-u.t>DT+120)return;clearTimeout(u.timer);taps=u.taps;coolUntil=u.cool;nextAt.move=u.move;Q=[];if(act&&!act.idle)idle();window.CATPET=Object.assign({},window.CATPET,{kind:'cancelled'})}
+const DT=280,LP=500,SLOP=10,DD=32;let lp=null,long=false,moved=false,p0=null,lastTap=0,lastXY=null;
+const isOpen=()=>menu.style.display==='block';
+hit.addEventListener('pointerdown',e=>{long=false;moved=false;p0=[e.clientX,e.clientY];clearTimeout(lp);lp=setTimeout(()=>{long=true;cancelPet();lastTap=0;open()},LP)});
+hit.addEventListener('pointermove',e=>{if(p0&&Math.hypot(e.clientX-p0[0],e.clientY-p0[1])>SLOP){clearTimeout(lp);moved=true}});
+hit.addEventListener('pointerup',e=>{clearTimeout(lp);p0=null;if(long||moved)return;e.stopPropagation();
+  if(isOpen()){close();lastTap=0;return}                                       // 選單開著時點貓＝只關選單
+  const now=performance.now(),xy=[e.clientX,e.clientY];
+  if(lastTap&&now-lastTap<DT&&Math.hypot(xy[0]-lastXY[0],xy[1]-lastXY[1])<DD){lastTap=0;cancelPet();open();return}   // 第二下＝雙擊
+  lastTap=now;lastXY=xy;pet(false)});
+hit.addEventListener('pointercancel',()=>{clearTimeout(lp);p0=null});
 hit.addEventListener('pointerleave',()=>clearTimeout(lp));hit.addEventListener('contextmenu',e=>e.preventDefault());
-hit.addEventListener('click',e=>e.stopPropagation());
-menu.addEventListener('click',e=>{e.stopPropagation();const b=e.target.dataset.b;if(b){add(b);close()}});
+hit.addEventListener('click',e=>e.stopPropagation());hit.addEventListener('dblclick',e=>{e.preventDefault();e.stopPropagation()});
+menu.addEventListener('click',e=>{e.stopPropagation();if(e.target.dataset.x==='export'){close();exportJSON();return}const b=e.target.dataset.b;if(b){add(b);close();if(b==='討摸')pet(true)}});
 document.addEventListener('pointerdown',e=>{if(!menu.contains(e.target)&&e.target!==hit)close()},true);
-addEventListener('alivelog:layout',place);place();pose();window.catLog={get,add,exportJSON};
+addEventListener('alivelog:layout',place);place();pose();window.catLog={get,add,exportJSON,pet:()=>pet(true)};
 })();
