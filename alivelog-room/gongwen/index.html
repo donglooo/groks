@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>公文函｜冬瓜的公文課</title>
-<!-- 公文函 v1（2026-10-29）。單一自含檔案，不載入外部資源。
+<!-- 公文函 v1（2026-10-29）。第2、第3課於 2026-10-30 追加。單一自含檔案，不載入外部資源。
      追加方式：
        課程：在 #lessons 內複製一個 <article class="lesson" data-lesson="NN">，放在 LESSON:NN 註解標記之間。
        作業：在 #homework 內複製 <article class="hw" data-lesson="NN">，修改 data-status（todo / submitted / graded）。
@@ -26,6 +26,7 @@ nav.tabs button:focus-visible{outline:3px solid var(--main-soft);outline-offset:
 main{max-width:860px;margin:0 auto;padding:16px 16px 48px}
 section[role=tabpanel][hidden]{display:none}
 .card,article.lesson,article.hw,article.review,article.tpl{background:var(--card);border-radius:var(--r);padding:20px 20px;margin:0 0 16px;box-shadow:0 1px 3px rgba(0,0,0,.05);border:1px solid var(--line)}
+article.lesson,article.hw,article.tpl{scroll-margin-top:72px}
 h2{font-size:1.25rem;color:var(--main);margin:0 0 10px}
 h3{font-size:1.05rem;margin:22px 0 8px;color:var(--main)}
 .tag{display:inline-block;font-size:.78rem;padding:1px 10px;border-radius:999px;background:var(--main-soft);color:var(--main);margin-right:6px;vertical-align:middle}
@@ -86,9 +87,9 @@ a{color:var(--main)}
     <div class="tbl"><table>
       <thead><tr><th>課</th><th>主題</th><th>學到什麼</th><th>作業形式</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>簽與函入門</td><td>簽與函的差別與使用時機；三段式；期望語、稱謂語、引敘語、數字書寫</td><td>依情境寫一份復文「函」</td></tr>
-        <tr><td>2</td><td>簽的深入</td><td>主旨三元素；說明不提擬辦、擬辦不重複說明；先簽後稿／簽稿併陳／以稿代簽</td><td>修改一份寫壞的簽並說明理由</td></tr>
-        <tr><td>3</td><td>函的深入</td><td>上行、平行、下行的稱謂與期望語；復文、轉文；附件與正副本</td><td>同一件事寫上行函與下行函各一份</td></tr>
+        <tr><td>1</td><td><a href="#lesson-01">簽與函入門</a></td><td>簽與函的差別與使用時機；三段式；期望語、稱謂語、引敘語、數字書寫</td><td>依情境寫一份復文「函」</td></tr>
+        <tr><td>2</td><td><a href="#lesson-02">簽的深入</a></td><td>主旨三元素；說明不提擬辦、擬辦不重複說明；先簽後稿／簽稿併陳／以稿代簽</td><td>修改一份寫壞的簽並說明理由</td></tr>
+        <tr><td>3</td><td><a href="#lesson-03">函的深入</a></td><td>上行、平行、下行的稱謂與期望語；復文、轉文；附件與正副本</td><td>同一件事寫上行函與下行函各一份</td></tr>
         <tr><td>4</td><td>書函、便簽、箋函</td><td>函與書函的分界（是否涉及准駁）；便簽用單位名義、箋函用個人名義</td><td>判斷題 5 題＋寫一份書函</td></tr>
         <tr><td>5</td><td>開會通知單與會議紀錄</td><td>必備欄位；「紀錄」與「記錄」用字；結論寫法</td><td>社會住宅協調會的開會通知單與紀錄</td></tr>
         <tr><td>6</td><td>公告</td><td>主旨／依據／公告事項；段名不冠數字；周知方式</td><td>寫一份社會住宅招租公告（自編）</td></tr>
@@ -197,7 +198,125 @@ a{color:var(--main)}
     </details>
   </article>
   <!-- LESSON:01 END -->
-  <!-- 下一課貼在這裡：LESSON:02 START ... LESSON:02 END -->
+  <!-- LESSON:02 START -->
+  <article class="lesson" data-lesson="02" id="lesson-02">
+    <h2><span class="tag">第2課</span>簽的深入：主旨、說明、擬辦</h2>
+    <p class="lead">冬瓜老大，簽只要先抓住三件事：<b>主旨一次講完要長官決定什麼，說明只擺事實，擬辦只寫下一步。</b>三種陳核方式是這三件事的用法，不是另外一套公文。</p>
+
+    <h3>一、主旨的三個元素</h3>
+    <p>主旨一段寫完，不分項。三個元素都要在，順序可以是「為……，擬……，簽請……」。</p>
+    <ul>
+      <li><b>案由</b>：這件事是什麼。常用「為○○」起頭。</li>
+      <li><b>目的</b>：希望長官同意的那一個作法。寫「擬……」，不要寫成「詳如說明」。</li>
+      <li><b>期望</b>：請長官做決定。機關內簽最常用「簽請核示」。</li>
+    </ul>
+    <p>有期限、金額、場次，就寫在主旨裡，不要藏到說明第3項。</p>
+    <p class="muted">依據：文書處理手冊第16、19點。第1課已經講過主旨要寫出案由、目的與期望。</p>
+
+    <h3>二、說明不提擬辦，擬辦不重複說明</h3>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>說明</th><th>擬辦</th></tr></thead>
+      <tbody>
+        <tr><th>放什麼</th><td>依據、來源、事實、數字</td><td>誰去做、做什麼、做完要不要再陳報</td></tr>
+        <tr><th>不放什麼</th><td>不寫「擬……」、不寫「建請……」</td><td>不把說明的法規和統計再講一遍</td></tr>
+        <tr><th>第1項</th><td>通常先交代依據或來文</td><td>先寫最需要長官點頭的那一件</td></tr>
+      </tbody>
+    </table></div>
+    <p>一段就寫得完的簽，不必硬湊成三段。沒有要對方配合的下一步，可以只有主旨和說明。</p>
+
+    <h3>三、先簽後稿、簽稿併陳、以稿代簽</h3>
+    <ol>
+      <li><b>先簽後稿</b>：事情還沒定。先用簽請長官決定方向、經費或是否辦理；奉核之後，再另辦函稿對外發文。</li>
+      <li><b>簽稿併陳</b>：方向大致清楚，但函稿要長官看過才發。簽說明為什麼這樣寫，函稿併附在後面。簽的擬辦寫「簽稿併陳，簽請核示」。第8課會拿一整案來練。</li>
+      <li><b>以稿代簽</b>：例行、案情簡單、沒有需要另外說明的承轉。不必另寫一份簽，直接在函稿上簽辦。第1課提過的「例行承轉」就是這種。</li>
+    </ol>
+    <p class="muted">怎麼選：還沒決定用先簽後稿；決定了、稿子也要看，用簽稿併陳；照舊例轉出去就好，用以稿代簽。</p>
+
+    <h3>四、一份寫壞的簽，錯在哪</h3>
+    <p>下面這份是反面教材，機關與數字皆為自編。作業要改的是另一份，不要直接把這裡的答案貼去繳。</p>
+    <div class="doc">
+      <div class="title">簽</div>
+      <div class="sec"><span class="k">主旨：</span><span>有關租金補貼補件比率偏高一案，詳如說明，請查照。</span></div>
+      <div class="sec"><span class="k">說明：</span><ol class="cn">
+        <li><span>一、</span><span>擬於115年11月18日辦說明會1場，經費乙份新臺幣12000元。</span></li>
+        <li><span>二、</span><span>本年度須補件者約占17.8%。</span></li>
+      </ol></div>
+      <div class="sec"><span class="k">擬辦：</span><span>補件比率約占17.8%，情況不理想，擬如說明辦理，簽請核示。</span></div>
+    </div>
+    <ol>
+      <li>主旨看不出要辦什麼、要花多少，還用了函的期望語「請查照」。</li>
+      <li>日期和金額跑去說明，而且「乙份」不能拿來數經費；份數才寫「1份」，金額寫「新臺幣1萬2,000元」。</li>
+      <li>說明第1項在寫擬辦，第2項才是事實，順序反了。</li>
+      <li>擬辦把17.8%再講一次，沒有寫辦完要不要陳報。</li>
+    </ol>
+
+    <h3>五、範例</h3>
+    <p>改好的寫法在「範本庫」：同一件說明會，主旨一次寫完，說明只留依據和事實，擬辦只留下一步。那份是先簽後稿，還沒有併附函稿。</p>
+
+    <details class="src"><summary>本課參考來源</summary>
+      <ul>
+        <li><a href="https://www.ey.gov.tw/File/2549CDCFAACC57E1?A=C">文書處理手冊（行政院，112年9月版 PDF）</a>第16、19點</li>
+        <li><a href="https://www.archives.gov.tw/wSite/public/Attachment/001/f1775608489221.pdf">國家發展委員會檔案管理局 115年度文書流程管理研習講義（PDF）</a></li>
+      </ul>
+    </details>
+  </article>
+  <!-- LESSON:02 END -->
+  <!-- LESSON:03 START -->
+  <article class="lesson" data-lesson="03" id="lesson-03">
+    <h2><span class="tag">第3課</span>函的深入：上行、平行、下行</h2>
+    <p class="lead">冬瓜老大，函先看你跟對方是什麼關係。<b>關係定了，稱謂和期望語就跟著定，不要混用。</b></p>
+
+    <h3>一、三種方向</h3>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>上行</th><th>平行</th><th>下行</th></tr></thead>
+      <tbody>
+        <tr><th>寫給誰</th><td>有隸屬關係的上級機關</td><td>沒有隸屬的機關、團體</td><td>所屬下級機關</td></tr>
+        <tr><th>稱謂</th><td>「鈞」。無隸屬的上級稱「大」，不稱「鈞」</td><td>「貴」。自稱「本」</td><td>「貴」。自稱「本」</td></tr>
+        <tr><th>期望語</th><td>「請鑒核」、「請核定」、「請備查」</td><td>「請查照」；要回文用「請查照見復」</td><td>「請查照」、「請照辦」</td></tr>
+        <tr><th>附件</th><td>「檢陳」</td><td>「檢送」、「檢附」</td><td>「檢送」、「檢附」</td></tr>
+        <tr><th>引來文</th><td>「奉」，引完寫「奉悉」</td><td>「准」或直接復文，引完寫「敬悉」</td><td>「據」，引完寫「已悉」</td></tr>
+      </tbody>
+    </table></div>
+    <p>期望語放在主旨，辦法段不要再寫一次。無隸屬的上級雖然地位高，但不是你的上級，所以稱「大」、期望語用「請查照」，不用「請鑒核」。</p>
+    <p class="muted">依據：文書處理手冊第18點；第1課的稱謂與期望語。</p>
+
+    <h3>二、復文</h3>
+    <ul>
+      <li>說明第1項寫來文日期和字號。例如：「復貴會115年11月2日○大學字第1150000123號函。」</li>
+      <li>引敘完，依對象接「奉悉」、「敬悉」或「已悉」。</li>
+      <li>主旨要寫答復結果，不要只寫「復貴會函，請查照」。</li>
+    </ul>
+    <p>第1課作業那封給學生會的回函，就是平行復文。</p>
+
+    <h3>三、轉文</h3>
+    <p>轉文是把別的機關來文，轉給該辦的單位，不是把來文全文再抄一遍。</p>
+    <ul>
+      <li>主旨寫清轉的是哪一件、要對方做什麼。例如：「奉○○市政府○年○月○日函，辦理租金補貼申請說明會，請照辦。」</li>
+      <li>說明第1項引那份來文的日期和字號，接著寫這次要轉行的重點。</li>
+      <li>來文若已列附件，寫「檢送原函影本1份」，不要在說明裡重貼全文。</li>
+    </ul>
+
+    <h3>四、附件、正本、副本</h3>
+    <ul>
+      <li>有附件，公文欄位要列附件名稱和份數，正文用「檢陳」或「檢送」對上。沒有附件，附件欄整列省略。</li>
+      <li>份數寫「1份」，不寫「乙份」。</li>
+      <li><b>正本</b>是要對方辦理或作為主要受文者的機關。<b>副本</b>是需要知悉、但不是主受文者的單位，例如自己的承辦科。</li>
+      <li>副本收受者也要做事時，在辦法或說明寫明，不要只把名字放在副本欄。</li>
+    </ul>
+
+    <h3>五、範例</h3>
+    <p>範本庫有同一件說明會的兩份函：都發局函市政府（上行，請核定）以及市政府函都發局（下行，請照辦）。機關、金額都是自編的。區公所和都發局同屬市政府、彼此沒有隸屬，所以第1課那封給區公所的是平行函，不是下行函。</p>
+
+    <details class="src"><summary>本課參考來源</summary>
+      <ul>
+        <li><a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0030018">公文程式條例（全國法規資料庫）</a>第2條</li>
+        <li><a href="https://www.ey.gov.tw/File/2549CDCFAACC57E1?A=C">文書處理手冊（行政院，112年9月版 PDF）</a>第17、18點</li>
+        <li><a href="https://www-ws.gov.taipei/001/Upload/332/relfile/15894/2531236/131610175970.pdf">臺北市政府公文製作參考手冊（第2版，PDF）</a></li>
+      </ul>
+    </details>
+  </article>
+  <!-- LESSON:03 END -->
+  <!-- 下一課貼在這裡：LESSON:04 START ... LESSON:04 END -->
   </div>
 </section>
 
@@ -239,6 +358,73 @@ a{color:var(--main)}
     <p class="muted"><b>繳交方式</b>：把文字貼給總控（拍照也可以）。總控會轉給 Wen 批改，批改紀錄會放在「批改」分頁。</p>
   </article>
   <!-- HW:01 END -->
+  <!-- HW:02 START -->
+  <article class="hw" data-lesson="02" data-status="todo" id="hw-02">
+    <h2><span class="tag">第2課</span>改一份寫壞的簽</h2>
+    <p>狀態：<span class="status">未繳交</span>　<span class="muted">建議用時 20 分鐘</span></p>
+    <p>冬瓜，下面這份簽是反面教材。請改成可以陳核的版本，並用條列寫出你改了什麼、為什麼。不要只重寫、不說明。</p>
+    <h3>原稿（自編，請修改）</h3>
+    <div class="doc">
+      <div class="title">簽</div>
+      <div class="meta"><div>115年11月3日　於住宅服務科</div></div>
+      <div class="sec"><span class="k">主旨：</span><span>有關本公司同仁租屋補助一案，詳如說明，惠請協助。</span></div>
+      <div class="sec"><span class="k">說明：</span><ol class="cn">
+        <li><span>一、</span><span>擬同意補助每名同仁新臺幣3000元，共12名，簽請核示。</span></li>
+        <li><span>二、</span><span>申請期限到115年11月20日。</span></li>
+        <li><span>三、</span><span>本局目前沒有同仁租屋補助要點。</span></li>
+      </ol></div>
+      <div class="sec"><span class="k">擬辦：</span><span>本局目前沒有同仁租屋補助要點，12名同仁有需要，擬如說明，請查照。</span></div>
+    </div>
+    <h3>任務</h3>
+    <ol>
+      <li>交出改過的簽：主旨含案由、目的、期望；說明不寫擬辦；擬辦不重複說明。</li>
+      <li>另外用 4 點以內說明原稿錯在哪。至少要點到期望語、稱謂或數字其中兩類。</li>
+    </ol>
+    <p class="muted">這份還在內部討論，還沒有函稿，所以用「先簽後稿」，不要寫成已經發文。</p>
+    <h3>評分重點（滿分100）</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>項目</th><th>配分</th><th>看什麼</th></tr></thead>
+      <tbody>
+        <tr><td>主旨三元素</td><td>25</td><td>看得出要不要辦、辦什麼、請長官決定；期限或金額在主旨；不用「請查照」</td></tr>
+        <tr><td>說明／擬辦分工</td><td>25</td><td>說明沒有「擬」；擬辦有下一步，且不重複「沒有要點」這句事實</td></tr>
+        <tr><td>用語與數字</td><td>25</td><td>機關內簽的期望語；不寫「惠請」「本公司」；金額用半形阿拉伯數字</td></tr>
+        <tr><td>修改說明</td><td>25</td><td>每點對得上原稿的某一句，不是只寫「已修改」</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted"><b>繳交方式</b>：把改過的簽和修改說明貼給總控。批改會放在「批改」分頁。</p>
+  </article>
+  <!-- HW:02 END -->
+  <!-- HW:03 START -->
+  <article class="hw" data-lesson="03" data-status="todo" id="hw-03">
+    <h2><span class="tag">第3課</span>同一件事，寫上行函與下行函</h2>
+    <p>狀態：<span class="status">未繳交</span>　<span class="muted">建議用時 30 分鐘</span></p>
+    <p>冬瓜，同一件說明會，站在兩個位子各寫一封函。兩封的事實要一致，稱謂和期望語不要互相抄。</p>
+    <h3>情境（自編）</h3>
+    <ul>
+      <li><b>事情</b>：○○市政府都市發展局擬於115年11月18日14時，在本局1樓多功能會議室辦「租金補貼申請說明會」1場，需經費新臺幣6,000元。</li>
+      <li><b>上行</b>：都發局把這件事報給○○市政府，請市政府核定。聯絡人是住宅服務科○○○，電話(00)0000-0000。沒有附件。</li>
+      <li><b>下行</b>：市政府核定後，函都發局照辦，並請於115年11月25日前把辦理情形報府。正本是都發局，副本是市政府秘書處。沒有附件。</li>
+    </ul>
+    <h3>任務</h3>
+    <ol>
+      <li>都發局致市政府的<b>上行函</b>：期望語用「請核定」或「請鑒核」；對市政府的稱謂用「鈞府」。</li>
+      <li>市政府致都發局的<b>下行函</b>：這是轉行核定結果，說明要引市政府自己的核定，不要寫成都發局在對市政府說話；期望語用「請照辦」或「請查照」。</li>
+      <li>兩封都要有受文者、發文日期、發文字號、正本與署名。沒有附件就不要列附件欄。</li>
+    </ol>
+    <h3>評分重點（滿分100）</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>項目</th><th>配分</th><th>看什麼</th></tr></thead>
+      <tbody>
+        <tr><td>方向</td><td>30</td><td>上行、下行的稱謂和期望語沒有對調；無隸屬才用的「大」「請查照」不要拿去取代「鈞」「請核定」</td></tr>
+        <tr><td>主旨</td><td>20</td><td>兩封都寫出說明會與期望；期限寫在該出現的那一封主旨</td></tr>
+        <tr><td>說明</td><td>20</td><td>上行寫報請核定的理由；下行有引敘，不把上行函全文再抄一次</td></tr>
+        <tr><td>正副本與附件</td><td>15</td><td>正本是主受文者；下行的副本欄有秘書處；兩封都沒有多寫附件</td></tr>
+        <tr><td>數字與整潔</td><td>15</td><td>日期、時間、金額前後一致；半形阿拉伯數字；不寫「乙份」</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted"><b>繳交方式</b>：兩封函一起貼給總控，標明哪一封是上行、哪一封是下行。</p>
+  </article>
+  <!-- HW:03 END -->
 </section>
 
 <!-- ===================== 批改 ===================== -->
@@ -314,9 +500,85 @@ a{color:var(--main)}
       <div class="foot">正本：本市各區公所<br>副本：本局住宅服務科</div>
       <div class="sign">局長 ○ ○ ○</div>
     </div>
-    <p class="muted">重點：期限寫在主旨；「請查照」只出現在主旨；對區公所稱「貴所」、自稱「本局」；附件用「檢送」、份數寫「1份」。</p>
+    <p class="muted">重點：期限寫在主旨；「請查照」只出現在主旨；對區公所稱「貴所」、自稱「本局」；附件用「檢送」、份數寫「1份」。區公所與都發局無隸屬，這是平行函。</p>
   </article>
   <!-- TPL:01-B END -->
+
+  <!-- TPL:02 START -->
+  <article class="tpl" data-lesson="02" id="tpl-02-sign">
+    <h2><span class="tag">第2課</span>範例：先簽後稿的簽</h2>
+    <div class="doc">
+      <div class="right">檔　號：<br>保存年限：</div>
+      <div class="title">簽</div>
+      <div class="meta"><div>115年10月28日　於住宅服務科</div></div>
+      <div class="sec"><span class="k">主旨：</span><span>為降低租金補貼申請案件補件比率，擬於115年11月18日辦理「租金補貼申請說明會」1場，所需經費新臺幣6,000元由本局業務費支應，簽請核示。</span></div>
+      <div class="sec"><span class="k">說明：</span><ol class="cn">
+        <li><span>一、</span><span>依住宅法第9條第1項第3款規定，主管機關得辦理承租住宅租金補貼。</span></li>
+        <li><span>二、</span><span>本年度截至115年10月20日止，須補件者約占17.8%，主要原因為租賃契約影本缺頁。</span></li>
+        <li><span>三、</span><span>本局1樓多功能會議室於當日下午可借用。</span></li>
+      </ol></div>
+      <div class="sec"><span class="k">擬辦：</span><ol class="cn">
+        <li><span>一、</span><span>如奉核可，再辦函稿，請本市各區公所協助張貼周知。</span></li>
+        <li><span>二、</span><span>說明會辦理完竣後，另簽陳報辦理成果。</span></li>
+      </ol></div>
+      <div class="foot">承辦人 ○○○　　科長 ○○○</div>
+    </div>
+    <p class="muted">重點：主旨有案由、作法、金額和「簽請核示」；說明沒有「擬」；擬辦不重複17.8%，只寫奉核後才辦稿。這是先簽後稿，所以函稿不在這一份裡面。</p>
+  </article>
+  <!-- TPL:02 END -->
+
+  <!-- TPL:03-A START -->
+  <article class="tpl" data-lesson="03" id="tpl-03-up">
+    <h2><span class="tag">第3課</span>範例1：上行函（都發局→市政府）</h2>
+    <div class="doc">
+      <div class="right">檔　號：<br>保存年限：</div>
+      <div class="title">○○市政府都市發展局　函</div>
+      <div class="right">地址：000000○○市○○區○○路000號<br>聯絡方式：承辦人○○○，電話(00)0000-0000</div>
+      <div class="meta">
+        <div>受文者：○○市政府</div>
+        <div>發文日期：中華民國115年10月30日</div>
+        <div>發文字號：○都住字第1150000456號</div>
+        <div>速別：普通件</div>
+        <div>密等及解密條件或保密期限：</div>
+      </div>
+      <div class="sec"><span class="k">主旨：</span><span>本局擬於115年11月18日辦理「租金補貼申請說明會」1場，所需經費新臺幣6,000元，請核定。</span></div>
+      <div class="sec"><span class="k">說明：</span><ol class="cn">
+        <li><span>一、</span><span>依住宅法第9條第1項第3款規定辦理。</span></li>
+        <li><span>二、</span><span>本年度租金補貼申請案件須補件者約占17.8%，擬以說明會協助民眾備齊文件。</span></li>
+        <li><span>三、</span><span>場地使用本局1樓多功能會議室，不另租借。</span></li>
+      </ol></div>
+      <div class="foot">正本：○○市政府<br>副本：本局住宅服務科</div>
+      <div class="sign">局長 ○ ○ ○</div>
+    </div>
+    <p class="muted">重點：受文者是有隸屬的上級機關，期望語用「請核定」，而且只寫在主旨。正文若要稱呼對方，用「鈞府」，不用「貴府」。沒有附件，所以不列附件欄。</p>
+  </article>
+  <!-- TPL:03-A END -->
+
+  <!-- TPL:03-B START -->
+  <article class="tpl" data-lesson="03" id="tpl-03-down">
+    <h2><span class="tag">第3課</span>範例2：下行函（市政府→都發局）</h2>
+    <div class="doc">
+      <div class="right">檔　號：<br>保存年限：</div>
+      <div class="title">○○市政府　函</div>
+      <div class="right">地址：000000○○市○○區○○路000號<br>聯絡方式：承辦人○○○，電話(00)0000-0000</div>
+      <div class="meta">
+        <div>受文者：本府都市發展局</div>
+        <div>發文日期：中華民國115年11月4日</div>
+        <div>發文字號：○府秘字第1150000789號</div>
+        <div>速別：普通件</div>
+        <div>密等及解密條件或保密期限：</div>
+      </div>
+      <div class="sec"><span class="k">主旨：</span><span>所報115年11月18日「租金補貼申請說明會」及經費新臺幣6,000元一案，同意辦理，請於115年11月25日前陳報辦理情形，請照辦。</span></div>
+      <div class="sec"><span class="k">說明：</span><ol class="cn">
+        <li><span>一、</span><span>據本府都市發展局115年10月30日○都住字第1150000456號函辦理。</span></li>
+        <li><span>二、</span><span>經費在該局業務費項下支應。</span></li>
+      </ol></div>
+      <div class="foot">正本：本府都市發展局<br>副本：本府秘書處</div>
+      <div class="sign">市長 ○ ○ ○</div>
+    </div>
+    <p class="muted">重點：這是上級轉行核定，用「據」引下級來文；稱下級機關「貴局」若寫進正文，期望語用「請照辦」；副本知會秘書處，但秘書處不用另做一件事，所以正文沒有再交辦給副本。</p>
+  </article>
+  <!-- TPL:03-B END -->
 </section>
 </main>
 
@@ -325,15 +587,18 @@ a{color:var(--main)}
   var tabs=[].slice.call(document.querySelectorAll('[role="tab"]'));
   var ids=tabs.map(function(t){return t.getAttribute('aria-controls');});
   function show(id,focus){
-    if(ids.indexOf(id)<0){id=ids[0];}
+    var el=id?document.getElementById(id):null;
+    var panel=el&&el.closest('[role="tabpanel"]');
+    var tab=ids.indexOf(id)>=0?id:(panel?panel.id:ids[0]);
     tabs.forEach(function(t){
-      var on=t.getAttribute('aria-controls')===id;
+      var on=t.getAttribute('aria-controls')===tab;
       t.setAttribute('aria-selected',on?'true':'false');
       t.tabIndex=on?0:-1;
       document.getElementById(t.getAttribute('aria-controls')).hidden=!on;
       if(on&&focus){t.focus();}
     });
-    if(history.replaceState){history.replaceState(null,'','#'+id);}
+    if(history.replaceState&&ids.indexOf(id)>=0&&location.hash!=='#'+id){history.replaceState(null,'','#'+id);}
+    if(el&&ids.indexOf(id)<0){requestAnimationFrame(function(){el.scrollIntoView({block:'start'});});}
   }
   tabs.forEach(function(t,i){
     t.addEventListener('click',function(){show(t.getAttribute('aria-controls'));});
@@ -353,8 +618,10 @@ a{color:var(--main)}
     var s=a.querySelector('.status');
     if(s&&label[a.dataset.status]){s.textContent=label[a.dataset.status];}
   });
-  show((location.hash||'').replace('#',''));
-  window.scrollTo(0,0);
+  var start=(location.hash||'').replace('#','');
+  show(start);
+  if(!start||ids.indexOf(start)>=0){window.scrollTo(0,0);}
+  window.addEventListener('hashchange',function(){show((location.hash||'').replace('#',''));});
 })();
 </script>
 </body>
