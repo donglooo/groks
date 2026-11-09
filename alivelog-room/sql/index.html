@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#24222c">
+<title>SQL 筆記｜冬瓜的小窩</title>
+<!--
+  SQL 筆記 v1（2026-11-09）。單一自含檔案，不載入任何外部資源。
+  所有表名、欄位、人名、日期都是「範例資料」（虛構的租約小表），只用來練習寫法，不含任何公司或真實資料。
+  範例查詢都在 SQL Server 2022 上用這份虛構資料實際跑過，輸出表就是執行結果。
+-->
+<style>
+:root{--bg:#f7f4ee;--card:#fff;--ink:#2a2a24;--ink2:#45443d;--muted:#7a766b;--line:#e8e2d6;--main:#2f5d50;--main-soft:#eaf1ed;--warm:#c58a42;--warm-soft:#faf1e4;--no:#b0533d;--no-soft:#f9e9e3;--codebg:#24222c;--codeink:#efe6d6;--r:16px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;letter-spacing:.01em}
+a{color:var(--main);text-underline-offset:3px}
+.wrap{max-width:860px;margin:0 auto;padding:16px 14px 64px;padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+header.hero{background:#24222c;color:#e0cbb8;border:3px solid #120f1a;box-shadow:4px 4px 0 #05070a;padding:18px 16px;margin-bottom:16px}
+header.hero h1{margin:0 0 6px;font:bold 22px/1.3 ui-monospace,monospace;color:#f0b25a;letter-spacing:.06em}
+header.hero p{margin:4px 0;font-size:14px;line-height:1.7}
+.demo{display:inline-block;background:var(--warm);color:#1c1a22;font:bold 12px/1 ui-monospace,monospace;padding:4px 8px;margin-top:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 14px;margin:14px 0;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+h2{margin:0 0 10px;font-size:20px;line-height:1.4;color:var(--main);display:flex;align-items:baseline;gap:8px}
+h4{margin:18px 0 6px;color:var(--ink2)}
+.no{font:bold 13px/1 ui-monospace,monospace;color:#fff;background:var(--main);padding:4px 6px;border-radius:6px;flex:none}
+#toc ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:6px}
+@media(min-width:620px){#toc ol{grid-template-columns:1fr 1fr}}
+#toc a{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink);background:#fcfaf6;min-height:44px}
+#toc .no{background:var(--warm)}
+.solve{background:var(--main-soft);border-radius:10px;padding:10px 12px;margin:8px 0 12px}
+.solve span{display:inline-block;font-weight:bold;color:var(--main);margin-right:8px}
+.take{background:var(--warm-soft);border-left:4px solid var(--warm);padding:8px 12px;margin:14px 0 4px;border-radius:0 10px 10px 0;font-weight:600}
+.box{border-radius:10px;padding:10px 12px;margin:12px 0}
+.box>b{display:block;margin-bottom:2px}
+.box.pit{background:var(--no-soft)}
+.box.pit>b{color:var(--no)}
+.box ul{margin:4px 0 0;padding-left:20px}
+.box li{margin:3px 0}
+.note{color:var(--ink2);font-size:14.5px}
+.formula{background:#fcfaf6;border:1px dashed var(--warm);border-radius:10px;padding:10px 12px;margin:10px 0;font-weight:600}
+.steps,.plain{padding-left:22px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:#f1ece2;padding:1px 5px;border-radius:5px;word-break:break-word}
+.code{margin:12px 0;border:2px solid #120f1a;background:var(--codebg);box-shadow:3px 3px 0 #05070a}
+.cbar{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 4px 10px;background:#1c1a22;border-bottom:2px solid #120f1a}
+.ct{font:bold 12px/1 ui-monospace,monospace;color:#f0b25a;letter-spacing:.08em}
+.copy{min-height:34px;min-width:64px;background:#efe6d6;color:#2a2418;border:2px solid #120f1a;font:bold 13px/1 ui-monospace,monospace;cursor:pointer}
+.copy.ok{background:#8fc4a0}
+pre{margin:0;padding:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+pre code{background:none;padding:0;color:var(--codeink);font-size:13px;line-height:1.6;white-space:pre;word-break:normal}
+.tw{overflow-x:auto;margin:10px 0;-webkit-overflow-scrolling:touch}
+.cap{font-size:13px;color:var(--muted);margin-bottom:4px}
+table{border-collapse:collapse;font-size:13.5px;min-width:100%;background:#fff}
+th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;white-space:nowrap}
+th{background:#f1ece2;color:var(--ink2)}
+tr.hl td{background:#fff3d9}
+table.cheat td{white-space:normal}
+table.cheat td:first-child{white-space:nowrap;font-weight:600}
+kbd{font:bold 12px/1 ui-monospace,monospace;border:1px solid #bbb;border-bottom-width:3px;border-radius:5px;padding:2px 6px;background:#fff}
+.top{display:inline-block;margin-top:10px;font-size:13px;color:var(--muted)}
+.ex{border-top:1px dashed var(--line);padding-top:8px;margin-top:10px}
+details summary{cursor:pointer;color:var(--main);font-weight:600;min-height:40px;display:flex;align-items:center}
+footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+<h1>SQL 筆記</h1>
+<p>冬瓜老大今天練的 SQL Server（T-SQL）組合技，拆成 13 招。每一招都有：解決什麼問題、最小範例、輸入輸出、常見坑和一句話重點。</p>
+<p>在 DBeaver 連 MSSQL 就能直接貼上執行。</p>
+<span class="demo">全部是範例資料（虛構）</span>
+</header>
+<nav id="toc" class="card"><h2>目錄</h2><ol><li><a href="#ch0"><span class="no">··</span>範例資料</a></li><li><a href="#ch1"><span class="no">01</span>用 WITH 分段（CTE）</a></li><li><a href="#ch2"><span class="no">02</span>逐步筆數漏斗</a></li><li><a href="#ch3"><span class="no">03</span>每個鍵取最新版本：ROW_NUMBER</a></li><li><a href="#ch4"><span class="no">04</span>閉區間日期：+1 與 −1</a></li><li><a href="#ch5"><span class="no">05</span>合併重疊區間（gaps & islands）</a></li><li><a href="#ch6"><span class="no">06</span>用空檔門檻分段</a></li><li><a href="#ch7"><span class="no">07</span>LAG / LEAD 與 LAST_VALUE 陷阱</a></li><li><a href="#ch8"><span class="no">08</span>FLOOR vs ROUND：年組分箱</a></li><li><a href="#ch9"><span class="no">09</span>CROSS APPLY (VALUES …)：一列展成多列</a></li><li><a href="#ch10"><span class="no">10</span>EXISTS vs JOIN + MAX</a></li><li><a href="#ch11"><span class="no">11</span>某一天有效：BETWEEN 起迄</a></li><li><a href="#ch12"><span class="no">12</span>做成 VIEW：參數 view、GO、分層</a></li><li><a href="#ch13"><span class="no">13</span>DBeaver 小技巧</a></li><li><a href="#cheat"><span class="no">14</span>速查表</a></li><li><a href="#practice"><span class="no">··</span>小練習</a></li></ol></nav>
+<section id="ch0" class="card"><h2>範例資料</h2>
+<p>整份教材都用同一張<strong>虛構</strong>的小表「租約」：4 位房客、5 間屋子、9 份契約。所有名字、日期都是編的，只為了練習寫法。</p>
+<div class="tw"><div class="cap">範例資料（虛構）：租約</div><table><thead><tr><th>契約編號</th><th>房客</th><th>物件</th><th>起日</th><th>迄日</th></tr></thead><tbody><tr><td>1</td><td>小明</td><td>A屋</td><td>2024-01-01</td><td>2024-05-31</td></tr><tr><td>2</td><td>小明</td><td>A屋</td><td>2024-06-01</td><td>2024-12-31</td></tr><tr><td>3</td><td>小明</td><td>A屋</td><td>2025-03-01</td><td>2025-08-31</td></tr><tr><td>4</td><td>小華</td><td>B屋</td><td>2024-02-01</td><td>2024-07-31</td></tr><tr><td>5</td><td>小華</td><td>B屋</td><td>2024-08-01</td><td>2025-01-31</td></tr><tr><td>6</td><td>阿美</td><td>C屋</td><td>2024-03-01</td><td>2024-03-31</td></tr><tr><td>7</td><td>阿美</td><td>C屋</td><td>2024-04-20</td><td>2024-09-30</td></tr><tr><td>9</td><td>小華</td><td>E屋</td><td>2024-07-01</td><td>2024-09-30</td></tr><tr><td>10</td><td>阿傑</td><td>C屋</td><td>2024-04-01</td><td>2024-04-15</td></tr></tbody></table></div>
+<p class="note">想自己跑：把下面整段貼進 DBeaver，按 <kbd>Alt</kbd>+<kbd>X</kbd>。需要 SQL Server 2016 以上（<code>DROP TABLE IF EXISTS</code>）。</p>
+<div class="code"><div class="cbar"><span class="ct">建立範例資料</span><button type="button" class="copy">複製</button></div><pre><code>-- 範例資料（虛構）：可直接貼到自己的練習資料庫執行
+DROP TABLE IF EXISTS 租約匯入;
+DROP TABLE IF EXISTS 租約;
+CREATE TABLE 租約匯入 (
+    流水號   int IDENTITY PRIMARY KEY,
+    契約編號 int, 房客 nvarchar(10), 物件 nvarchar(10),
+    起日 date, 迄日 date, 匯入時間 datetime);
+INSERT 租約匯入 (契約編號, 房客, 物件, 起日, 迄日, 匯入時間) VALUES
+ (1, N'小明', N'A屋', '2024-01-01', '2024-06-30', '2024-01-05 09:00'),
+ (1, N'小明', N'A屋', '2024-01-01', '2024-05-31', '2024-06-10 09:00'),  -- 同編號較新版本：提早結束
+ (2, N'小明', N'A屋', '2024-06-01', '2024-12-31', '2024-06-10 09:00'),
+ (3, N'小明', N'A屋', '2025-03-01', '2025-08-31', '2025-03-02 09:00'),
+ (4, N'小華', N'B屋', '2024-02-01', '2024-07-31', '2024-02-02 09:00'),
+ (5, N'小華', N'B屋', '2024-08-01', '2025-01-31', '2024-08-02 09:00'),
+ (6, N'阿美', N'C屋', '2024-03-01', '2024-03-31', '2024-03-02 09:00'),
+ (7, N'阿美', N'C屋', '2024-04-20', '2024-09-30', '2024-04-21 09:00'),
+ (8, NULL,    N'D屋', '2024-05-01', '2024-10-31', '2024-05-02 09:00'),  -- 沒有房客
+ (9, N'小華', N'E屋', '2024-07-01', '2024-09-30', '2024-07-02 09:00'),
+ (10,N'阿傑', N'C屋', '2024-04-01', '2024-04-15', '2024-04-01 09:00');
+
+-- 已去重、已排除沒房客的乾淨版本（第 3 章會教怎麼從上表做出來）
+SELECT 契約編號, 房客, 物件, 起日, 迄日
+INTO 租約
+FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY 契約編號
+                                   ORDER BY 匯入時間 DESC, 流水號 DESC) AS RN
+      FROM 租約匯入) X
+WHERE RN = 1 AND 房客 IS NOT NULL;</code></pre></div>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch1" class="card"><h2><span class="no">01</span>用 WITH 分段（CTE）</h2>
+<p class="solve"><span>解決什麼</span>一支查詢要做很多步（去重 → 篩選 → 計算 → 彙總）時，全部擠在一層子查詢裡會看不懂。<code>WITH</code> 讓每一步有名字，從上往下讀就是流程。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>WITH 篩選 AS (            -- 第 1 步：只留 2024 年起租
+    SELECT * FROM 租約
+    WHERE 起日 &gt;= '2024-01-01' AND 起日 &lt; '2025-01-01'
+), 算日數 AS (            -- 第 2 步：每份契約加一欄日數
+    SELECT *, DATEDIFF(day, 起日, 迄日) + 1 AS 日數
+    FROM 篩選
+)
+SELECT 房客, COUNT(*) AS 契約數, SUM(日數) AS 日數合計   -- 最後一步：彙總
+FROM 算日數
+GROUP BY 房客
+ORDER BY 房客;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>房客</th><th>契約數</th><th>日數合計</th></tr></thead><tbody><tr><td>小明</td><td>2</td><td>366</td></tr><tr><td>小華</td><td>3</td><td>458</td></tr><tr><td>阿傑</td><td>1</td><td>15</td></tr><tr><td>阿美</td><td>2</td><td>195</td></tr></tbody></table></div>
+<p>小華這裡的 458 天是把三份契約<strong>直接相加</strong>，重疊的天數被算了兩次。第 5 章會修正這個問題。</p>
+<div class="box pit"><b>常見坑</b><ul><li>每段用「動詞＋名詞」或「階段名」命名（篩選、去重、算日數），不要叫 A、B、T1。</li><li>後面的段只能引用前面的段；同一個 <code>WITH</code> 只寫一次，後面各段用逗號接。</li><li><code>WITH</code> 前一句如果沒結束，要補分號：<code>;WITH ...</code>。</li><li>CTE 不是暫存表：被引用兩次就會算兩次。很重的段要重複用時，考慮 <code>#暫存表</code>（但 view 裡不能用，見第 12 章）。</li><li>CTE 裡不能放 <code>ORDER BY</code>（除非搭配 TOP）；排序放最外層。</li></ul></div>
+<p class="take">🔑 一段只做一件事、名字說清楚做什麼，之後要查錯就一段一段 <code>SELECT * FROM 那段</code>。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch2" class="card"><h2><span class="no">02</span>逐步筆數漏斗</h2>
+<p class="solve"><span>解決什麼</span>每篩一次少了多少筆？用一張「步驟／剩餘筆數／本步排除筆數」表，一眼就能看出哪一步砍最多、有沒有算錯。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>WITH 原始 AS (
+    SELECT * FROM 租約匯入
+), 最新 AS (
+    SELECT *, ROW_NUMBER() OVER (PARTITION BY 契約編號
+                                 ORDER BY 匯入時間 DESC, 流水號 DESC) AS RN
+    FROM 原始
+), 去重   AS (SELECT * FROM 最新   WHERE RN = 1)
+,  有房客 AS (SELECT * FROM 去重   WHERE 房客 IS NOT NULL)
+,  期間內 AS (SELECT * FROM 有房客 WHERE 起日 &gt;= '2024-01-01' AND 起日 &lt; '2025-01-01')
+,  步驟 AS (
+    SELECT 1 AS 序, N'原始列' AS 步驟, COUNT(*) AS 剩餘筆數 FROM 原始
+    UNION ALL SELECT 2, N'同編號取最新', COUNT(*) FROM 去重
+    UNION ALL SELECT 3, N'排除無房客',   COUNT(*) FROM 有房客
+    UNION ALL SELECT 4, N'起日在2024年', COUNT(*) FROM 期間內
+)
+SELECT 序, 步驟, 剩餘筆數,
+       LAG(剩餘筆數) OVER (ORDER BY 序) - 剩餘筆數 AS 本步排除筆數
+FROM 步驟
+ORDER BY 序;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>序</th><th>步驟</th><th>剩餘筆數</th><th>本步排除筆數</th></tr></thead><tbody><tr><td>1</td><td>原始列</td><td>11</td><td>NULL</td></tr><tr><td>2</td><td>同編號取最新</td><td>10</td><td>1</td></tr><tr><td>3</td><td>排除無房客</td><td>9</td><td>1</td></tr><tr><td>4</td><td>起日在2024年</td><td>8</td><td>1</td></tr></tbody></table></div>
+<div class="box pit"><b>常見坑</b><ul><li>一定要用 <code>UNION ALL</code>：<code>UNION</code> 會去重，兩步剛好同筆數時會少一列。</li><li>每一列的第一欄型別要一致；文字加 <code>N''</code>，免得中文變問號。</li><li>如果某一步是 <code>JOIN</code>，筆數可能<strong>變多</strong>（一對多），這時「排除筆數」會是負的。這是警訊，不是排除；要另外標註「這步增加了幾列」。</li><li>單位要一致：前面算「契約列」，後面不要突然改算「人數」再相減。</li></ul></div>
+<p class="take">🔑 每多一個篩選段，就在漏斗補一列；數字對得起來，結果才可信。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch3" class="card"><h2><span class="no">03</span>每個鍵取最新版本：ROW_NUMBER</h2>
+<p class="solve"><span>解決什麼</span>同一個契約編號被匯入好幾次（改過資料），只想留最新那一筆整列。</p>
+<div class="tw"><div class="cap">輸入：租約匯入（契約 1 有兩版）</div><table><thead><tr><th>流水號</th><th>契約編號</th><th>迄日</th><th>匯入時間</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>2024-06-30</td><td>2024-01-05 09:00</td></tr><tr><td>2</td><td>1</td><td>2024-05-31</td><td>2024-06-10 09:00</td></tr><tr><td>3</td><td>2</td><td>2024-12-31</td><td>2024-06-10 09:00</td></tr></tbody></table></div>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>WITH 版本 AS (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY 契約編號          -- 每個編號各自排
+                              ORDER BY 匯入時間 DESC,          -- 最新的排第 1
+                                       流水號   DESC) AS RN    -- 第二排序鍵：打破平手
+    FROM 租約匯入
+)
+SELECT 契約編號, 迄日, 匯入時間, RN
+FROM 版本
+WHERE 契約編號 IN (1, 2)
+ORDER BY 契約編號, RN;     -- 正式使用時改成 WHERE RN = 1</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>契約編號</th><th>迄日</th><th>匯入時間</th><th>RN</th></tr></thead><tbody><tr class="hl"><td>1</td><td>2024-05-31</td><td>2024-06-10 09:00</td><td>1</td></tr><tr><td>1</td><td>2024-06-30</td><td>2024-01-05 09:00</td><td>2</td></tr><tr class="hl"><td>2</td><td>2024-12-31</td><td>2024-06-10 09:00</td><td>1</td></tr></tbody></table></div>
+<div class="box pit"><b>常見坑</b><ul><li><strong>平手陷阱</strong>：兩筆匯入時間一樣時，SQL Server 會隨便挑一筆，而且每次跑可能不同，結果就會飄。一定要補一個唯一欄位（流水號、主鍵）當第二排序鍵。</li><li><code>PARTITION BY</code> 裡的欄位如果是 NULL，所有 NULL 會被當成<strong>同一組</strong>，最後只留一筆。先確認鍵有沒有空值。</li><li><code>MAX(匯入時間)</code> 再 JOIN 回原表也能做，但平手時會留下兩筆；<code>ROW_NUMBER</code> 保證只留一筆。</li><li>不要對每一欄各自取 <code>MAX</code>：那樣會把不同版本的欄位拼成一列不存在的資料。</li></ul></div>
+<p class="take">🔑 取最新整列 = <code>ROW_NUMBER() OVER (PARTITION BY 鍵 ORDER BY 時間 DESC, 唯一欄 DESC)</code> 加上 <code>WHERE RN = 1</code>。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch4" class="card"><h2><span class="no">04</span>閉區間日期：+1 與 −1</h2>
+<p class="solve"><span>解決什麼</span>起日和迄日<strong>都算在內</strong>（1/1～1/31 是 31 天，不是 30 天）。這叫閉區間。日數要 +1，兩份契約之間的空檔要 −1。</p>
+<div class="formula"><div>日數 = <code>DATEDIFF(day, 起日, 迄日) + 1</code></div><div>空檔 = <code>DATEDIFF(day, 前一份迄日, 下一份起日) − 1</code></div></div>
+<p class="note">5/31 結束、6/1 開始：DATEDIFF = 1，空檔 = 0，代表緊接著。1/1 開始、1/1 結束：日數 = 1。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>DECLARE @截止 date = '2024-12-31';   -- 統計截止日
+
+SELECT 契約編號, 起日, 迄日,
+       IIF(迄日 &gt; @截止, @截止, 迄日) AS 統計迄日,                    -- 截尾
+       DATEDIFF(day, 起日, IIF(迄日 &gt; @截止, @截止, 迄日)) + 1 AS 涵蓋日數,
+       DATEDIFF(day, LAG(迄日) OVER (PARTITION BY 房客 ORDER BY 起日), 起日) - 1 AS 與上一份空檔
+FROM 租約
+WHERE 房客 = N'小明'
+ORDER BY 起日;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>契約編號</th><th>起日</th><th>迄日</th><th>統計迄日</th><th>涵蓋日數</th><th>與上一份空檔</th></tr></thead><tbody><tr><td>1</td><td>2024-01-01</td><td>2024-05-31</td><td>2024-05-31</td><td>152</td><td>NULL</td></tr><tr><td>2</td><td>2024-06-01</td><td>2024-12-31</td><td>2024-12-31</td><td>214</td><td>0</td></tr><tr class="hl"><td>3</td><td>2025-03-01</td><td>2025-08-31</td><td>2024-12-31</td><td>-59</td><td>59</td></tr></tbody></table></div>
+<p>第 3 列是錯的：契約在截止日<strong>之後</strong>才開始，截尾後迄日比起日早，日數變成負數。要先篩 <code>WHERE 起日 &lt;= @截止</code>，再截尾。</p>
+<div class="box pit"><b>常見坑</b><ul><li>截尾前先排除「起日晚於截止日」的契約，不然會出現負日數。</li><li><code>IIF(a, b, c)</code> 和 <code>CASE WHEN a THEN b ELSE c END</code> 一樣，CASE 可攜性較好。</li><li>欄位是 <code>datetime</code> 時，<code>起日 &lt;= '2024-12-31'</code> 會漏掉 12/31 白天的資料。用 <code>起日 &lt; DATEADD(day, 1, @截止)</code>，或先 <code>CONVERT(date, …)</code>。</li><li>提前終止：「實際迄日」要先取 <code>COALESCE(提前終止日, 迄日)</code>，再拿去截尾。</li><li>截尾後的日數是「截至統計日涵蓋的天數」，不是約定租期，命名時要講清楚。</li></ul></div>
+<p class="take">🔑 兩端都算：日數 +1、空檔 −1；先篩再截尾。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch5" class="card"><h2><span class="no">05</span>合併重疊區間（gaps & islands）</h2>
+<p class="solve"><span>解決什麼</span>同一位房客的契約可能重疊或緊接著。要算「實際涵蓋多少天」時，重疊的部分只能算一次，中間的空檔不算。</p>
+<p>做法分三步：</p>
+<ol class="steps"><li>依起日排序，算出<strong>前面所有列</strong>的最晚迄日（running MAX）。</li><li>如果這列起日和那個最晚迄日之間有空檔（&gt; 0 天），就是新區塊，旗標設 1。</li><li>把旗標累加，得到區塊號；同一區塊用 MIN(起日)、MAX(迄日) 合併。</li></ol>
+<div class="code"><div class="cbar"><span class="ct">步驟 1～3</span><button type="button" class="copy">複製</button></div><pre><code>WITH 排序 AS (
+    SELECT 房客, 物件, 起日, 迄日,
+           MAX(迄日) OVER (PARTITION BY 房客 ORDER BY 起日, 迄日
+                           ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS 前面最晚迄日
+    FROM 租約
+), 旗標 AS (
+    SELECT *, CASE WHEN 前面最晚迄日 IS NULL
+                     OR DATEDIFF(day, 前面最晚迄日, 起日) - 1 &gt; 0 THEN 1 ELSE 0 END AS 新區塊
+    FROM 排序
+), 編號 AS (
+    SELECT *, SUM(新區塊) OVER (PARTITION BY 房客 ORDER BY 起日, 迄日
+                                ROWS UNBOUNDED PRECEDING) AS 區塊號
+    FROM 旗標
+)
+SELECT 房客, 物件, 起日, 迄日, 前面最晚迄日, 新區塊, 區塊號
+FROM 編號
+WHERE 房客 IN (N'小明', N'小華')
+ORDER BY 房客, 起日;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>房客</th><th>物件</th><th>起日</th><th>迄日</th><th>前面最晚迄日</th><th>新區塊</th><th>區塊號</th></tr></thead><tbody><tr><td>小明</td><td>A屋</td><td>2024-01-01</td><td>2024-05-31</td><td>NULL</td><td>1</td><td>1</td></tr><tr><td>小明</td><td>A屋</td><td>2024-06-01</td><td>2024-12-31</td><td>2024-05-31</td><td>0</td><td>1</td></tr><tr class="hl"><td>小明</td><td>A屋</td><td>2025-03-01</td><td>2025-08-31</td><td>2024-12-31</td><td>1</td><td>2</td></tr><tr><td>小華</td><td>B屋</td><td>2024-02-01</td><td>2024-07-31</td><td>NULL</td><td>1</td><td>1</td></tr><tr><td>小華</td><td>E屋</td><td>2024-07-01</td><td>2024-09-30</td><td>2024-07-31</td><td>0</td><td>1</td></tr><tr><td>小華</td><td>B屋</td><td>2024-08-01</td><td>2025-01-31</td><td>2024-09-30</td><td>0</td><td>1</td></tr></tbody></table></div>
+<div class="code"><div class="cbar"><span class="ct">步驟 4：合併與累計</span><button type="button" class="copy">複製</button></div><pre><code>-- 接在「編號」後面：合併成區塊，再加總
+, 區塊 AS (
+    SELECT 房客, 區塊號, MIN(起日) AS 區塊起日, MAX(迄日) AS 區塊迄日
+    FROM 編號
+    GROUP BY 房客, 區塊號
+)
+SELECT 房客,
+       COUNT(*) AS 區塊數,
+       SUM(DATEDIFF(day, 區塊起日, 區塊迄日) + 1) AS 累計日數,          -- 不含空檔、重疊只算一次
+       DATEDIFF(day, MIN(區塊起日), MAX(區塊迄日)) + 1 AS 頭尾跨度日數   -- 含空檔，僅供對照
+FROM 區塊
+GROUP BY 房客
+ORDER BY 房客;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>房客</th><th>區塊數</th><th>累計日數</th><th>頭尾跨度日數</th></tr></thead><tbody><tr><td>小明</td><td>2</td><td>550</td><td>609</td></tr><tr><td>小華</td><td>1</td><td>366</td><td>366</td></tr><tr><td>阿傑</td><td>1</td><td>15</td><td>15</td></tr><tr><td>阿美</td><td>2</td><td>195</td><td>214</td></tr></tbody></table></div>
+<p>小華的三份契約直接相加是 458 天（第 1 章），合併後是 366 天，因為重疊的天數只算一次。小明的跨度是 609 天，扣掉 59 天空檔後是 550 天。</p>
+<h4>為什麼不能用 LAG(迄日)？</h4>
+<p>LAG 只看上一列。如果有一份長約把後面幾份短約整個包住，LAG 會誤判出空檔：</p>
+<div class="tw"><div class="cap">範例資料（虛構）：一份長約包住兩份短約</div><table><thead><tr><th>序</th><th>起日</th><th>迄日</th><th>上一列迄日</th><th>用LAG算空檔</th><th>前面最晚迄日</th><th>用MAX算空檔</th></tr></thead><tbody><tr><td>1</td><td>2024-01-01</td><td>2024-12-31</td><td>NULL</td><td>NULL</td><td>NULL</td><td>NULL</td></tr><tr><td>2</td><td>2024-03-01</td><td>2024-03-31</td><td>2024-12-31</td><td>-306</td><td>2024-12-31</td><td>-306</td></tr><tr class="hl"><td>3</td><td>2024-05-01</td><td>2024-05-31</td><td>2024-03-31</td><td>30 ✗</td><td>2024-12-31</td><td>-245 ✓</td></tr></tbody></table></div>
+<div class="box pit"><b>常見坑</b><ul><li>框架一定要寫 <code>ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING</code>（不含自己），第一列才會是 NULL。</li><li><code>ORDER BY 起日, 迄日</code>：起日相同時補迄日，排序才穩定。</li><li>要判斷「相接也合併」用 <code>空檔 &gt; 0</code> 開新區塊；只想合併真正重疊的用 <code>空檔 &gt;= 0</code>。先想清楚定義。</li><li>完全相同的列（同起迄）先 <code>DISTINCT</code>，避免重複計算。</li></ul></div>
+<p class="take">🔑 running MAX → 新區塊旗標 → SUM 旗標得區塊號 → GROUP BY 合併。這是處理時間區間最常用的組合。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch6" class="card"><h2><span class="no">06</span>用空檔門檻分段</h2>
+<p class="solve"><span>解決什麼</span>允許短暫空檔：同一房客、同一物件，中斷不超過 30 天仍算同一段「連續承租」；超過才切新段。邏輯和第 5 章一樣，只是把「空檔 &gt; 0」換成「空檔 &gt; 門檻」。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>DECLARE @門檻 int = 30;
+
+WITH 前一份 AS (
+    SELECT 房客, 物件, 起日, 迄日,
+           LAG(迄日) OVER (PARTITION BY 房客, 物件 ORDER BY 起日) AS 前迄日
+    FROM 租約            -- 正式用時，這裡應先換成第 5 章合併好的區塊
+), 旗標 AS (
+    SELECT A.*, DATEDIFF(day, A.前迄日, A.起日) - 1 AS 空檔,
+           CASE WHEN A.前迄日 IS NULL THEN 1                                   -- 首段
+                WHEN DATEDIFF(day, A.前迄日, A.起日) - 1 &gt; @門檻 THEN 1          -- 空檔超過門檻
+                WHEN EXISTS (SELECT 1 FROM 租約 B                               -- 空檔內有別人的完整契約
+                             WHERE B.物件 = A.物件 AND B.房客 &lt;&gt; A.房客
+                               AND B.起日 &gt; A.前迄日 AND B.迄日 &lt; A.起日) THEN 1
+                ELSE 0 END AS 新區段
+    FROM 前一份 A
+), 編號 AS (
+    SELECT *, SUM(新區段) OVER (PARTITION BY 房客, 物件 ORDER BY 起日
+                                ROWS UNBOUNDED PRECEDING) AS 區段號
+    FROM 旗標
+)
+SELECT 房客, 物件, 起日, 迄日, 空檔, 新區段, 區段號
+FROM 編號
+WHERE 房客 IN (N'小明', N'阿美')
+ORDER BY 房客, 起日;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>房客</th><th>物件</th><th>起日</th><th>迄日</th><th>空檔</th><th>新區段</th><th>區段號</th></tr></thead><tbody><tr><td>小明</td><td>A屋</td><td>2024-01-01</td><td>2024-05-31</td><td>NULL</td><td>1</td><td>1</td></tr><tr><td>小明</td><td>A屋</td><td>2024-06-01</td><td>2024-12-31</td><td>0</td><td>0</td><td>1</td></tr><tr class="hl"><td>小明</td><td>A屋</td><td>2025-03-01</td><td>2025-08-31</td><td>59</td><td>1</td><td>2</td></tr><tr><td>阿美</td><td>C屋</td><td>2024-03-01</td><td>2024-03-31</td><td>NULL</td><td>1</td><td>1</td></tr><tr class="hl"><td>阿美</td><td>C屋</td><td>2024-04-20</td><td>2024-09-30</td><td>19</td><td>1</td><td>2</td></tr></tbody></table></div>
+<p>阿美的空檔只有 19 天，但這段空檔裡阿傑完整租過 C屋（4/1～4/15），所以還是切成新段。如果拿掉 <code>EXISTS</code> 那一行，阿美就會是同一段。</p>
+<div class="box pit"><b>常見坑</b><ul><li>門檻只拿來決定「切不切段」；段內的累計天數仍然不含空檔（加總各區塊日數，不是頭尾相減）。</li><li>先合併重疊（第 5 章）再分段，否則重疊的契約會讓 LAG 算出負空檔。</li><li>門檻要放在變數或參數 view，不要寫死在好幾個地方。</li><li>用語要保守：資料只能證明「有租賃紀錄」，不能證明真的搬進或搬出。</li></ul></div>
+<p class="take">🔑 分段 = 第 5 章的旗標法，換一個門檻條件；想加特殊規則就在 CASE 多加一個 WHEN。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch7" class="card"><h2><span class="no">07</span>LAG / LEAD 與 LAST_VALUE 陷阱</h2>
+<p class="solve"><span>解決什麼</span><code>LAG</code> 取上一列、<code>LEAD</code> 取下一列，用來算「與前一份的空檔」「下一份何時開始」。<code>LAST_VALUE</code> 則有一個很常見的預設框架陷阱。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>SELECT 契約編號, 起日,
+       LEAD(起日) OVER (PARTITION BY 房客 ORDER BY 起日) AS 下一份起日,
+       LAST_VALUE(迄日) OVER (PARTITION BY 房客 ORDER BY 起日) AS 預設框架,
+       LAST_VALUE(迄日) OVER (PARTITION BY 房客 ORDER BY 起日
+                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS 指定整段
+FROM 租約
+WHERE 房客 = N'小明'
+ORDER BY 起日;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>契約編號</th><th>起日</th><th>下一份起日</th><th>預設框架</th><th>指定整段</th></tr></thead><tbody><tr class="hl"><td>1</td><td>2024-01-01</td><td>2024-06-01</td><td>2024-05-31</td><td>2025-08-31</td></tr><tr class="hl"><td>2</td><td>2024-06-01</td><td>2025-03-01</td><td>2024-12-31</td><td>2025-08-31</td></tr><tr><td>3</td><td>2025-03-01</td><td>NULL</td><td>2025-08-31</td><td>2025-08-31</td></tr></tbody></table></div>
+<p>有 <code>ORDER BY</code> 但沒寫框架時，預設是「從第一列到<strong>目前這列</strong>」，所以 <code>LAST_VALUE</code> 拿到的其實是自己這列，不是整組最後一列。</p>
+<div class="box pit"><b>常見坑</b><ul><li>想要整組最後一個值：寫完整框架 <code>ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING</code>，或改用 <code>FIRST_VALUE(…) OVER (… ORDER BY 起日 DESC)</code>。</li><li>只是要最大值，直接 <code>MAX(迄日) OVER (PARTITION BY 房客)</code> 最省事。</li><li>LAG/LEAD 第一列、最後一列是 NULL；可用第三個參數給預設值：<code>LAG(迄日, 1, '1900-01-01')</code>。</li><li>預設框架是 <code>RANGE</code>，遇到 ORDER BY 值相同的列會一起算進來，結果更難預期；寫 <code>ROWS</code> 比較明確。</li></ul></div>
+<p class="take">🔑 有 ORDER BY 的視窗函數，框架自己寫清楚；LAST_VALUE 不寫框架，幾乎一定是錯的。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch8" class="card"><h2><span class="no">08</span>FLOOR vs ROUND：年組分箱</h2>
+<p class="solve"><span>解決什麼</span>把天數分成「未滿1年、1年、2年……8年以上」。關鍵是要<strong>無條件捨去</strong>，而且要設上限。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>SELECT 日數,
+       ROUND(日數 / 365.25, 0) AS ROUND_365_25,
+       FLOOR(日數 / 365.25)    AS FLOOR_365_25,
+       FLOOR(日數 / 365.0)     AS FLOOR_365,
+       CASE WHEN 日數 / 365 &gt;= 8 THEN 8                     -- 上限 8：8年以上
+            ELSE CONVERT(int, FLOOR(日數 / 365.0)) END AS 年組
+FROM (VALUES (200), (364), (365), (548), (729), (730), (2920), (3500)) V(日數);</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>日數</th><th>ROUND_365_25</th><th>FLOOR_365_25</th><th>FLOOR_365</th><th>年組</th></tr></thead><tbody><tr class="hl"><td>200</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>364</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr class="hl"><td>365</td><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>548</td><td>2</td><td>1</td><td>1</td><td>1</td></tr><tr><td>729</td><td>2</td><td>1</td><td>1</td><td>1</td></tr><tr><td>730</td><td>2</td><td>1</td><td>2</td><td>2</td></tr><tr><td>2920</td><td>8</td><td>7</td><td>8</td><td>8</td></tr><tr><td>3500</td><td>10</td><td>9</td><td>9</td><td>8</td></tr></tbody></table></div>
+<ul class="plain"><li><strong>ROUND</strong> 會四捨五入：200 天被算成「1 年」。用 ROUND 時，「1 年」其實涵蓋約 0.5～1.5 年。</li>
+<li><strong>FLOOR(÷365.25)</strong>：剛好 365 天會落在「未滿1年」，平年的一整年被少算。</li>
+<li><strong>FLOOR(÷365.0)</strong>：365 天 = 1 年。這是「以 365 天換算年」，<strong>不是</strong>曆法週年。</li></ul>
+<div class="code"><div class="cbar"><span class="ct">加上可讀名稱</span><button type="button" class="copy">複製</button></div><pre><code>-- 年組名稱
+CASE WHEN 年組 = 0 THEN N'未滿1年'
+     WHEN 年組 = 8 THEN N'8年以上'
+     ELSE CONVERT(nvarchar(10), 年組) + N'年至未滿' + CONVERT(nvarchar(10), 年組 + 1) + N'年'
+END AS 年組名稱</code></pre></div>
+<div class="box pit"><b>常見坑</b><ul><li><code>int / int</code> 在 SQL Server 是整數除法：<code>500 / 365 = 1</code>。要小數就寫 <code>365.0</code>。</li><li>日數為非負整數時，<code>日數 / 365</code> 和 <code>FLOOR(日數 / 365.0)</code> 結果一樣。</li><li>要真正的週年（考慮閏年，例如 2/29），得用 <code>DATEADD(year, n, 起日)</code> 去比，不能只除天數。</li><li>在報表上寫一行註解：「年組以 365 天換算年，非曆法週年」。</li></ul></div>
+<p class="take">🔑 分箱用 FLOOR 不用 ROUND；上限用 CASE；分母寫清楚是 365 還是 365.25。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch9" class="card"><h2><span class="no">09</span>CROSS APPLY (VALUES …)：一列展成多列</h2>
+<p class="solve"><span>解決什麼</span>同一份契約要分別用「房客」「物件」「房客＋物件」三種角度分析。與其把同一段查詢 <code>UNION ALL</code> 寫三次（讀三次表），不如讀一次，再把每列展開成三列。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>SELECT B.契約編號, V.分析對象, V.主體
+FROM 租約 B
+CROSS APPLY (VALUES
+    (N'房客',       B.房客),
+    (N'物件',       B.物件),
+    (N'房客＋物件', B.房客 + N'｜' + B.物件)
+) V(分析對象, 主體)
+WHERE B.契約編號 = 1;</code></pre></div>
+<div class="tw"><div class="cap">輸出：1 列變 3 列</div><table><thead><tr><th>契約編號</th><th>分析對象</th><th>主體</th></tr></thead><tbody><tr><td>1</td><td>房客</td><td>小明</td></tr><tr><td>1</td><td>物件</td><td>A屋</td></tr><tr><td>1</td><td>房客＋物件</td><td>小明｜A屋</td></tr></tbody></table></div>
+<p>之後只要 <code>PARTITION BY 分析對象, 主體</code>，第 5 章的合併邏輯寫一次，就能同時算出三種角度。</p>
+<div class="code"><div class="cbar"><span class="ct">對照：UNION ALL</span><button type="button" class="copy">複製</button></div><pre><code>-- 等價的 UNION ALL 寫法（讀三次表）
+SELECT 契約編號, N'房客' AS 分析對象, 房客 AS 主體 FROM 租約
+UNION ALL
+SELECT 契約編號, N'物件', 物件 FROM 租約
+UNION ALL
+SELECT 契約編號, N'房客＋物件', 房客 + N'｜' + 物件 FROM 租約;</code></pre></div>
+<div class="box pit"><b>常見坑</b><ul><li><code>VALUES</code> 每列欄數、型別要一致；空的位置寫 <code>NULL</code>（必要時 <code>CAST(NULL AS nvarchar(10))</code>）。</li><li>字串串接遇到 NULL 會整個變 NULL；可以用 <code>CONCAT()</code>，或分成兩個鍵欄位（房客鍵、物件鍵）。</li><li><code>CROSS APPLY</code> 右邊沒有列時，左邊那列會消失；要保留就用 <code>OUTER APPLY</code>。</li><li>也常拿來做「欄轉列」（unpivot），比 <code>UNPIVOT</code> 好讀，NULL 也保得住。</li></ul></div>
+<p class="take">🔑 同一份資料要用好幾種角度分析：讀一次，用 CROSS APPLY VALUES 展開，再 PARTITION BY 角度。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch10" class="card"><h2><span class="no">10</span>EXISTS vs JOIN + MAX</h2>
+<p class="solve"><span>解決什麼</span>要判斷「同物件有沒有別人的契約，且落在某個條件內」。<code>EXISTS</code> 好讀，但它引用的如果是很重的 view，每一列都可能重算一次。改成先 JOIN、再用 <code>MAX(CASE …)</code> 彙總，常常會快很多，而且一次就能算出好幾個旗標。</p>
+<div class="code"><div class="cbar"><span class="ct">寫法 A：EXISTS（好讀）</span><button type="button" class="copy">複製</button></div><pre><code>WITH 前一份 AS (
+    SELECT 房客, 物件, 起日, 迄日,
+           LAG(迄日) OVER (PARTITION BY 房客, 物件 ORDER BY 起日) AS 前迄日
+    FROM 租約
+)
+SELECT A.房客, A.物件, A.前迄日, A.起日,
+       CASE WHEN EXISTS (SELECT 1 FROM 租約 B
+                         WHERE B.物件 = A.物件 AND B.房客 &lt;&gt; A.房客
+                           AND B.起日 &gt; A.前迄日 AND B.迄日 &lt; A.起日)
+            THEN 1 ELSE 0 END AS 空檔內有他人
+FROM 前一份 A
+WHERE A.物件 = N'C屋';</code></pre></div>
+<div class="code"><div class="cbar"><span class="ct">寫法 B：JOIN 一次 + MAX（兩個旗標一起算）</span><button type="button" class="copy">複製</button></div><pre><code>WITH 前一份 AS (
+    SELECT 房客, 物件, 起日, 迄日,
+           LAG(迄日) OVER (PARTITION BY 房客, 物件 ORDER BY 起日) AS 前迄日
+    FROM 租約
+)
+SELECT A.房客, A.物件, A.前迄日, A.起日,
+       MAX(CASE WHEN B.起日 &gt; A.前迄日 AND B.迄日 &lt; A.起日 THEN 1 ELSE 0 END) AS 空檔內有他人,
+       MAX(CASE WHEN B.起日 &lt;= A.迄日  AND B.迄日 &gt;= A.起日 THEN 1 ELSE 0 END) AS 有他人重疊
+FROM 前一份 A
+LEFT JOIN 租約 B ON B.物件 = A.物件 AND B.房客 &lt;&gt; A.房客
+WHERE A.物件 = N'C屋'
+GROUP BY A.房客, A.物件, A.前迄日, A.起日
+ORDER BY A.房客, A.起日;</code></pre></div>
+<div class="tw"><div class="cap">輸出（C屋）</div><table><thead><tr><th>房客</th><th>物件</th><th>前迄日</th><th>起日</th><th>空檔內有他人</th><th>有他人重疊</th></tr></thead><tbody><tr><td>阿傑</td><td>C屋</td><td>NULL</td><td>2024-04-01</td><td>0</td><td>0</td></tr><tr><td>阿美</td><td>C屋</td><td>NULL</td><td>2024-03-01</td><td>0</td><td>0</td></tr><tr class="hl"><td>阿美</td><td>C屋</td><td>2024-03-31</td><td>2024-04-20</td><td>1</td><td>0</td></tr></tbody></table></div>
+<p class="note">兩段重疊的判斷式：<code>B.起日 &lt;= A.迄日 AND B.迄日 &gt;= A.起日</code>（閉區間）。這個公式很常用，值得背起來。</p>
+<div class="box pit"><b>常見坑</b><ul><li>用 <code>LEFT JOIN</code>：沒有別人的列才不會消失，旗標會是 0。</li><li>GROUP BY 要包含能唯一識別 A 列的欄位，不然不同列會被併在一起。</li><li>JOIN 可能一對多，所以一定要先彙總回「每個 A 一列」，再拿去和別的表 JOIN。</li><li>資料量小、來源是實體表又有索引時，EXISTS 通常已經夠快。改寫前後都要比對結果是否一致（雙向 <code>EXCEPT</code>）。</li></ul></div>
+<p class="take">🔑 多個「有沒有」的判斷：JOIN 一次、<code>MAX(CASE…)</code> 一次算完，比好幾個 EXISTS 各掃一遍省。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch11" class="card"><h2><span class="no">11</span>某一天有效：BETWEEN 起迄</h2>
+<p class="solve"><span>解決什麼</span>「某天當下還有效的契約有幾份？」閉區間的寫法就是 <code>@d BETWEEN 起日 AND 迄日</code>（兩端都算）。</p>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>DECLARE @d date = '2024-07-15';
+
+SELECT 契約編號, 房客, 物件, 起日, 迄日
+FROM 租約
+WHERE @d BETWEEN 起日 AND 迄日     -- 等於 起日 &lt;= @d AND 迄日 &gt;= @d
+ORDER BY 契約編號;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>契約編號</th><th>房客</th><th>物件</th><th>起日</th><th>迄日</th></tr></thead><tbody><tr><td>2</td><td>小明</td><td>A屋</td><td>2024-06-01</td><td>2024-12-31</td></tr><tr><td>4</td><td>小華</td><td>B屋</td><td>2024-02-01</td><td>2024-07-31</td></tr><tr><td>7</td><td>阿美</td><td>C屋</td><td>2024-04-20</td><td>2024-09-30</td></tr><tr><td>9</td><td>小華</td><td>E屋</td><td>2024-07-01</td><td>2024-09-30</td></tr></tbody></table></div>
+<div class="box pit"><b>常見坑</b><ul><li>用「實際迄日」（有提前終止就用終止日），不要用為了統計而截尾過的迄日。</li><li>欄位是 <code>datetime</code> 時，<code>BETWEEN</code> 的上界只到 00:00:00；先 <code>CONVERT(date, …)</code> 再比。</li><li><code>BETWEEN a AND b</code> 必須 a ≤ b，寫反了不會報錯，只會查不到資料。</li><li>要算「期間內曾經有效」（不是單一天），改用第 10 章的重疊公式。</li></ul></div>
+<p class="take">🔑 單一天有效：<code>@d BETWEEN 起日 AND 實際迄日</code>；先確認日期型別。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch12" class="card"><h2><span class="no">12</span>做成 VIEW：參數 view、GO、分層</h2>
+<p class="solve"><span>解決什麼</span>想讓別人（或以後的自己）直接 <code>SELECT * FROM 某view WHERE …</code> 查明細，不用每次跑一大段腳本。</p>
+<ul class="plain"><li>view 裡<strong>不能</strong>用 <code>DECLARE</code> 變數，也不能用 <code>#暫存表</code>。</li><li>參數改放一支只有一列的「參數 view」，其他 view 用 <code>CROSS JOIN</code> 帶進來。</li><li>每支 <code>CREATE VIEW</code> 必須是批次裡的第一句，用 <code>GO</code> 隔開。</li><li>分層：底層算明細，上層再彙總；上層依賴下層，要照順序建立。</li></ul>
+<div class="code"><div class="cbar"><span class="ct">T-SQL</span><button type="button" class="copy">複製</button></div><pre><code>CREATE OR ALTER VIEW dbo.vw_練習_參數 AS
+SELECT CONVERT(date, '2024-12-31') AS 統計截止日,
+       CONVERT(int, 30)            AS 空檔門檻天數
+GO
+CREATE OR ALTER VIEW dbo.vw_練習_契約 AS
+SELECT A.契約編號, A.房客, A.物件, A.起日, A.迄日,
+       IIF(A.迄日 &gt; P.統計截止日, P.統計截止日, A.迄日) AS 統計迄日,
+       DATEDIFF(day, A.起日, IIF(A.迄日 &gt; P.統計截止日, P.統計截止日, A.迄日)) + 1 AS 涵蓋日數
+FROM dbo.租約 A
+CROSS JOIN dbo.vw_練習_參數 P
+WHERE A.起日 &lt;= P.統計截止日
+GO
+-- 使用
+SELECT * FROM dbo.vw_練習_契約 WHERE 房客 = N'小明' ORDER BY 起日;</code></pre></div>
+<div class="tw"><div class="cap">輸出</div><table><thead><tr><th>契約編號</th><th>房客</th><th>物件</th><th>起日</th><th>迄日</th><th>統計迄日</th><th>涵蓋日數</th></tr></thead><tbody><tr><td>1</td><td>小明</td><td>A屋</td><td>2024-01-01</td><td>2024-05-31</td><td>2024-05-31</td><td>152</td></tr><tr><td>2</td><td>小明</td><td>A屋</td><td>2024-06-01</td><td>2024-12-31</td><td>2024-12-31</td><td>214</td></tr></tbody></table></div>
+<div class="box pit"><b>常見坑</b><ul><li><code>CREATE OR ALTER</code> 要 SQL Server 2016 SP1 以上；更舊的版本先 <code>DROP VIEW</code>，再 <code>CREATE VIEW</code>。</li><li>view 裡不能放 <code>ORDER BY</code>（除非加 TOP），排序寫在查詢時。</li><li>view 不會存結果，每次查詢都從頭重算。很慢的話，改成排程把結果寫進實體表。</li><li>有視窗函數、CTE、外部聯結的 view 不能做 indexed view。</li><li>DBeaver 預設把<strong>空白行</strong>當成語句分隔，view 本體裡別留空行（或改設定）。</li><li>建 view 前先確認 schema 和權限；view 裡如果有敏感欄位，查詢權限要收緊。</li></ul></div>
+<p class="take">🔑 變數換成參數 view、暫存表換成分層 view、每支用 GO 隔開，照依賴順序建立。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="ch13" class="card"><h2><span class="no">13</span>DBeaver 小技巧</h2>
+<p class="solve"><span>解決什麼</span>同一份腳本，用不同方式執行，結果差很多。</p>
+<div class="tw"><table><thead><tr><th>按鍵</th><th>做什麼</th><th>什麼時候用</th></tr></thead><tbody>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>只執行游標所在（或選取）的那一句</td><td>測單一段 SELECT</td></tr>
+<tr><td><kbd>Alt</kbd>+<kbd>X</kbd></td><td>執行整份腳本，每句各一個結果分頁</td><td>有 DECLARE、#暫存表、建 view 時</td></tr>
+<tr><td>選取多行 + <kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>把選取範圍當一句送出</td><td>DECLARE 加上要用它的那句一起跑</td></tr>
+</tbody></table></div>
+<ul class="plain">
+<li><strong>只顯示 200 列</strong>：結果格預設只抓前 200 列，畫面上的列數不等於總數。總數用 <code>COUNT(*)</code> 查，或在結果下方點「取得全部列」。</li>
+<li><strong>要完整明細</strong>：在結果上按右鍵 →「Export data」（匯出資料）→ CSV／Excel，它會重新執行查詢並匯出全部列。</li>
+<li><strong>DECLARE 的範圍</strong>：變數只在同一批次有效。只用 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 跑後面那句，會出現「必須宣告純量變數」。</li>
+<li><strong>#暫存表</strong>：同一個連線（session）內都有效；換個編輯器分頁可能是另一個連線，就看不到了。</li>
+</ul>
+<div class="box pit"><b>常見坑</b><ul><li>把 200 列當成全部結果去統計。</li><li>匯出前沒確認連線是正式還是測試資料庫。</li><li>含個資的明細不要截圖或貼到外面；只看自己需要的那幾筆，用 WHERE 篩。</li></ul></div>
+<p class="take">🔑 建表、建 view、有變數時用 Alt+X；看總數用 COUNT；要完整明細用 Export data。</p>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="cheat" class="card"><h2><span class="no">14</span>速查表</h2>
+<div class="tw"><table class="cheat"><thead><tr><th>想做什麼</th><th>寫法</th></tr></thead><tbody>
+<tr><td>分段寫流程</td><td><code>WITH 步驟1 AS (…), 步驟2 AS (SELECT … FROM 步驟1)</code></td></tr>
+<tr><td>逐步筆數</td><td><code>SELECT 1, N'步驟', COUNT(*) FROM 段1 UNION ALL …</code> + <code>LAG(剩餘) - 剩餘</code></td></tr>
+<tr><td>取最新整列</td><td><code>ROW_NUMBER() OVER (PARTITION BY 鍵 ORDER BY 時間 DESC, 唯一欄 DESC)</code>、<code>RN = 1</code></td></tr>
+<tr><td>閉區間日數</td><td><code>DATEDIFF(day, 起, 迄) + 1</code></td></tr>
+<tr><td>閉區間空檔</td><td><code>DATEDIFF(day, 前迄, 下起) - 1</code></td></tr>
+<tr><td>截尾</td><td><code>IIF(迄 &gt; @截止, @截止, 迄)</code>（先篩 <code>起 &lt;= @截止</code>）</td></tr>
+<tr><td>前面最晚迄日</td><td><code>MAX(迄) OVER (PARTITION BY 主體 ORDER BY 起, 迄 ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING)</code></td></tr>
+<tr><td>旗標 → 區塊號</td><td><code>SUM(新區塊) OVER (PARTITION BY 主體 ORDER BY 起, 迄 ROWS UNBOUNDED PRECEDING)</code></td></tr>
+<tr><td>兩段重疊</td><td><code>B.起 &lt;= A.迄 AND B.迄 &gt;= A.起</code></td></tr>
+<tr><td>整組最後一個值</td><td><code>LAST_VALUE(x) OVER (… ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)</code></td></tr>
+<tr><td>年組</td><td><code>CASE WHEN 日數/365 &gt;= 8 THEN 8 ELSE FLOOR(日數/365.0) END</code></td></tr>
+<tr><td>一列展多列</td><td><code>CROSS APPLY (VALUES (N'甲', 欄1), (N'乙', 欄2)) V(類別, 值)</code></td></tr>
+<tr><td>多個「有沒有」</td><td><code>LEFT JOIN</code> + <code>MAX(CASE WHEN 條件 THEN 1 ELSE 0 END)</code> + <code>GROUP BY</code></td></tr>
+<tr><td>某天有效</td><td><code>@d BETWEEN 起日 AND 實際迄日</code></td></tr>
+<tr><td>參數 view</td><td><code>CREATE OR ALTER VIEW v_參數 AS SELECT CONVERT(date,'…') AS 截止</code> + <code>CROSS JOIN</code></td></tr>
+</tbody></table></div>
+<a class="top" href="#toc">↑ 回目錄</a></section>
+<section id="practice" class="card"><h2>小練習</h2><p>用上面的範例資料就能做。先自己寫，再展開答案對照。</p><div class="ex"><p><b>練習 1</b>　3/1 起租、3/31 退租是幾天？3/31 退租、4/20 再起租，中間空檔幾天？用 SQL 算出來。</p><details><summary>看答案</summary><div class="code"><div class="cbar"><span class="ct">參考答案</span><button type="button" class="copy">複製</button></div><pre><code>SELECT DATEDIFF(day, '2024-03-01', '2024-03-31') + 1 AS 日數,      -- 31
+       DATEDIFF(day, '2024-03-31', '2024-04-20') - 1 AS 空檔;     -- 19</code></pre></div><p class="note">日數 +1（兩端都算），空檔 −1（兩端都不算）。</p></details></div><div class="ex"><p><b>練習 2</b>　「租約匯入」裡，每個契約編號只留最新一筆，且匯入時間平手時也要穩定。寫出查詢。</p><details><summary>看答案</summary><div class="code"><div class="cbar"><span class="ct">參考答案</span><button type="button" class="copy">複製</button></div><pre><code>WITH V AS (
+    SELECT *, ROW_NUMBER() OVER (PARTITION BY 契約編號
+                                 ORDER BY 匯入時間 DESC, 流水號 DESC) AS RN
+    FROM 租約匯入
+)
+SELECT * FROM V WHERE RN = 1;</code></pre></div><p class="note">流水號是唯一欄位，用來打破平手。</p></details></div><div class="ex"><p><b>練習 3</b>　2024-04-10 當天，C屋有幾份有效契約？是誰的？</p><details><summary>看答案</summary><div class="code"><div class="cbar"><span class="ct">參考答案</span><button type="button" class="copy">複製</button></div><pre><code>DECLARE @d date = '2024-04-10';
+SELECT 房客, 起日, 迄日
+FROM 租約
+WHERE 物件 = N'C屋' AND @d BETWEEN 起日 AND 迄日;
+-- 1 份：阿傑（2024-04-01～2024-04-15）</code></pre></div><p class="note">阿美 3/31 已結束、4/20 才再起租，4/10 不算有效。</p></details></div><div class="ex"><p><b>練習 4</b>　以「物件」為主體（不是房客），算每間屋子的累計出租日數（重疊只算一次、空檔不算）。提示：把第 5 章的 <code>PARTITION BY 房客</code> 換掉。</p><details><summary>看答案</summary><div class="code"><div class="cbar"><span class="ct">參考答案</span><button type="button" class="copy">複製</button></div><pre><code>WITH 排序 AS (
+    SELECT 物件, 起日, 迄日,
+           MAX(迄日) OVER (PARTITION BY 物件 ORDER BY 起日, 迄日
+                           ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS 前面最晚迄日
+    FROM 租約
+), 旗標 AS (
+    SELECT *, CASE WHEN 前面最晚迄日 IS NULL
+                     OR DATEDIFF(day, 前面最晚迄日, 起日) - 1 &gt; 0 THEN 1 ELSE 0 END AS 新區塊
+    FROM 排序
+), 編號 AS (
+    SELECT *, SUM(新區塊) OVER (PARTITION BY 物件 ORDER BY 起日, 迄日 ROWS UNBOUNDED PRECEDING) AS 區塊號
+    FROM 旗標
+), 區塊 AS (
+    SELECT 物件, 區塊號, MIN(起日) AS s, MAX(迄日) AS e FROM 編號 GROUP BY 物件, 區塊號
+)
+SELECT 物件, SUM(DATEDIFF(day, s, e) + 1) AS 累計出租日數
+FROM 區塊 GROUP BY 物件 ORDER BY 物件;
+-- A屋 550、B屋 366、C屋 210、E屋 92</code></pre></div><p class="note">C屋：3/1～3/31（31）＋ 4/1～4/15（15）＋ 4/20～9/30（164）= 210。3/31 和 4/1 緊接著，所以前兩份會併成同一個區塊。</p></details></div><div class="ex"><p><b>練習 5</b>　把第 8 章的年組換成「每 2 年一組、上限 6 年以上」（0、2、4、6）。</p><details><summary>看答案</summary><div class="code"><div class="cbar"><span class="ct">參考答案</span><button type="button" class="copy">複製</button></div><pre><code>SELECT 日數,
+       CASE WHEN 日數 / 365 &gt;= 6 THEN 6
+            ELSE (日數 / 365) / 2 * 2 END AS 年組
+FROM (VALUES (364), (730), (1459), (1460), (3000)) V(日數);
+-- 0, 2, 2, 4, 6</code></pre></div><p class="note">整數除法本身就是無條件捨去：<code>(年 / 2) * 2</code> 會把年數變成偶數下界。</p></details></div><a class="top" href="#toc">↑ 回目錄</a></section>
+
+<footer>冬瓜的小窩 · SQL 筆記 · 範例資料皆為虛構</footer>
+</div>
+<script>
+document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){
+  var t=b.closest('.code').querySelector('code').innerText;
+  function done(){b.textContent='已複製';b.classList.add('ok');setTimeout(function(){b.textContent='複製';b.classList.remove('ok')},1400)}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(done,fallback)}else fallback();
+  function fallback(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}
+})});
+</script>
+</body>
+</html>

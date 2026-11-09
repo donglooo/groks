@@ -1,4 +1,4 @@
-// ---- 電視下方、沙發上方那排書：點開三本學習頁（各自獨立，不是同一課的分頁）----
+// ---- 電視下方、沙發上方那排書：點開四本學習頁（各自獨立，不是同一課的分頁）----
 // 實測 room_fg.png（600×420）：書脊 x124–176、y302–315；層板 x124–182、y316–318；支架落到 y321。
 // 點擊區含一點牆面留白，仍離沙發坐墊（約 y348）很遠。拖曳超過 6px 不算點，跟房間平移同一門檻。
 (function(){
@@ -7,7 +7,8 @@ const SLOP=6;
 const BOOKS=[
   {id:'gongwen',name:'公文',href:'gongwen/'},
   {id:'english',name:'英文發音',href:'english/'},
-  {id:'housing',name:'住宅研究',href:'housing/'}
+  {id:'housing',name:'住宅研究',href:'housing/'},
+  {id:'sql',name:'SQL 筆記',href:'sql/'}
 ];
 const css=document.createElement('style');css.textContent=`
 #shelfhit{position:absolute;z-index:4;cursor:pointer;touch-action:none}
@@ -16,12 +17,14 @@ const css=document.createElement('style');css.textContent=`
 #shelf-pick{z-index:70;align-items:center;justify-content:center;background:rgba(10,8,16,.78);touch-action:none}
 #shelf-panel{width:min(92vw,420px);box-sizing:border-box;background:#24222c;border:3px solid #120f1a;box-shadow:4px 4px 0 #05070a;padding:14px 14px 12px;color:#e0cbb8}
 #shelf-panel h2{margin:0 0 12px;text-align:center;font:bold 14px/1 ui-monospace,monospace;letter-spacing:.18em;color:#f0b25a}
-.shelf-row{display:flex;gap:10px}
+.shelf-row{display:flex;gap:8px}
 .shelf-book{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;min-height:148px;padding:12px 4px 10px;background:#1c1a22;color:#e0cbb8;border:2px solid #120f1a;box-shadow:inset 0 -3px 0 #121016;cursor:pointer;font:bold 15px/1.25 ui-monospace,monospace;touch-action:none}
 .shelf-book b{width:36px;height:74px;box-shadow:inset -5px 0 0 rgba(0,0,0,.35),inset 4px 0 0 rgba(255,248,230,.28),3px 3px 0 #05070a}
 .shelf-book[data-book=gongwen] b{background:#9a3a32}
 .shelf-book[data-book=english] b{background:#2f6f62}
 .shelf-book[data-book=housing] b{background:#c48a3a}
+.shelf-book[data-book=sql] b{background:#4a5a8a}
+.shelf-book{white-space:nowrap;font-size:13px}
 #shelf-dismiss{display:block;width:100%;min-height:48px;margin-top:12px;background:#efe6d6;color:#2a2418;border:2px solid #120f1a;font:bold 16px/1 ui-monospace,monospace;cursor:pointer;touch-action:manipulation}
 #shelf-read{z-index:80;flex-direction:column;background:#120f1a;touch-action:auto}
 #shelf-bar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top));background:#24222c;color:#e0cbb8;border-bottom:3px solid #120f1a;font:bold 15px/1.2 ui-monospace,monospace}
