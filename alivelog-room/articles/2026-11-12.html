@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f5d50">
+<title>資料治理年會－技術場講座重點筆記｜文章集</title>
+<style>
+:root{--bg:#f7f4ee;--card:#fff;--ink:#2a2a24;--ink2:#45443d;--muted:#7a766b;--line:#e8e2d6;--main:#2f5d50;--main-soft:#eaf1ed;--warm:#c58a42;--warm-soft:#faf1e4;--r:16px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;letter-spacing:.01em}
+a{color:var(--main);text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--warm);outline-offset:2px;border-radius:6px}
+.wrap{max-width:720px;margin:0 auto;padding:20px 18px 48px;padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right))}
+header.top{padding:22px 0 8px}
+header.top h1{margin:0;font-size:1.15rem;letter-spacing:.12em;font-weight:600;color:var(--main)}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;text-decoration:none;color:inherit;min-height:48px}
+.card:hover{border-color:#d3c7b2}
+.card time{display:block;font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.card .title{display:block;margin-top:4px;font-size:1.05rem;font-weight:600;line-height:1.5;color:var(--ink)}
+.kicker{margin:0 0 8px;font-size:.88rem}
+.kicker a{text-decoration:none}
+.dochead h1{margin:0 0 8px;font-size:1.45rem;line-height:1.45;font-weight:600;color:var(--ink)}
+.docmeta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:0 0 18px;color:var(--muted);font-size:.92rem}
+.docmeta time{font-variant-numeric:tabular-nums}
+.pdf{display:inline-flex;align-items:center;min-height:44px;padding:0 2px;font-weight:600}
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px 8px;margin:0 0 16px}
+h2{margin:0 0 12px;font-size:1.18rem;line-height:1.5;font-weight:600;color:var(--ink)}
+h3{margin:22px 0 8px;font-size:1.02rem;line-height:1.5;font-weight:600;color:var(--main)}
+p{margin:0 0 14px}
+p.speaker{color:var(--ink2);margin-top:-4px}
+p.key{background:var(--main-soft);border-radius:14px;padding:14px 16px;color:var(--main);line-height:1.85}
+ul,ol{margin:4px 0 16px;padding-left:1.35em}
+li{margin:0 0 8px;padding-left:.15em}
+li::marker{color:var(--main)}
+strong{font-weight:600}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:8px 0 16px}
+table{border-collapse:collapse;width:100%;min-width:36em;background:#fff;font-size:.95rem;line-height:1.7}
+th,td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+th:nth-child(1),td:nth-child(1){width:9.5em}
+th:nth-child(3),td:nth-child(3){width:6.5em;white-space:nowrap}
+thead th{color:var(--muted);font-weight:600;font-size:.85rem;background:#f6f1e8;white-space:nowrap}
+tbody td:first-child{font-weight:600;color:var(--main)}
+.back{margin:8px 0 0}
+@media (max-width:640px){
+  .dochead h1{font-size:1.28rem}
+  section{padding:16px 14px 4px}
+  .tbl{overflow:visible}
+  table{min-width:0;font-size:1rem}
+  thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  table,tbody,tr,td{display:block;width:auto;white-space:normal}
+  tr{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;overflow:hidden}
+  td{border-bottom:0;border-top:1px solid var(--line)}
+  tr td:first-child{border-top:0}
+  td::before{content:attr(data-h);display:block;font-size:.78rem;line-height:1.4;font-weight:600;color:var(--muted);margin-bottom:2px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<article>
+<header class="dochead">
+<p class="kicker"><a href="./">文章集</a></p>
+<h1>資料治理年會－技術場講座重點筆記</h1>
+<p class="docmeta"><time datetime="2026-11-12">2026-11-12</time><a class="pdf" href="2026-11-12-data-governance.pdf">原始 PDF</a></p>
+</header>
+<div class="body">
+<section>
+<h2>第一場：你的資料庫裡有幾個王大明？從補習班學生資料談 <strong>Entity Resolution</strong></h2>
+<p class="speaker">講者：陳家宏｜睿博資訊（<strong>REPLWARE</strong>）執行長</p>
+<p class="key">一句話重點： 資料庫裡有好幾個同名同姓的人，分不清是同一人還是不同人，這個問題叫 Entity Resolution。</p>
+<h3>問題情境</h3>
+<ul>
+<li>補習班約 2 萬名學生，轉分校時重複註冊，同步到總公司後出現兩筆資料。</li>
+<li>同樣的問題也出現在廣告受眾資料（Google、Facebook 等平台對不起來）、企業併購後的客戶合併、行銷重複發送或漏發。</li>
+<li>本質不是資料量，而是資料品質。它也不是單純去重，因為去重的前提是你已經確定是同一筆。</li>
+<li>實體錯了，AI 的輸出就錯，客戶實體是資料治理中最關鍵的一塊。</li>
+</ul>
+<h3>為什麼規則式不夠</h3>
+<ul>
+<li>地址很髒（戶籍地和居住地不同），結果只有信或不信，沒有 0.5 或 0.7 的信心程度。</li>
+<li>規則寫太嚴會漏配，寫太鬆會誤配。</li>
+</ul>
+<h3>解法：<strong>Fellegi-Sunter</strong> 演算法（<strong>1969</strong>）</h3>
+<ul>
+<li>先用姓名加生日縮小範圍，2 萬筆縮成約 100 到 300 筆。</li>
+<li>每個欄位估兩個機率：M（同一人時相符的機率）、U（不同人時相符的機率）。</li>
+<li>起始值不必擔心，演算法會迭代到收斂。</li>
+<li>結果分三種：高機率視為同人、低機率視為不同人、中間地帶交人工處理。</li>
+</ul>
+<h3>工具：<strong>Splink</strong>（<strong>Python</strong> 套件，源自英國司法部）</h3>
+<ol>
+<li>Blocking：只比較姓名生日相同的那幾百筆，避免 2 萬乘 2 萬。</li>
+<li>估計 M 與 U。</li>
+<li>計算配對機率，例如 A 和 B 是 0.92，B 和 C 是 0.88。</li>
+<li>Clustering：用圖論的連通概念，A≈B 且 B≈C，就歸為同一群。</li>
+</ol>
+<h3>落地要想的三件事</h3>
+<ol>
+<li>Blocking 用哪些欄位。</li>
+<li>M 和 U 的起始機率怎麼設，這依賴領域知識，例如地址相同不代表同一家人，有人借戶籍。</li>
+<li>中間地帶（例如機率約 0.6）如何人工處理。</li>
+</ol>
+<p>這是傳統機器學習，不是大型語言模型，一台筆電就跑得動。</p>
+<h3>什麼時候不必用 <strong>Splink</strong></h3>
+<ul>
+<li>已有唯一識別碼：直接 join。</li>
+<li>量小（約 300 筆）、不常做、影響小：人工或寫 SQL 處理。</li>
+<li>需要用的情況：缺唯一識別碼、量大、做錯會被罰、每週都要做。</li>
+</ul>
+<h3>自我診斷</h3>
+<ul>
+<li>有沒有人問過「系統裡怎麼有兩個一樣的人」。</li>
+<li>行銷是否對同一人重複發送或漏發。</li>
+<li>跟人數有關的報表是否對不上。</li>
+<li>是否缺少 UID。</li>
+</ul>
+<h3>帶回家的一句話：</h3>
+<p>細節會忘沒關係，記得「資料庫有好幾個王大明，這叫 Entity Resolution」。</p>
+</section>
+<section>
+<h2>第二場：<strong>From Data Platforms to Decision Capability</strong></h2>
+<p class="speaker">講者：林基玄｜捷通軟體（<strong>JetFusion</strong>）顧問總監</p>
+<p class="key">一句話重點： 很多組織升級了資料架構，卻沒升級決策架構；AI 時代的目標不是 Data Ready，而是 Decision Trust（決策信任）。</p>
+<h3>核心論點</h3>
+<ul>
+<li>這些年投資了資料倉儲、資料中臺、CRM、AI，平臺上線了，但業務仍依賴 IT，管理層也沒看到決策變好。</li>
+<li>平臺能集中資料、提升擴充性、支援 AI，但不會自動回答決策信任的問題。</li>
+</ul>
+<h3>三個親身案例</h3>
+<div class="tbl"><table><thead><tr><th scope="col">案例</th><th scope="col">發現</th><th scope="col">對應的層次</th></tr></thead><tbody><tr><td data-h="案例">銀行 DW／CRM 轉型</td><td data-h="發現">約 113 萬客戶被標為不可接觸，最大宗來自一條多年前的遺留規則，沒人擁有、沒人檢討。重整後約 90 萬人可重新經營</td><td data-h="對應的層次">決策所有權</td></tr><tr><td data-h="案例">重大事件調查</td><td data-h="發現">靠約 25 年前設計好的加密、去識別化、自動控制與 audit trail，能快速還原資料來源與使用紀錄</td><td data-h="對應的層次">決策可追溯</td></tr><tr><td data-h="案例">事件式即時行銷</td><td data-h="發現">刷卡後 5 秒內完成判斷與簡訊觸達，回應率兩位數，形成事件、判斷、行動、回饋的閉環</td><td data-h="對應的層次">決策執行</td></tr></tbody></table></div>
+<ul>
+<li>信任不是宣告出來的，是設計出來的；出事後才補檔案、補流程叫補救。</li>
+<li>決策基礎建設不是新概念，新的是參與決策的不只有人，還有 AI。</li>
+</ul>
+<h3><strong>AI</strong> 改變了什麼</h3>
+<ul>
+<li>以前人會補位，多問一圈，用人的摩擦力吸收資料與規則的模糊。</li>
+<li>AI 不會懷疑規則，只會忠實、快速、大規模地執行，因此會放大既有體質：成熟能力被放大，治理缺口也被規模化。</li>
+</ul>
+<h3>決策信任的六個檢查問題</h3>
+<ol>
+<li>關鍵數字有沒有主人？ 主人是能定義、解釋、裁決、更新的人或角色，不是信箱或部門名稱。</li>
+<li>決策路徑能還原嗎？ 要從資料、規則、模型、人的判斷一路追到最終行動，不只是 table 到 table 的 lineage。</li>
+<li>治理政策有 <strong>AI</strong> 這一層嗎？ 要管 AI 能否基於某目的使用資料、只能建議還是能直接觸發、何時必須人工介入。規模放大卻沒有治理，那不叫成長，叫騷擾。</li>
+<li>判斷能被辯護嗎？ 追溯不等於辯護，要能向主管機關與客戶說明為何用這個資料、規則、模型，只列 feature importance 不夠。</li>
+<li>規則與模型幾個月後還有效嗎？ 需要效能監控、drift detection、結果回饋，以及 challenge、override、stop 機制。</li>
+<li>人與 <strong>AI</strong> 判斷不一致時，誰裁決、誰負責？ AI 可以參與決策，責任不能沒有主人。</li>
+</ol>
+<h3>對技術團隊的意涵</h3>
+<ul>
+<li>Metadata、lineage、識別碼與版本紀錄，決定決策能否被重建、解釋與辯護。</li>
+<li>技術人的責任從「把資料送到對的地方」變成「把決策信任的條件設計進系統」。</li>
+</ul>
+<p>結語： 以前問「會議室那個數字可以相信嗎」，答錯代價有限；現在可能是以機器速度執行錯誤。資料治理不是為了管資料，而是為了建立決策信任。</p>
+</section>
+<section>
+<h2>第三場：從效能到高效益：資料庫雲端遷移後的 <strong>FinOps</strong> 治理與自治演進</h2>
+<p class="speaker">講者：許庭魁（<strong>Jerry</strong>）｜華碩電腦 開放雲端 <strong>infra lead</strong></p>
+<p class="key">一句話重點： 雲端最大的浪費是過度配置，只有持續調校能讓你不再浪費；折扣只是讓你便宜地浪費。</p>
+<h3>背景</h3>
+<ul>
+<li>地端的 CAPEX 到了雲端變成每月 OPEX，所以效能調校直接等於省錢。</li>
+<li>講者分析近十幾個跨 AWS、Azure、GCP 的案子，排除 LLM 後，資料庫占雲端 TCO 的比重很大。有報告指出約 32% 的雲端支出是過度配置。</li>
+<li>資料庫貴的原因：商業授權貴，且因交易一致性的特性，是最後才能擴充的一層。</li>
+</ul>
+<h3><strong>FinOps</strong> 的定義</h3>
+<ul>
+<li>一種文化實踐，讓工程、財務、業務共同關注雲端的商業價值；架構的每個決策都決定資產的持有成本。</li>
+</ul>
+<h3>財務治理的順序：由內而外</h3>
+<ol>
+<li>先效能調校。</li>
+<li>再選對規格，避免過度配置。</li>
+<li>最後用預留（Reserved）等折扣鎖定。</li>
+</ol>
+<p>核心心法是 <strong>Performance by Design</strong>：系統 80% 以上的效能瓶頸來自不良的資料庫設計。</p>
+<h3><strong>DBA</strong> 為什麼會過度配置</h3>
+<ol>
+<li>寧可多開，不可出事，照搬地端規格。</li>
+<li>為尖峰（雙十一、Black Friday、攻擊）買保險。</li>
+<li>資源耦合：大表需要大量快取，只好堆 CPU。</li>
+<li>擴容耗時：案例中縮放一次要 6 小時。</li>
+</ol>
+<h3>案例</h3>
+<ul>
+<li>上雲前壓測發現 cursor 造成瓶頸，改寫後查詢從 0.5 秒降到約 0.054 秒，約快 10 倍。</li>
+<li>單一 instance 月費約 5,900 美元，調校後省約 50%，再搭配三年預留，進一步降低。服務有十幾個 instance，省下的金額要再乘上去。</li>
+</ul>
+<h3>雲端資料庫最佳化三步驟</h3>
+<ol>
+<li>先清理：檢查每個查詢與執行計畫是否合乎 best practice。</li>
+<li>找到適合雲端的 baseline：地端會把 CPU 壓榨到很低的閒置，雲端的 CPU 基準線約設在 30 到 40%。</li>
+<li>以調校結果決定規格，再鎖定長期折扣。</li>
+</ol>
+<h3>自治演進：<strong>AI Agent</strong> 擔任 <strong>DBA</strong> 助手</h3>
+<ul>
+<li>用 AI 讓一個下午就能分析完所有 SQL，連重構後的程式碼都準備好。</li>
+<li>採用設計思考的雙鑽石模型（找對方向、把事情做對）。</li>
+<li>安全架構：Agent 不直接碰資料庫，中間用 <strong>MCP</strong> 隔離，只能使用預先定義的工具，並經人同意才能操作。</li>
+<li>用途：主動巡檢（例如 300 台資料庫，上班前巡完並匯報）、檢查連線與備份、自動分析慢查詢並產出改善報告，DBA 審查後再派工。</li>
+<li>挑戰：最小權限、人的審查、系統隔離，以及最重要的 <strong>rollback plan</strong>，必須先準備好。</li>
+</ul>
+<h3>資料架構師的 <strong>FinOps</strong> 思維</h3>
+<ul>
+<li>DBA 從被動維運，轉為 FinOps 的貢獻者，讓工程、業務、財務對同一項資產說同一種語言。</li>
+<li>關鍵詞：Value by tuning。DBA 的關注點從「不能掛、不能慢」變成「效能與成本」，成果會直接反映在下個月的帳單。</li>
+</ul>
+<p><strong>Q&amp;A</strong> 重點： 有人問能否把 OLAP 查詢從 OLTP 資料庫拆出去。講者回答可透過 replication 與讀寫分離，把 OLAP 查詢導到唯讀副本，他認為是很好的做法。他也提到一般企業很難配置足夠的 DBA。</p>
+</section>
+<section>
+<h2>第四場：當「客戶」有十種定義：用 <strong>Metadata</strong> 打造 <strong>AI-Understandable</strong> 的資料</h2>
+<p class="speaker">講者：陳威帆（<strong>William</strong>）｜核桃運算 產品暨 <strong>AI</strong> 與數據服務總監</p>
+<p class="key">一句話重點： AI Agent 就像公司新人，資料沒描述清楚時它只能猜；Metadata 不再是給人看的說明檔，而是 AI 的理解基礎。</p>
+<h3>問題</h3>
+<ul>
+<li>光是「客戶」就有多種定義（新客、活躍客、付費客、開票對象），Agent 不知道你問哪一種。</li>
+<li>換更強的模型有差，但不是關鍵。2026 年報告顯示 95% 的企業說不出 Copilot 類服務的財務回報，44% 暫停訂閱；成功的企業花 60 到 80% 的力氣整理資料。</li>
+</ul>
+<p><strong>Agent</strong> 要能做事的四個要點： 找得到、讀得懂、算得穩、可追溯。</p>
+<h3>三個 <strong>Agent</strong> 會算錯的情境</h3>
+<ol>
+<li>沒定義，<strong>Agent</strong> 自己挑： 客單價至少有三種算法（除以訂單數、下單客戶數、總客戶數），問 1,000 次能每次一致嗎？</li>
+<li>公式對、答案錯： 毛利率應該是毛利總和除以營收總和（例子中約 5.45%），Agent 卻可能把兩個毛利率直接平均。</li>
+<li>語法對、結果不合理： 庫存量是每日快照，直接加總會膨脹到約 365 倍。</li>
+</ol>
+<p>這不只是幻覺，而是 Agent 用對的公式，卻不知道什麼能這樣算，還在你沒注意時替你做了決定。</p>
+<h3>微軟實驗</h3>
+<ul>
+<li>給 Agent 一份約 4KB 的 metadata（粒度、業務定義、彙總方式、關聯、時間範圍），準確率從 48% 提高約 20 個百分點，三種模型都有提升。</li>
+<li>不是給越多越好，標準是「可執行」，像寫程式一樣讓 Agent 不用再猜。例如欄位值 1、2、3 必須寫明各自代表什麼。</li>
+</ul>
+<h3>讓 <strong>AI</strong> 算得跟 <strong>BI</strong> 一樣可靠：<strong>Semantic Layer</strong></h3>
+<ul>
+<li>固定指標 BI 仍然最快，動態問題才需要 AI，兩者不必互相取代。</li>
+<li>Semantic layer 包含找得到、讀得懂、算得穩，它是治理概念，不只是技術層。</li>
+<li>做法是把公式與彙總規則寫給 Agent，例如客單價三種情境各對應哪個公式、客戶數在哪些層級 group by 合理、哪些會重複計算。這樣全公司對同一個問題就有唯一答案。</li>
+<li>要區分答案是依公司公式算的，還是 Agent 自己湊的。後者不是不能用，但湊得越多，越可能是該轉成正式指標的訊號。</li>
+</ul>
+<h3><strong>Schema</strong> 變更風險</h3>
+<ul>
+<li>好處：有 semantic layer 後，改 schema 只需對應改一處。</li>
+<li>壞處：若沒同步，所有 Agent 呼叫會連鎖出錯，所以資料一變更就要立刻跟上。</li>
+</ul>
+<h3><strong>Metadata</strong> 從文件變成資產</h3>
+<ul>
+<li>以前少寫沒更新，程式照跑；AI 時代沒定義好，後面整個會壞。</li>
+<li>以後別人會問你的不只是「有沒有 API」，而是「有沒有足夠的 metadata 與 semantic layer，讓我的 Agent 能與你溝通」。</li>
+</ul>
+<p><strong>AI</strong> 時代治理框架要多出的能力： 傳統 metadata 管理是寫完就放；AI 時代必須持續維護。（錄音在這裡結束，具體內容未錄到。）</p>
+</section>
+</div>
+<p class="back"><a href="./">回到文章集</a></p>
+</article>
+</div>
+</body>
+</html>
